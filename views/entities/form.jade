@@ -15,20 +15,20 @@
 extends ../base.jade
 
 block content
-  h3 #{action} book
+  h3 #{action} entity
   form(method="POST")
     .form-group
       label(for="title") Title
-      input.form-control(type="text", name="title", id="title", value=book.title)
+      input.form-control(type="text", name="title", id="title", value=entity.title)
     .form-group
       label(for="author") Author
-      input.form-control(type="text", name="author", id="author", value=book.author)
+      input.form-control(type="text", name="author", id="author", value=entity.author)
     .form-group
       label(for="publishedDate") Date Published
-      input.form-control(type="text", name="publishedDate", id="publishedDate", value=book.publishedDate)
+      input.form-control(type="text", name="publishedDate", id="publishedDate", value=entity.publishedDate)
     .form-group
       label(for="description") Description
-      input.form-control(type="text", name="description", id="description", value=book.description)
+      input.form-control(type="text", name="description", id="description", value=entity.description)
     .form-group
     button.btn.btn-success(type="submit") Save
 

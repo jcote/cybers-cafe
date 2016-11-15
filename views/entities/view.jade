@@ -14,24 +14,21 @@
 extends ../base.jade
 
 block content
-  h3 Books
+  h3 Entity
+    small
 
-  a(href="/books/add", class='btn btn-success btn-sm')
-    i.glyphicon.glyphicon-plus
-    span  Add book
+  .btn-group
+    a(href="/entities/#{entity.id}/edit", class='btn btn-primary btn-sm')
+      i.glyphicon.glyphicon-edit
+      span  Edit entity
+    a(href="/entities/#{entity.id}/delete", class='btn btn-danger btn-sm')
+      i.glyphicon.glyphicon-trash
+      span  Delete entity
 
-  each book in books
-    .media
-      a(href="/books/#{book.id}")
-        .media-body
-          h4= book.title
-          p= book.author
-
-  if !books.length
-    p No books found.
-
-  if nextPageToken
-    nav
-      ul.pager
-        li
-          a(href="?pageToken=#{encodeURIComponent(nextPageToken)}") More
+  .media
+    .media-body
+      h4= entity.title
+        | &nbsp;
+        small= entity.publishedDate
+      h5 By #{entity.author||'unknown'}
+      p= entity.description

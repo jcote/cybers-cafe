@@ -27,9 +27,9 @@ var router = express.Router();
 router.use(bodyParser.json());
 
 /**
- * GET /api/books
+ * GET /api/entities
  *
- * Retrieve a page of books (up to ten at a time).
+ * Retrieve a page of entities (up to ten at a time).
  */
 router.get('/', function list (req, res, next) {
   getModel().list(10, req.query.pageToken, function (err, entities, cursor) {
@@ -44,9 +44,9 @@ router.get('/', function list (req, res, next) {
 });
 
 /**
- * POST /api/books
+ * POST /api/entities
  *
- * Create a new book.
+ * Create a new entity.
  */
 router.post('/', function insert (req, res, next) {
   getModel().create(req.body, function (err, entity) {
@@ -58,12 +58,12 @@ router.post('/', function insert (req, res, next) {
 });
 
 /**
- * GET /api/books/:id
+ * GET /api/entities/:id
  *
- * Retrieve a book.
+ * Retrieve a entity.
  */
-router.get('/:book', function get (req, res, next) {
-  getModel().read(req.params.book, function (err, entity) {
+router.get('/:entity', function get (req, res, next) {
+  getModel().read(req.params.entity, function (err, entity) {
     if (err) {
       return next(err);
     }
@@ -72,12 +72,12 @@ router.get('/:book', function get (req, res, next) {
 });
 
 /**
- * PUT /api/books/:id
+ * PUT /api/entities/:id
  *
- * Update a book.
+ * Update a entity.
  */
-router.put('/:book', function update (req, res, next) {
-  getModel().update(req.params.book, req.body, function (err, entity) {
+router.put('/:entity', function update (req, res, next) {
+  getModel().update(req.params.entity, req.body, function (err, entity) {
     if (err) {
       return next(err);
     }
@@ -86,12 +86,12 @@ router.put('/:book', function update (req, res, next) {
 });
 
 /**
- * DELETE /api/books/:id
+ * DELETE /api/entities/:id
  *
- * Delete a book.
+ * Delete a entity.
  */
-router.delete('/:book', function _delete (req, res, next) {
-  getModel().delete(req.params.book, function (err) {
+router.delete('/:entity', function _delete (req, res, next) {
+  getModel().delete(req.params.entity, function (err) {
     if (err) {
       return next(err);
     }
@@ -100,7 +100,7 @@ router.delete('/:book', function _delete (req, res, next) {
 });
 
 /**
- * Errors on "/api/books/*" routes.
+ * Errors on "/api/entities/*" routes.
  */
 router.use(function handleRpcError (err, req, res, next) {
   // Format error and forward to generic error handler for logging and

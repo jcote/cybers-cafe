@@ -20,7 +20,7 @@ var config = require('../config');
 var ds = Datastore({
   projectId: config.get('GCLOUD_PROJECT')
 });
-var kind = 'Book';
+var kind = 'Entity';
 // [END config]
 
 // Translates from Datastore's entity format to
@@ -83,10 +83,10 @@ function toDatastore (obj, nonIndexed) {
   return results;
 }
 
-// Lists all books in the Datastore sorted alphabetically by title.
+// Lists all entitys in the Datastore sorted alphabetically by title.
 // The ``limit`` argument determines the maximum amount of results to
 // return per page. The ``token`` argument allows requesting additional
-// pages. The callback is invoked with ``(err, books, nextPageToken)``.
+// pages. The callback is invoked with ``(err, entitys, nextPageToken)``.
 // [START list]
 function list (limit, token, cb) {
   var q = ds.createQuery([kind])
@@ -104,8 +104,8 @@ function list (limit, token, cb) {
 }
 // [END list]
 
-// Creates a new book or updates an existing book with new data. The provided
-// data is automatically translated into Datastore format. The book will be
+// Creates a new entity or updates an existing entity with new data. The provided
+// data is automatically translated into Datastore format. The entity will be
 // queued for background processing.
 // [START update]
 function update (id, data, cb) {

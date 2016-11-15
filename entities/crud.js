@@ -33,40 +33,40 @@ router.use(function (req, res, next) {
 });
 
 /**
- * GET /books/add
+ * GET /entities/add
  *
- * Display a page of books (up to ten at a time).
+ * Display a page of entities (up to ten at a time).
  */
 router.get('/', function list (req, res, next) {
-  getModel().list(10, req.query.pageToken, function (err, entities, cursor) {
+  getModel().list(10, req.query.pageToken, function (err, entityList, cursor) {
     if (err) {
       return next(err);
     }
-    res.render('books/list.jade', {
-      books: entities,
+    res.render('entities/list.jade', {
+      entities: entityList,
       nextPageToken: cursor
     });
   });
 });
 
 /**
- * GET /books/add
+ * GET /entities/add
  *
- * Display a form for creating a book.
+ * Display a form for creating a entity.
  */
 // [START add_get]
 router.get('/add', function addForm (req, res) {
-  res.render('books/form.jade', {
-    book: {},
+  res.render('entities/form.jade', {
+    entity: {},
     action: 'Add'
   });
 });
 // [END add_get]
 
 /**
- * POST /books/add
+ * POST /entities/add
  *
- * Create a book.
+ * Create a entity.
  */
 // [START add_post]
 router.post('/add', function insert (req, res, next) {
@@ -83,31 +83,31 @@ router.post('/add', function insert (req, res, next) {
 // [END add_post]
 
 /**
- * GET /books/:id/edit
+ * GET /entities/:id/edit
  *
- * Display a book for editing.
+ * Display a entity for editing.
  */
-router.get('/:book/edit', function editForm (req, res, next) {
-  getModel().read(req.params.book, function (err, entity) {
+router.get('/:entity/edit', function editForm (req, res, next) {
+  getModel().read(req.params.entity, function (err, entity) {
     if (err) {
       return next(err);
     }
-    res.render('books/form.jade', {
-      book: entity,
+    res.render('entities/form.jade', {
+      entity: entity,
       action: 'Edit'
     });
   });
 });
 
 /**
- * POST /books/:id/edit
+ * POST /entities/:id/edit
  *
- * Update a book.
+ * Update a entity.
  */
-router.post('/:book/edit', function update (req, res, next) {
+router.post('/:entity/edit', function update (req, res, next) {
   var data = req.body;
 
-  getModel().update(req.params.book, data, function (err, savedData) {
+  getModel().update(req.params.entity, data, function (err, savedData) {
     if (err) {
       return next(err);
     }
@@ -116,28 +116,28 @@ router.post('/:book/edit', function update (req, res, next) {
 });
 
 /**
- * GET /books/:id
+ * GET /entities/:id
  *
- * Display a book.
+ * Display a entity.
  */
-router.get('/:book', function get (req, res, next) {
-  getModel().read(req.params.book, function (err, entity) {
+router.get('/:entity', function get (req, res, next) {
+  getModel().read(req.params.entity, function (err, entityObj) {
     if (err) {
       return next(err);
     }
-    res.render('books/view.jade', {
-      book: entity
+    res.render('entities/view.jade', {
+      entity: entityObj
     });
   });
 });
 
 /**
- * GET /books/:id/delete
+ * GET /entities/:id/delete
  *
- * Delete a book.
+ * Delete a entity.
  */
-router.get('/:book/delete', function _delete (req, res, next) {
-  getModel().delete(req.params.book, function (err) {
+router.get('/:entity/delete', function _delete (req, res, next) {
+  getModel().delete(req.params.entity, function (err) {
     if (err) {
       return next(err);
     }
@@ -146,7 +146,7 @@ router.get('/:book/delete', function _delete (req, res, next) {
 });
 
 /**
- * Errors on "/books/*" routes.
+ * Errors on "/entities/*" routes.
  */
 router.use(function handleRpcError (err, req, res, next) {
   // Format error and forward to generic error handler for logging and

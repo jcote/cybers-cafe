@@ -14,19 +14,28 @@
 doctype html
 html(lang="en")
   head
-    title Bookshelf - Node.js on Google Cloud Platform
+    meta(name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no')
+    meta(charset='utf-8')
+    link(rel="stylesheet" type="text/css" href="/canvas/styles.css")
+    link(rel="manifest" href="manifest.json")
+    title
+      Cybers Cafe
+    script(src="/canvas/playcanvas-stable.min.js")
+    script(src="/canvas/const.js")
     meta(charset='utf-8')
     meta(name="viewport", content="width=device-width, initial-scale=1")
     link(rel="stylesheet", href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css")
   body
+    script(src="/canvas/__start__.js")
+    script(src="/canvas/__loading__.js")
     .navbar.navbar-default
       .container
         .navbar-header
-          .navbar-brand Bookshelf
+          .navbar-brand Library
 
         ul.nav.navbar-nav
           li
-            a(href="/books") Books
+            a(href="/entities") Entities
 
     .container
       block content
