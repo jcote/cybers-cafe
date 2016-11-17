@@ -25,15 +25,15 @@ app.set('view engine', 'jade');
 app.set('trust proxy', true);
 
 // Use the built-in express middleware for serving static files from './playcanvas'
-app.use('/playcanvas', express.static('playcanvas'));
+app.use('/canvas', express.static('canvas'));
 
-// Books
-app.use('/books', require('./books/crud'));
-app.use('/api/books', require('./books/api'));
+// entities
+app.use('/entities', require('./entities/crud'));
+app.use('/api/entities', require('./entities/api'));
 
-// Redirect root to /books
+// Redirect root to /entities
 app.get('/', function (req, res) {
-  res.redirect('/books');
+  res.redirect('/entities');
 });
 
 // Basic 404 handler
