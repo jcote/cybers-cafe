@@ -26,13 +26,24 @@ app.set('trust proxy', true);
 
 // Use the built-in express middleware for serving static files from './playcanvas'
 app.use('/canvas', express.static('canvas'));
+app.use('/css', express.static('css'));
 
 // entities
 app.use('/entities', require('./entities/crud'));
 app.use('/api/entities', require('./entities/api'));
 
-// Redirect root to /entities
+// Home page with frames viewport + interface
 app.get('/', function (req, res) {
+  res.render("home.jade");
+});
+
+// Canvas viewport
+app.get('/viewport', function (req, res) {
+  res.render("viewport.jade");
+});
+
+// Redirect /interface to /entities
+app.get('/interface', function (req, res) {
   res.redirect('/entities');
 });
 

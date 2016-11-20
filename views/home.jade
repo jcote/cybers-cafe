@@ -14,19 +14,13 @@
 doctype html
 html(lang="en")
   head
-    title Cybers Entity Interface
+    meta(name='cybers-cafe' content='width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no')
     meta(charset='utf-8')
-    meta(name="interface", content="width=device-width, initial-scale=1")
-    link(rel="stylesheet", href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css")
+    link(rel="stylesheet" type="text/css" href="/css/styles.css")
+    title Cybers Cafe
   body
-    .navbar.navbar-default
-      .container
-        .navbar-header
-          .navbar-brand Library
-
-        ul.nav.navbar-nav
-          li
-            a(href="/entities") Entities
-
-    .container
-      block content
+    div(id="frameset")
+      div(id="viewport-div")
+        iframe(src="/viewport" id="viewport-frame")
+      div(id="interface-div")
+        iframe(src="/interface" id="interface-frame")

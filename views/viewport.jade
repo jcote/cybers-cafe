@@ -14,19 +14,12 @@
 doctype html
 html(lang="en")
   head
-    title Cybers Entity Interface
-    meta(charset='utf-8')
-    meta(name="interface", content="width=device-width, initial-scale=1")
-    link(rel="stylesheet", href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css")
+    meta(name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no')
+    title Cybers Cafe Viewport
+    link(rel="stylesheet" type="text/css" href="/canvas/styles.css")
+    link(rel="manifest" href="/canvas/manifest.json")
+    script(src="/canvas/playcanvas-stable.min.js")
+    script(src="/canvas/const.js")
   body
-    .navbar.navbar-default
-      .container
-        .navbar-header
-          .navbar-brand Library
-
-        ul.nav.navbar-nav
-          li
-            a(href="/entities") Entities
-
-    .container
-      block content
+    script(src="/canvas/__start__.js")
+    script(src="/canvas/__loading__.js")

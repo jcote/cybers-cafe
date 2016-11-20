@@ -1,0 +1,44 @@
+html {
+    height: 100%;
+    background-color: #1d292c;
+}
+body {
+    margin: 0;
+    max-height: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #1d292c;
+    font-family: Helvetica, arial, sans-serif;
+    position: relative;
+    width: 100%;
+}
+
+#frameset {
+    display: block;
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+#viewport-frame,#viewport-div {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+#interface-div,#interface-frame {
+  width: 100%;
+  height: 300px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+canvas:focus {
+    outline: none;
+}
