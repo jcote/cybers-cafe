@@ -1,9 +1,10 @@
 pc.script.createLoadingScreen(function (app) {
     var showSplash = function () {
+        var viewportDiv = document.getElementById("viewport-div");
         // splash wrapper
         var wrapper = document.createElement('div');
         wrapper.id = 'application-splash-wrapper';
-        document.body.appendChild(wrapper);
+        viewportDiv.appendChild(wrapper);
 
         // splash
         var splash = document.createElement('div');

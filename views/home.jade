@@ -18,9 +18,15 @@ html(lang="en")
     meta(charset='utf-8')
     link(rel="stylesheet" type="text/css" href="/css/styles.css")
     title Cybers Cafe
+    link(rel="stylesheet" type="text/css" href="/canvas/styles.css")
+    link(rel="manifest" href="/canvas/manifest.json")
+    script(src="/canvas/playcanvas-stable.min.js")
+    script(src="/canvas/const.js")
   body
     div(id="frameset")
       div(id="viewport-div")
-        iframe(src="/viewport" id="viewport-frame")
       div(id="interface-div")
         iframe(src="/interface" id="interface-frame")
+
+    script(src="/canvas/__start__.js")
+    script(src="/canvas/__loading__.js")

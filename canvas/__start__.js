@@ -5,6 +5,7 @@
 
     var createCanvas = function () {
         canvas = document.createElement('canvas');
+
         canvas.setAttribute('id', CANVAS_ID);
         canvas.setAttribute('tabindex', 0);
         // canvas.style.visibility = 'hidden';
@@ -12,8 +13,10 @@
         // Disable I-bar cursor on click+drag
         canvas.onselectstart = function () { return false; };
 
-        document.body.appendChild(canvas);
+//        document.body.appendChild(canvas);
 
+        var viewportDiv = document.getElementById("viewport-div");
+        viewportDiv.appendChild(canvas);
         return canvas;
     };
 
@@ -82,7 +85,9 @@
             '</table>'
         ].join('\n');
 
-        document.body.appendChild(div);
+//        document.body.appendChild(div);
+        var viewportDiv = document.getElementById("viewport-div");
+        viewportDiv.appendChild(div);
     };
 
     canvas = createCanvas();
