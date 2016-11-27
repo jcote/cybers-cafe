@@ -3,6 +3,7 @@ var Network = pc.createScript('network');
 // static variables
 Network.id = null;
 Network.socket = null;
+Network.gotEntity = false;
 
 // initialize code called once per entity
 Network.prototype.initialize = function() {
@@ -30,6 +31,11 @@ Network.prototype.initialize = function() {
 
     socket.on ('killPlayer', function (data) {
         self.removePlayer(data);
+    });
+
+    socket.on ('addEntity', function (data) {
+        console.log('Add Entity');
+        self.addEntity (data.entity);
     });
 
     setInterval (function () {
@@ -89,6 +95,7 @@ Network.prototype.createPlayerEntity = function (data) {
 // update code called every frame
 Network.prototype.update = function(dt) {
     this.updatePosition();
+    this.getEntity();
 };
 
 Network.prototype.updatePosition = function () {
@@ -96,4 +103,44 @@ Network.prototype.updatePosition = function () {
         var pos = this.player.getPosition();
         Network.socket.emit('positionUpdate', {id: Network.id, x: pos.x, y: pos.y, z: pos.z});
     }
+};
+
+Network.prototype.getEntity = function () {
+    if (!this.gotEntity) {
+        Network.socket.emit('getEntity', {});
+        this.gotEntity = true;
+    }
+};
+
+Network.prototype.addEntity = function(data) {
+    console.log('Entity Added');
+    var children = data.children;
+    delete data.children;
+    var entity = jQuery.extend(true, new pc.Entity(), data);
+    
+    // from playcanvas entity.js: clone()
+    if (data.children instanceof Array) {
+        var i;
+        for (i = 0; i < data.children.length; i++) {
+            var child = data.children[i];
+            if (child instanceof pc.Entity) {
+                entity.addChild(child.clone());
+            }
+        }
+    }
+
+    this.app.root.addChild(entity);
+
+};
+
+Network.prototype.addAsset = function(data) {
+    console.log('Asset Added');
+    // from playcanvas' application.js: _parseAssets()
+    var asset = new pc.Asset(data.name, data.type, data.file, data.data);
+    asset.id = parseInt(data.id);
+    asset.preload = data.preload ? data.preload : false;
+    // tags
+    asset.tags.add(data.tags);
+    // registry
+    this.app.assets.add(asset);
 };
