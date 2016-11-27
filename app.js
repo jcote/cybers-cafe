@@ -27,6 +27,8 @@ app.set('trust proxy', true);
 // Use the built-in express middleware for serving static files from './playcanvas'
 app.use('/canvas', express.static('canvas'));
 app.use('/css', express.static('css'));
+app.use('/images', express.static('images'));
+app.use('/scripts', express.static('scripts'));
 
 // entities
 app.use('/entities', require('./entities/crud'));

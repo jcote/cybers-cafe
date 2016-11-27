@@ -20,13 +20,15 @@ html(lang="en")
     title Cybers Cafe
     link(rel="stylesheet" type="text/css" href="/canvas/styles.css")
     link(rel="manifest" href="/canvas/manifest.json")
+    script(src="/scripts/jquery-3.1.1.min.js")
     script(src="/canvas/playcanvas-stable.min.js")
     script(src="/canvas/const.js")
+    script(src="/scripts/home.js")
   body
     div(id="frameset")
       div(id="viewport-div")
       div(id="interface-div")
         iframe(src="/interface" id="interface-frame")
-
+      span.glyphicon.glyphicon-menu-hamburger.drawer-icon.drawer-icon-closed(onclick="drawer()")
     script(src="/canvas/__start__.js")
     script(src="/canvas/__loading__.js")
