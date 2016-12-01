@@ -33,6 +33,11 @@ Network.prototype.initialize = function() {
         self.removePlayer(data);
     });
 
+    socket.on ('addAsset', function (data) {
+        console.log('Add Asset');
+        self.addAsset (data.asset);
+    });
+
     socket.on ('addEntity', function (data) {
         console.log('Add Entity');
         self.addEntity (data.entity);
@@ -112,10 +117,23 @@ Network.prototype.getEntity = function () {
     }
 };
 
+Network.prototype.addAsset = function(data) {
+    // from playcanvas application.js: _parseAssets()
+    var asset = new pc.Asset(data.name, data.type, data.file, data.data);
+    asset.id = parseInt(data.id);
+    asset.preload = data.preload ? data.preload : false;
+    asset.tags.add(data.tags);
+    asset.revision = data.revision;
+    this.app.assets.add(asset);
+    console.log('Asset Added');
+    console.log(asset);
+}
+
 Network.prototype.addEntity = function(data) {
-    console.log('Entity Added');
     var children = data.children;
+    var parent = data.parent;
     delete data.children;
+    delete data.parent;
     var entity = jQuery.extend(true, new pc.Entity(), data);
     
     // from playcanvas entity.js: clone()
@@ -129,18 +147,9 @@ Network.prototype.addEntity = function(data) {
         }
     }
 
+    entity.parent = parent;
+
     this.app.root.addChild(entity);
-
-};
-
-Network.prototype.addAsset = function(data) {
-    console.log('Asset Added');
-    // from playcanvas' application.js: _parseAssets()
-    var asset = new pc.Asset(data.name, data.type, data.file, data.data);
-    asset.id = parseInt(data.id);
-    asset.preload = data.preload ? data.preload : false;
-    // tags
-    asset.tags.add(data.tags);
-    // registry
-    this.app.assets.add(asset);
+    console.log('Entity Added');
+    console.log(entity);
 };
