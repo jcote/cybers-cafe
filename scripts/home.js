@@ -1,11 +1,15 @@
 'use strict';
 
-var draweropen = true;
+var draweropen = false;
 
 function drawer () {
-  if (draweropen) {
-  	document.getElementById("interface-div").hidden = true;
-  } else {
-  	document.getElementById("interface-div").hidden = false;
+  if (draweropen) { // close
+  	document.getElementById("interface-div").style.visibility = 'hidden';
+  	document.getElementById("drawer-icon-div").style.visibility = 'visible';
+  	draweropen = false;
+  } else { // open
+  	document.getElementById("interface-div").style.visibility = 'visible';
+  	document.getElementById("drawer-icon-div").style.visibility = 'hidden';
+  	draweropen = true;
   }
 }

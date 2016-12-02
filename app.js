@@ -36,7 +36,10 @@ app.use('/api/entities', require('./entities/api'));
 
 // Home page with frames viewport + interface
 app.get('/', function (req, res) {
-  res.render("home.jade");
+  res.render("home.jade", {
+    entity:{},
+    action:'Add'
+  });
 });
 
 // Canvas viewport
