@@ -126,18 +126,13 @@ Network.prototype.addAsset = function(data) {
     asset.revision = data.revision;
     this.app.assets.add(asset);
     console.log('Asset Added');
-    console.log(asset);
 }
 
 Network.prototype.addEntity = function(data) {
-    var children = data.children;
-    var parent = data.parent;
-    delete data.children;
-    delete data.parent;
-    var entity = jQuery.extend(true, new pc.Entity(), data);
-    
+    var entity = new pc.Entity();
+
     // from playcanvas entity.js: clone()
-    if (data.children instanceof Array) {
+/*    if (data.children instanceof Array) {
         var i;
         for (i = 0; i < data.children.length; i++) {
             var child = data.children[i];
@@ -146,10 +141,17 @@ Network.prototype.addEntity = function(data) {
             }
         }
     }
+*/
 
-    entity.parent = parent;
+    for (component in data.components) {
+        entity.addComponent(component, data.components[component]);
+    }
 
+    entity.setLocalPosition(data.position[0],data.position[1],data.position[2]);
+    entity.setLocalScale(data.scale[0],data.scale[1],data.scale[2]);
+    entity.setLocalRotation(data.rotation[0],data.rotation[1],data.rotation[2],1);
+    entity.rigidbody.teleport(data.position[0],data.position[1],data.position[2]);
     this.app.root.addChild(entity);
+
     console.log('Entity Added');
-    console.log(entity);
 };
