@@ -31,20 +31,22 @@ body {
 }
 
 #interface-div {
-  width: 100%;
-  height: 300px;
+  width: 300px;
+  height: 100%;
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
   background-color: white;
   visibility: hidden;
 }
-
+#container-div {
+  width: 300px;
+}
 #drawer-icon-div {
   width: 24px;
   height: 24px;
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
   background-color: grey;
 }
@@ -53,7 +55,7 @@ body {
   width: 50%;
   height: 300px;
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
 }
 

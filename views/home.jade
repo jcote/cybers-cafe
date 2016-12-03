@@ -38,26 +38,25 @@ html(lang="en")
         .navbar.navbar-default
           .container
             .navbar-header
-              .navbar-brand Bookshelf
+              .navbar-brand /Cybers Cafe/
 
             ul.nav.navbar-nav
               li
-                a(href="/books") Books
+                a(href="/entities") Entities
 
-        .container
-          h3 #{action} entity
+        .container.container-div
           form(method="POST")
             .form-group
-              label(for="title") Title
-              input.form-control(type="text", name="title", id="title", value=entity.title)
+              label(for="title") Title : &nbsp;
+              input.form-ctl(type="text", name="title", id="title", value=entity.title)
             .form-group
-              label(for="author") Author
-              input.form-control(type="text", name="author", id="author", value=entity.author)
+              label(for="author") Author : &nbsp;
+              input.form-ctl(type="text", name="author", id="author", value=entity.author)
             .form-group
-              label(for="publishedDate") Date Published
-              input.form-control(type="text", name="publishedDate", id="publishedDate", value=entity.publishedDate)
+              label(for="description") Description : &nbsp;
+              input.form-ctl(type="text", name="description", id="description", value=entity.description)
             .form-group
-              label(for="description") Description
-              input.form-control(type="text", name="description", id="description", value=entity.description)
+              label(for="zipFile") Zip File : &nbsp;
+              input.form-ctl(type="file", name="zipFile", id="zipFile", value=entity.zipFile)
             .form-group
-            button.btn.btn-success(type="submit") Save
+            button.btn.btn-success(type="submit") Upload
