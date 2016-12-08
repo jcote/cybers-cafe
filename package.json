@@ -47,7 +47,9 @@
     "mongodb": "^2.2.5",
     "mysql": "^2.11.1",
     "nconf": "^0.8.4",
-    "prompt": "^1.0.0"
+    "prompt": "^1.0.0",
+    "multer": "^1.2.0",
+    "adm-zip": "^0.4.7"
   },
   "devDependencies": {
     "mocha": "^3.0.2",

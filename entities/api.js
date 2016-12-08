@@ -16,6 +16,8 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var config = require('../config');
+var multer  = require('multer')
+var upload = multer({ dest: 'uploads' })
 
 function getModel () {
   return require('./model-' + config.get('DATA_BACKEND'));
@@ -31,7 +33,7 @@ router.use(bodyParser.json());
  *
  * Retrieve a page of entities (up to ten at a time).
  */
-router.get('/', function list (req, res, next) {
+/*router.get('/', function list (req, res, next) {
   getModel().list(10, req.query.pageToken, function (err, entities, cursor) {
     if (err) {
       return next(err);
@@ -42,19 +44,25 @@ router.get('/', function list (req, res, next) {
     });
   });
 });
-
+*/
 /**
  * POST /api/entities
  *
  * Create a new entity.
  */
-router.post('/', function insert (req, res, next) {
+/*router.post('/', function insert (req, res, next) {
+    console.log(req.files);
   getModel().create(req.body, function (err, entity) {
     if (err) {
       return next(err);
     }
     res.json(entity);
   });
+});
+*/
+router.post('/', upload.single('zipFile'), function (req, res, next) {
+  console.log(req.file); 
+  console.log(req.body); 
 });
 
 /**

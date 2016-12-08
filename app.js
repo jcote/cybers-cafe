@@ -34,7 +34,7 @@ app.use('/scripts', express.static('scripts'));
 app.use('/entities', require('./entities/crud'));
 app.use('/api/entities', require('./entities/api'));
 
-// Home page with frames viewport + interface
+// Home page with viewport + entities interface
 app.get('/', function (req, res) {
   res.render("home.jade", {
     entity:{},
