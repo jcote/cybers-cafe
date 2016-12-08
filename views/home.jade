@@ -44,8 +44,8 @@ html(lang="en")
               li
                 a(href="/entities") Entities
 
-        .container.container-div
-          form(method="post" action="api/entities" enctype="multipart/form-data")
+        .container.container-div(id="formContainer")
+          form(name="createEntity" method="post" enctype="multipart/form-data")
             .form-group
               label(for="title") Title : &nbsp;
               input.form-ctl(type="text", name="title", id="title", value=entity.title)
@@ -60,3 +60,4 @@ html(lang="en")
               input.form-ctl(type="file", name="zipFile", id="zipFile", value=entity.zipFile)
             .form-group
             button.btn.btn-success(type="submit") Upload
+        .container.container-div(id="formResultContainer") Ready...

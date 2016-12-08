@@ -72,7 +72,8 @@ router.post('/', upload.single('zipFile'), function (req, res, next) {
         //console.log(zipEntry.toString()); // outputs zip entries information 
         if (zipEntry.entryName == "474142.json") {
           var data = zipEntry.getData().toString('utf8');
-          console.log(JSON.parse(data)); 
+          //console.log(JSON.parse(data));
+          res.json({"message":"Found entity data"});
         }
     });
 });
