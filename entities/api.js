@@ -17,7 +17,9 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var config = require('../config');
 var multer  = require('multer')
-var upload = multer({ dest: 'uploads' })
+var AdmZip = require('adm-zip');
+
+var upload = multer({ dest: 'uploads' });
 
 function getModel () {
   return require('./model-' + config.get('DATA_BACKEND'));
@@ -63,6 +65,16 @@ router.use(bodyParser.json());
 router.post('/', upload.single('zipFile'), function (req, res, next) {
   console.log(req.file); 
   console.log(req.body); 
+  var zip = new AdmZip(req.file.path);
+    var zipEntries = zip.getEntries(); // an array of ZipEntry records 
+ 
+    zipEntries.forEach(function(zipEntry) {
+        //console.log(zipEntry.toString()); // outputs zip entries information 
+        if (zipEntry.entryName == "474142.json") {
+          var data = zipEntry.getData().toString('utf8');
+          console.log(JSON.parse(data)); 
+        }
+    });
 });
 
 /**
