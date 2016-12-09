@@ -17,6 +17,7 @@ vm: true
 # Temporary setting to keep gcloud from uploading node_modules
 skip_files:
  - ^node_modules$
+ - uploads
 
 network:
 #  forwarded_ports:
