@@ -43,10 +43,10 @@ function unzipEntries (req, res, next) {
   console.log("begin unzip");
   var zip = new AdmZip(req.file.path);
   var zipEntries = zip.getEntries();
+  req.assetFiles = [];
 
   zipEntries.forEach(function(zipEntry) {
     //console.log(zipEntry.toString()); // outputs zip entries information 
-    req.assetFiles = [];
 
     if (zipEntry.entryName == "config.json") {
       var dataString = zipEntry.getData().toString('utf8');
@@ -62,7 +62,7 @@ function unzipEntries (req, res, next) {
       var assetFile = {
         originalname: zipEntry.entryName,
 //        mimetype: zipEntry.mimetype,
-        data: zipEntry.getData() // ...or use getCompressedData to avoid decompression and to save space
+        data: zipEntry.getData() // ...or use getCompressedData to avoid decompression and to save space (but client needs to decompress)
       };
       req.assetFiles.push(assetFile);
       console.log("found asset file");
@@ -74,7 +74,7 @@ function unzipEntries (req, res, next) {
 
 function sendUploadToGCS (req, res, next) {
   console.log("begin cloud upload");
-  if (!req.assetFiles) {
+  if (req.assetFiles.length == 0) {
     console.log("nothing to upload");
     return next();
   }
@@ -143,8 +143,9 @@ function sendUploadToGCS (req, res, next) {
 });
 */
 router.post('/', multer.single('zipFile'), unzipEntries, sendUploadToGCS, function (req, res, next) {
-  //console.log(req.file); 
-  //console.log(req.body); 
+//  console.log(req.entities); 
+//  console.log(req.assets); 
+  console.log(req.assetFiles);
   if (!req.entities) {
     res.json({"message":"No entities found"});
   }
@@ -157,7 +158,7 @@ router.post('/', multer.single('zipFile'), unzipEntries, sendUploadToGCS, functi
   if (req.cloudStorageError) {
     res.json({"message":"Trouble uploading to cloud: " + req.cloudStorageError});
   } else {
-    res.json({"message":"Found "  + req.entities.length + " entities, " + req.assets.length + " assets and " + req.assetFiles.length + " asset files"});
+    res.json({"message":"Found "  + Object.keys(req.entities).length + " entities, " + Object.keys(req.assets).length + " assets and " + req.assetFiles.length + " asset files"});
   }
 });
 

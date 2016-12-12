@@ -27,7 +27,7 @@ $(function(){
 	  oReq.open("POST", "api/entities", true);
 	  oReq.onload = function(oEvent) {
 	    if (oReq.status == 200) {
-	      oOutput.innerHTML = "Uploaded!";
+	      oOutput.innerHTML = oReq.responseText;
 	    } else {
 	      oOutput.innerHTML = "Error " + oReq.status + " occurred when trying to upload your file.<br \/>";
 	    }
