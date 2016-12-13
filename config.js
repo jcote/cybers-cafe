@@ -24,6 +24,7 @@ nconf
   // 2. Environment variables
   .env([
     'DATA_BACKEND',
+    'CLOUD_BUCKET',
     'GCLOUD_PROJECT',
     'MONGO_URL',
     'MONGO_COLLECTION',
@@ -44,7 +45,9 @@ nconf
 
     // This is the id of your project in the Google Cloud Developers Console.
     GCLOUD_PROJECT: 'cybers-cafe',
-
+    
+    CLOUD_BUCKET: '',
+    
     // MongoDB connection string
     // https://docs.mongodb.org/manual/reference/connection-string/
     MONGO_URL: 'mongodb://localhost:27017',

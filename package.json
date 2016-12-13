@@ -38,18 +38,20 @@
     ]
   },
   "dependencies": {
+    "@google-cloud/datastore": "^0.1.1",
+    "@google-cloud/storage": "^0.1.1",
+    "adm-zip": "^0.4.7",
+    "async": "^2.1.4",
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
-    "@google-cloud/datastore": "^0.1.1",
     "jade": "^1.11.0",
     "kerberos": "^0.0.21",
     "lodash": "^4.14.2",
     "mongodb": "^2.2.5",
+    "multer": "^1.2.0",
     "mysql": "^2.11.1",
     "nconf": "^0.8.4",
-    "prompt": "^1.0.0",
-    "multer": "^1.2.0",
-    "adm-zip": "^0.4.7"
+    "prompt": "^1.0.0"
   },
   "devDependencies": {
     "mocha": "^3.0.2",

@@ -15,9 +15,16 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
+const Storage = require('@google-cloud/storage');
 var config = require('../config');
 var Multer  = require('multer')
 var AdmZip = require('adm-zip');
+const async = require('async');
+const CLOUD_BUCKET = config.get('CLOUD_BUCKET');
+const storage = Storage({
+  projectId: config.get('GCLOUD_PROJECT')
+});
+const bucket = storage.bucket(CLOUD_BUCKET);
 
 const multer = Multer({dest:'uploads'
 /*  storage: Multer.MemoryStorage,
@@ -29,6 +36,12 @@ const multer = Multer({dest:'uploads'
 var entitiesRe = /^\d{6}\.json$/;
 var assetFilesRe = /^files\/assets\/\d{7}\/\d{1}\/.+$/;
 
+// Returns the public, anonymously accessable URL to a given Cloud Storage
+// object.
+// The object's ACL has to be set to public read.
+function getPublicUrl (filename) {
+  return `https://storage.googleapis.com/${CLOUD_BUCKET}/${filename}`;
+}
 
 function getModel () {
   return require('./model-' + config.get('DATA_BACKEND'));
@@ -59,8 +72,10 @@ function unzipEntries (req, res, next) {
       req.entities = data.entities;
       console.log("found entities");
     } else if (assetFilesRe.exec(zipEntry.entryName)) {
+      var entryPathLength = zipEntry.entryName.length - zipEntry.name.length;
       var assetFile = {
-        originalname: zipEntry.entryName,
+        originalName: zipEntry.name,
+        originalPath: zipEntry.entryName.substring(0,entryPathLength),
 //        mimetype: zipEntry.mimetype,
         data: zipEntry.getData() // ...or use getCompressedData to avoid decompression and to save space (but client needs to decompress)
       };
@@ -80,7 +95,7 @@ function sendUploadToGCS (req, res, next) {
   }
 
   req.assetFiles.forEach(function(assetFile) {
-    const gcsname = Date.now() + assetFile.originalname;
+    const gcsname = assetFile.originalPath + Date.now() + "+" + assetFile.originalName;
     const file = bucket.file(gcsname);
 
     console.log("begin upload: " + gcsname);
@@ -93,21 +108,73 @@ function sendUploadToGCS (req, res, next) {
 
     stream.on('error', (err) => {
       req.cloudStorageError = err;
+      console.log("error in cloud upload");
       next(err);
     });
 
     stream.on('finish', () => {
       assetFile.cloudStorageObject = gcsname;
       assetFile.cloudStoragePublicUrl = getPublicUrl(gcsname);
+      console.log("finish cloud upload");
       next();
     });
 
     stream.end(assetFile.data);
-
-    console.log("finish upload");
   });
-  console.log("finish cloud upload");
-  next();
+}
+
+
+function sendEntitiesToDatastore (req, res, next) {
+  console.log("begin entity processing");
+  if (req.assets.length == 0) {
+    console.log("no entities");
+    return next();
+  }
+
+  async.each(req.entities, function(entity, callback) {
+    // write to datastore
+    getModel().create('Entity', entity, function (err, entity) {
+      // on callback
+      if (err) {
+        callback(err);
+      }
+      console.log("entity stored: " + entity.name);
+      callback(null);
+    });
+  }, function(err, results) {
+    // after all the callbacks
+    if (err) {
+      return next(err);
+    }
+    next();
+  });
+}
+
+function sendAssetsToDatastore (req, res, next) {
+  console.log("begin asset processing");
+  if (req.assets.length == 0) {
+    console.log("no assets");
+    return next();
+  }
+
+  // for each asset
+  async.each(req.assets, function(asset, callback) {
+    // write to datastore
+    getModel().create('Asset', asset, function (err, asset) {
+      // on callback
+      if (err) {
+        callback(err);
+      }
+      console.log("asset stored: " + asset.name);
+      callback(null);
+    });
+  }, function(err, results) {
+    // after all the callbacks
+    if (err) {
+      return next(err);
+    }
+    next();
+  });
 }
 
 /**
@@ -142,7 +209,7 @@ function sendUploadToGCS (req, res, next) {
   });
 });
 */
-router.post('/', multer.single('zipFile'), unzipEntries, sendUploadToGCS, function (req, res, next) {
+router.post('/', multer.single('zipFile'), unzipEntries, sendEntitiesToDatastore, sendAssetsToDatastore, sendUploadToGCS, function (req, res, next) {
 //  console.log(req.entities); 
 //  console.log(req.assets); 
   console.log(req.assetFiles);

@@ -20,7 +20,6 @@ var config = require('../config');
 var ds = Datastore({
   projectId: config.get('GCLOUD_PROJECT')
 });
-var kind = 'Entity';
 // [END config]
 
 // Translates from Datastore's entity format to
@@ -88,7 +87,7 @@ function toDatastore (obj, nonIndexed) {
 // return per page. The ``token`` argument allows requesting additional
 // pages. The callback is invoked with ``(err, entitys, nextPageToken)``.
 // [START list]
-function list (limit, token, cb) {
+function list (kind, limit, token, cb) {
   var q = ds.createQuery([kind])
     .limit(limit)
     .order('title')
@@ -108,7 +107,7 @@ function list (limit, token, cb) {
 // data is automatically translated into Datastore format. The entity will be
 // queued for background processing.
 // [START update]
-function update (id, data, cb) {
+function update (kind, id, data, cb) {
   var key;
   if (id) {
     key = ds.key([kind, parseInt(id, 10)]);
@@ -131,7 +130,7 @@ function update (id, data, cb) {
 }
 // [END update]
 
-function read (id, cb) {
+function read (kind, id, cb) {
   var key = ds.key([kind, parseInt(id, 10)]);
   ds.get(key, function (err, entity) {
     if (err) {
@@ -147,15 +146,15 @@ function read (id, cb) {
   });
 }
 
-function _delete (id, cb) {
+function _delete (kind, id, cb) {
   var key = ds.key([kind, parseInt(id, 10)]);
   ds.delete(key, cb);
 }
 
 // [START exports]
 module.exports = {
-  create: function (data, cb) {
-    update(null, data, cb);
+  create: function (kind, data, cb) {
+    update(kind, null, data, cb);
   },
   read: read,
   update: update,
