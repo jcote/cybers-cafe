@@ -56,7 +56,9 @@ function unzipEntries (req, res, next) {
   console.log("begin unzip");
   var zip = new AdmZip(req.file.path);
   var zipEntries = zip.getEntries();
-  req.assetFiles = [];
+  req.assetFiles = {};
+  req.assets = {};
+  req.entities = {};
 
   zipEntries.forEach(function(zipEntry) {
     //console.log(zipEntry.toString()); // outputs zip entries information 
@@ -79,7 +81,7 @@ function unzipEntries (req, res, next) {
 //        mimetype: zipEntry.mimetype,
         data: zipEntry.getData() // ...or use getCompressedData to avoid decompression and to save space (but client needs to decompress)
       };
-      req.assetFiles.push(assetFile);
+      req.assetFiles[zipEntry.entryName] = assetFile;
       console.log("found asset file");
     }
   });
@@ -89,12 +91,13 @@ function unzipEntries (req, res, next) {
 
 function sendUploadToGCS (req, res, next) {
   console.log("begin cloud upload");
-  if (req.assetFiles.length == 0) {
+  if (Object.keys(req.assetFiles).length == 0) {
     console.log("nothing to upload");
     return next();
   }
 
-  req.assetFiles.forEach(function(assetFile) {
+  for (var assetFullPath in req.assetFiles) {
+    var assetFile = req.assetFiles[assetFullPath];
     const gcsname = assetFile.originalPath + Date.now() + "+" + assetFile.originalName;
     const file = bucket.file(gcsname);
 
@@ -120,13 +123,13 @@ function sendUploadToGCS (req, res, next) {
     });
 
     stream.end(assetFile.data);
-  });
+  };
 }
 
 
 function sendEntitiesToDatastore (req, res, next) {
   console.log("begin entity processing");
-  if (req.assets.length == 0) {
+  if (Object.keys(req.assets).length == 0) {
     console.log("no entities");
     return next();
   }
@@ -152,7 +155,7 @@ function sendEntitiesToDatastore (req, res, next) {
 
 function sendAssetsToDatastore (req, res, next) {
   console.log("begin asset processing");
-  if (req.assets.length == 0) {
+  if (Object.keys(req.assets).length == 0) {
     console.log("no assets");
     return next();
   }
@@ -175,6 +178,39 @@ function sendAssetsToDatastore (req, res, next) {
     }
     next();
   });
+}
+
+function rewriteAssetUrls (req, res, next) {
+  console.log("begin asset url rewrite");
+  if (!Object.keys(req.assets).length) {
+    console.log("no assets");
+    return next();
+  }
+
+  for (var key in req.assets) {
+    var asset = req.assets[key];
+    if (!asset.file || !asset.file.filename || !asset.file.url) {
+      console.log("no file info in asset");
+      continue;
+    }
+
+    if (! asset.file.filename in req.assetFiles) {
+      console.log("filename not found in assetFiles");
+      continue;
+    }
+    
+    if (! asset.file.url in req.assetFiles) {
+      console.log("asset file by url not found");
+      continue;
+    }
+
+    var assetFile = req.assetFiles[asset.file.url];
+    asset.file.url = assetFile.cloudStoragePublicUrl; // writing here writes req.assets[key]
+    console.log("asset url rewrite");
+  }
+
+  console.log("finish asset url rewrite");
+  next();
 }
 
 /**
@@ -209,7 +245,7 @@ function sendAssetsToDatastore (req, res, next) {
   });
 });
 */
-router.post('/', multer.single('zipFile'), unzipEntries, sendEntitiesToDatastore, sendAssetsToDatastore, sendUploadToGCS, function (req, res, next) {
+router.post('/', multer.single('zipFile'), unzipEntries, sendUploadToGCS, rewriteAssetUrls, sendEntitiesToDatastore, sendAssetsToDatastore, function (req, res, next) {
 //  console.log(req.entities); 
 //  console.log(req.assets); 
   console.log(req.assetFiles);
@@ -225,7 +261,7 @@ router.post('/', multer.single('zipFile'), unzipEntries, sendEntitiesToDatastore
   if (req.cloudStorageError) {
     res.json({"message":"Trouble uploading to cloud: " + req.cloudStorageError});
   } else {
-    res.json({"message":"Found "  + Object.keys(req.entities).length + " entities, " + Object.keys(req.assets).length + " assets and " + req.assetFiles.length + " asset files"});
+    res.json({"message":"Found "  + Object.keys(req.entities).length + " entities, " + Object.keys(req.assets).length + " assets and " + Object.keys(req.assetFiles).length + " asset files"});
   }
 });
 
