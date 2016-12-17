@@ -3,7 +3,6 @@ var Network = pc.createScript('network');
 // static variables
 Network.id = null;
 Network.socket = null;
-Network.gotEntity = false;
 
 // initialize code called once per entity
 Network.prototype.initialize = function() {
@@ -100,20 +99,12 @@ Network.prototype.createPlayerEntity = function (data) {
 // update code called every frame
 Network.prototype.update = function(dt) {
     this.updatePosition();
-    this.getEntity();
 };
 
 Network.prototype.updatePosition = function () {
     if (this.initialized) {
         var pos = this.player.getPosition();
         Network.socket.emit('positionUpdate', {id: Network.id, x: pos.x, y: pos.y, z: pos.z});
-    }
-};
-
-Network.prototype.getEntity = function () {
-    if (!this.gotEntity) {
-        Network.socket.emit('getEntity', {});
-        this.gotEntity = true;
     }
 };
 
@@ -126,6 +117,7 @@ Network.prototype.addAsset = function(data) {
     asset.revision = data.revision;
     this.app.assets.add(asset);
     console.log('Asset Added');
+    console.log(data);
 }
 
 Network.prototype.addEntity = function(data) {
@@ -156,4 +148,5 @@ Network.prototype.addEntity = function(data) {
     this.app.root.addChild(entity);
 
     console.log('Entity Added');
+    console.log(data);
 };
