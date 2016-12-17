@@ -98,7 +98,8 @@ function sendUploadToGCS (req, res, next) {
 
   for (var assetFullPath in req.assetFiles) {
     var assetFile = req.assetFiles[assetFullPath];
-    const gcsname = assetFile.originalPath + Date.now() + "+" + assetFile.originalName;
+    var assetFilename =  Date.now() + "+" + assetFile.originalName;
+    const gcsname = assetFile.originalPath + assetFilename;
     const file = bucket.file(gcsname);
 
     console.log("begin upload: " + gcsname);
@@ -118,6 +119,7 @@ function sendUploadToGCS (req, res, next) {
     stream.on('finish', () => {
       assetFile.cloudStorageObject = gcsname;
       assetFile.cloudStoragePublicUrl = getPublicUrl(gcsname);
+      assetFile.filename = assetFilename;
       console.log("finish cloud upload");
       next();
     });
@@ -206,6 +208,8 @@ function rewriteAssetUrls (req, res, next) {
 
     var assetFile = req.assetFiles[asset.file.url];
     asset.file.url = assetFile.cloudStoragePublicUrl; // writing here writes req.assets[key]
+    asset.file.filename = assetFile.filename;
+    asset.name = assetFile.filename;
     console.log("asset url rewrite");
   }
 
