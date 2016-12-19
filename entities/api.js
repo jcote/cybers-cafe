@@ -138,7 +138,7 @@ function sendEntitiesToDatastore (req, res, next) {
 
   async.each(req.entities, function(entity, callback) {
     // write to datastore
-    getModel().create('Entity', entity, function (err, entity) {
+    getModel().update('Entity', entity.resource_id, entity, function (err, entity) {
       // on callback
       if (err) {
         callback(err);
@@ -165,7 +165,7 @@ function sendAssetsToDatastore (req, res, next) {
   // for each asset
   async.each(req.assets, function(asset, callback) {
     // write to datastore
-    getModel().create('Asset', asset, function (err, asset) {
+    getModel().update('Asset', asset.id, asset, function (err, asset) {
       // on callback
       if (err) {
         callback(err);
