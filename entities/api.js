@@ -138,7 +138,7 @@ function sendEntitiesToDatastore (req, res, next) {
 
   async.each(req.entities, function(entity, callback) {
     // write to datastore
-    getModel().update('Entity', entity.resource_id, entity, function (err, entity) {
+    getModel().create('Entity', entity, function (err, entity) {
       // on callback
       if (err) {
         callback(err);
