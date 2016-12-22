@@ -82,7 +82,7 @@ function unzipEntries (req, res, next) {
         data: zipEntry.getData() // ...or use getCompressedData to avoid decompression and to save space (but client needs to decompress)
       };
       req.assetFiles[zipEntry.entryName] = assetFile;
-      console.log("found asset file");
+      console.log("found asset file: " + zipEntry.entryName);
     }
   });
   console.log("finish unzip");
@@ -195,14 +195,9 @@ function rewriteAssetUrls (req, res, next) {
       console.log("no file info in asset");
       continue;
     }
-
-    if (! asset.file.filename in req.assetFiles) {
-      console.log("filename not found in assetFiles");
-      continue;
-    }
     
-    if (! asset.file.url in req.assetFiles) {
-      console.log("asset file by url not found");
+    if (! (asset.file.url in req.assetFiles)) {
+      console.log("asset file not found");
       continue;
     }
 
