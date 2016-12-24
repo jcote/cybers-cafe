@@ -57,6 +57,17 @@ function getDependentAssetIdsFromAsset(asset) {
         }
       }
     }
+    if ('mapping' in asset.data) {
+      for (var i=0; i < asset.data.mapping.length; i++) {
+        var entry = asset.data.mapping[i];
+        if ('material' in entry) {
+          var assetId = parseInt(entry.material);
+          if (!isNaN(assetId)) {
+            assetIds.push(assetId);
+          }
+        }
+      }
+    }
   }
   return assetIds;
 }
