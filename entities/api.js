@@ -47,6 +47,57 @@ function getModel () {
   return require('./model-' + config.get('DATA_BACKEND'));
 }
 
+function getDependentAssetIdsFromAsset(asset) {
+  var assetIds = [];
+  if ('data' in asset) {
+    for (var key in asset.data) {
+      if (key.endsWith('Map')) {
+        if (typeof asset.data[key] === 'number' && asset.data[key] > 0 && !assetIds.includes(asset.data[key])) {
+          assetIds.push(asset.data[key]);
+        }
+      }
+    }
+  }
+  return assetIds;
+}
+
+function getDependentAssetIdsFromEntity(entity) {
+    var assetIds = [];
+    if ('components' in entity) {
+      if ('model' in entity.components) {
+        if ('asset' in entity.components.model) {
+          if (typeof entity.components.model.asset === 'number') {
+            assetIds.push(entity.components.model.asset);
+          }
+        }
+        if ('materialAsset' in entity.components.model) {
+          if (typeof entity.components.model.materialAsset === 'number') {
+            assetIds.push(entity.components.model.materialAsset);
+          }
+        }
+      }
+      if ('collision' in entity.components) {
+        if ('asset' in entity.components.collision) {
+          if (typeof entity.components.collision.asset === 'number') {
+            assetIds.push(entity.components.collision.asset);
+          }
+        }
+      }
+      if ('animation' in entity.components) {
+        if ('asset' in entity.components.animation) {
+          if (Array.isArray(entity.components.animation.assets)) {
+            if (entity.components.animation.assets.length > 0) {
+              if (typeof entity.components.animation.assets[0] === 'number') {
+                assetIds = assetIds.concat(entity.components.animation.assets);
+              }
+            }
+          }
+        }
+      }
+    }
+    return assetIds;
+}
+
 var router = express.Router();
 
 // Automatically parse request body as JSON
@@ -131,19 +182,37 @@ function sendUploadToGCS (req, res, next) {
 
 function sendEntitiesToDatastore (req, res, next) {
   console.log("begin entity processing");
-  if (Object.keys(req.assets).length == 0) {
+  if (Object.keys(req.entities).length == 0) {
     console.log("no entities");
     return next();
   }
 
   async.each(req.entities, function(entity, callback) {
+    var entityRecord = {};
+    entityRecord.entity = entity;
+    entityRecord.posX = entity.position[0];
+    entityRecord.posY = entity.position[1];
+    entityRecord.posZ = entity.position[2];
+
+    var assetIds = getDependentAssetIdsFromEntity(entity);
+
+    for (var key in req.assets) {
+      var asset = req.assets[key];
+      if (assetIds.includes(parseInt(key))) {
+        var depAssetsIds = getDependentAssetIdsFromAsset(asset);
+        assetIds = assetIds.concat(depAssetsIds);
+      }
+    }
+
+    entityRecord.assetIds = assetIds;
+
     // write to datastore
-    getModel().create('Entity', entity, function (err, entity) {
+    getModel().create('Entity', entityRecord, function (err, entity) {
       // on callback
       if (err) {
         callback(err);
       }
-      console.log("entity stored: " + entity.name);
+      console.log("entity stored: " + entity.entity.name);
       callback(null);
     });
   }, function(err, results) {
