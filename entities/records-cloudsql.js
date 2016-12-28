@@ -47,7 +47,7 @@ function toSqlStore (obj) {
 }
 
 function fromSqlStore (entityRecord, dependencyRecords) {
-  var entity = {};
+  var entity = {assetIds:[]};
 
   Object.keys(entityRecord).forEach(function(k) {
     entity[k] = entityRecord[k];
@@ -119,7 +119,7 @@ function listEntityRecords (point, range, limit, token, callback) {
         return callback(err);
       }
       var hasMore = results.length === limit ? token + results.length : false;
-      async.each(results, function (entityRecord, cb) {
+      async.concat(results, function (entityRecord, cb) {
       	// obtain all dependent asset ids for entity
       	connection.query('SELECT * FROM dependencies WHERE entityId = ?', entityRecord.id, function (err, results) {
           if (err) {
