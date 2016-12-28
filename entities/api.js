@@ -20,6 +20,7 @@ var config = require('../config');
 var Multer  = require('multer')
 var AdmZip = require('adm-zip');
 const async = require('async');
+const sqlRecord = require('./records-cloudsql');
 const CLOUD_BUCKET = config.get('CLOUD_BUCKET');
 const storage = Storage({
   projectId: config.get('GCLOUD_PROJECT')
@@ -190,6 +191,29 @@ function sendUploadToGCS (req, res, next) {
   };
 }
 
+function sendRecordToSql (entity, callback) {
+  var entityRecord = {};
+  entityRecord.id = entity.id; // should now exist after DS write
+  entityRecord.posX = entity.position[0];
+  entityRecord.posY = entity.position[1];
+  entityRecord.posZ = entity.position[2];
+
+  // extract entity's dependent asset ids
+  var assetIds = getDependentAssetIdsFromEntity(entity);
+
+  // extract entity's assets' dependent asset ids
+  for (var key in req.assets) {
+    var asset = req.assets[key];
+    if (assetIds.includes(parseInt(key))) {
+      var depAssetsIds = getDependentAssetIdsFromAsset(asset);
+      assetIds = assetIds.concat(depAssetsIds);
+    }
+  }
+
+  entityRecord.assetIds = assetIds;
+
+  sqlRecord.insertEntityRecord(entityRecord, callback);
+}
 
 function sendEntitiesToDatastore (req, res, next) {
   console.log("begin entity processing");
@@ -199,32 +223,14 @@ function sendEntitiesToDatastore (req, res, next) {
   }
 
   async.each(req.entities, function(entity, callback) {
-    var entityRecord = {};
-    entityRecord.entity = entity;
-    entityRecord.posX = entity.position[0];
-    entityRecord.posY = entity.position[1];
-    entityRecord.posZ = entity.position[2];
-
-    var assetIds = getDependentAssetIdsFromEntity(entity);
-
-    for (var key in req.assets) {
-      var asset = req.assets[key];
-      if (assetIds.includes(parseInt(key))) {
-        var depAssetsIds = getDependentAssetIdsFromAsset(asset);
-        assetIds = assetIds.concat(depAssetsIds);
-      }
-    }
-
-    entityRecord.assetIds = assetIds;
-
     // write to datastore
-    getModel().create('Entity', entityRecord, function (err, entity) {
+    getModel().create('Entity', entity, function (err, entity) {
       // on callback
       if (err) {
         callback(err);
       }
-      console.log("entity stored: " + entity.entity.name);
-      callback(null);
+      console.log("entity stored in DS: " + entity.entity.name);
+      sendRecordToSql(entity, callback);
     });
   }, function(err, results) {
     // after all the callbacks

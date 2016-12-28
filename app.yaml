@@ -23,3 +23,20 @@ network:
 #  forwarded_ports:
 #  - 3000
   instance_tag: cybers-cafe
+
+# [START env]
+env_variables:
+  MYSQL_USER: appeng
+  MYSQL_PASSWORD: sparkle8twilight
+  MYSQL_DATABASE: cyberscafe
+  # This path was printed to the console when you started the proxy, and is of
+  # the format: `/[DIR]/[YOUR_PROJECT_ID]:[YOUR_REGION]:[YOUR_INSTANCE_NAME]`
+  MYSQL_SOCKET_PATH: cybers-cafe:us-east1:cybers-cafe
+# [END env]
+
+# [START cloudsql_settings]
+beta_settings:
+  # The connection name of your instance on its Overview page in the Google
+  # Cloud Platform Console, or use `[YOUR_PROJECT_ID]:[YOUR_REGION]:[YOUR_INSTANCE_NAME]`
+  cloud_sql_instances: cybers-cafe:us-east1:cybers-cafe
+# [END cloudsql_settings]
