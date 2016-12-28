@@ -17,8 +17,9 @@ function toSqlStore (obj) {
   var dependencyRecords = [];
   var results = {};
   
-  if (!obj.hasOwnProperty(id) || obj.id === undefined) {
-  	return;
+  if (!obj.hasOwnProperty('id') || obj.id === undefined) {
+  	console.error('Attempted to write to Sql record without id');
+  	return null;
   }
   
   Object.keys(obj).forEach(function (k) {
@@ -30,7 +31,7 @@ function toSqlStore (obj) {
       	});
 
   	  }
-  	  continue;
+  	  return; // "continue"
   	}
 
     if (obj[k] === undefined) {
@@ -52,7 +53,7 @@ function fromSqlStore (entityRecord, dependencyRecords) {
   });
 
   if (Array.isArray(dependencyRecords)) {
-  	for (int i = 0; i < dependencyRecords.length; i++) {
+  	for (var i = 0; i < dependencyRecords.length; i++) {
   		if (!('assetId' in dependencyRecords[k])) {
   			console.error('No assetId in dependencyRecord of entity ' + entityRecord.id);
   			continue;
@@ -67,6 +68,9 @@ function fromSqlStore (entityRecord, dependencyRecords) {
 
 function insertEntityRecord (entityRecord, callback) {
   var results = toSqlStore(entityRecord);
+  if (!results) {
+    return callback("Malformed entity for SQL storage: " + entityRecord);
+  };
   var entityRecord = results.entityRecord;
   var dependencyRecords = results.dependencyRecords;
 
@@ -74,12 +78,18 @@ function insertEntityRecord (entityRecord, callback) {
     if (err) {
       return callback(err);
     }
-    connection.query('INSERT INTO `dependencies` SET ?', dependencyRecords, function (err) {
-      if (err) {
-        return callback(err);
-      }
-    console.log("Entity record stored in Sql: " + entityRecord.id);
-    return callback();
+    if (dependencyRecords.length > 0) {
+	    connection.query('INSERT INTO `dependencies` SET ?', dependencyRecords, function (err) {
+	      if (err) {
+	        return callback(err);
+	      }
+	      console.log("Entity and " + dependencyRecords.length + " dependency records stored in SQL for id: " + entityRecord.id);
+	      return callback();
+	    });
+    } else {
+        console.log("Entity record stored in SQL for id: " + entityRecord.id);
+	    return callback();
+    }
   });
 }
 

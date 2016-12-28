@@ -191,7 +191,7 @@ function sendUploadToGCS (req, res, next) {
   };
 }
 
-function sendRecordToSql (entity, callback) {
+function sendRecordToSql (entity, assets, callback) {
   var entityRecord = {};
   entityRecord.id = entity.id; // should now exist after DS write
   entityRecord.posX = entity.position[0];
@@ -202,8 +202,8 @@ function sendRecordToSql (entity, callback) {
   var assetIds = getDependentAssetIdsFromEntity(entity);
 
   // extract entity's assets' dependent asset ids
-  for (var key in req.assets) {
-    var asset = req.assets[key];
+  for (var key in assets) {
+    var asset = assets[key];
     if (assetIds.includes(parseInt(key))) {
       var depAssetsIds = getDependentAssetIdsFromAsset(asset);
       assetIds = assetIds.concat(depAssetsIds);
@@ -229,8 +229,8 @@ function sendEntitiesToDatastore (req, res, next) {
       if (err) {
         callback(err);
       }
-      console.log("entity stored in DS: " + entity.entity.name);
-      sendRecordToSql(entity, callback);
+      console.log("entity stored in DS: " + entity.name);
+      sendRecordToSql(entity, req.assets, callback);
     });
   }, function(err, results) {
     // after all the callbacks
