@@ -4,6 +4,7 @@
 var express = require('express');
 var mysql = require('mysql');
 var crypto = require('crypto');
+const async = require('async');
 
 var connection = mysql.createConnection({
   user: process.env.MYSQL_USER,
@@ -54,11 +55,11 @@ function fromSqlStore (entityRecord, dependencyRecords) {
 
   if (Array.isArray(dependencyRecords)) {
   	for (var i = 0; i < dependencyRecords.length; i++) {
-  		if (!('assetId' in dependencyRecords[k])) {
+  		if (!('assetId' in dependencyRecords[i])) {
   			console.error('No assetId in dependencyRecord of entity ' + entityRecord.id);
   			continue;
   		}
-      entity.assetIds.push(dependencyRecords[k].assetId);
+      entity.assetIds.push(dependencyRecords[i].assetId);
     }
   }
 
@@ -94,17 +95,56 @@ function insertEntityRecord (entityRecord, callback) {
 }
 
 
+function listEntityRecords (point, range, limit, token, callback) {
+  var x = point[0];
+  var y = point[1];
+  var z = point[2];
+  token = token ? parseInt(token, 10) : 0;
+  
+  var entityRecords = [];
 
-
-
-
-
-
+  // obtain all entities within bounding box from point position
+  connection.query('SELECT * FROM entities ' +
+  	'WHERE posX < ? ' +
+  	'AND posX > ? ' +
+  	'AND posY < ? ' +
+  	'AND posY > ? ' +
+  	'AND posZ < ? ' +
+  	'AND posZ > ? ' +
+  	'LIMIT ? ' +
+  	'OFFSET ?',
+  	[x + range, x - range, y + range, y - range, z + range, z - range, limit, token ], 
+  	function (err, results) {
+      if (err) {
+        return callback(err);
+      }
+      var hasMore = results.length === limit ? token + results.length : false;
+      async.each(results, function (entityRecord, cb) {
+      	// obtain all dependent asset ids for entity
+      	connection.query('SELECT * FROM dependencies WHERE entityId = ?', entityRecord.id, function (err, results) {
+          if (err) {
+            return cb(err);
+	      }
+	      // process the entityRecord and its dependent assetIds together for single object format
+	      cb(null, fromSqlStore(entityRecord, results));
+        });
+      }, function (err, results) {
+      	// after all dependencies have been queried and processed
+      	if (err) {
+      	  return callback(err);
+      	}
+      	var res = {};
+      	for (var i = 0; i < results.length; i++) {
+          var entityRecord = results[i];
+          res[entityRecord.id] = entityRecord;
+      	}
+        callback(null, res, hasMore);
+      });
+    });
+}
 
 
 module.exports = {
-  create: function (kind, data, cb) {
-    update(kind, null, data, cb);
-  },
   insertEntityRecord: insertEntityRecord,
+  listEntityRecords: listEntityRecords
 };
