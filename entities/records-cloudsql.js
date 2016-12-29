@@ -66,6 +66,18 @@ function fromSqlStore (entityRecord, dependencyRecords) {
   return entity;
 }
 
+// transform from [{k1:v1, k2,v2},..] to [[[v1, v2],..]]
+function reformDependencyRecords (dependencyRecords) {
+  var out = [];
+  for (var i = 0; i < dependencyRecords.length; i++) {
+    out.push([
+      dependencyRecords[i].assetId, 
+      dependencyRecords[i].entityId
+      ]);
+  }
+  console.log(out);
+  return [out];
+}
 
 function insertEntityRecord (entityRecord, callback) {
   var results = toSqlStore(entityRecord);
@@ -75,15 +87,20 @@ function insertEntityRecord (entityRecord, callback) {
   var entityRecord = results.entityRecord;
   var dependencyRecords = results.dependencyRecords;
 
-  connection.query('INSERT INTO `entities` SET ?', entityRecord, function (err) {
+  connection.query('INSERT INTO entities SET ?', entityRecord, function (err) {
     if (err) {
       return callback(err);
     }
     if (dependencyRecords.length > 0) {
-	    connection.query('INSERT INTO `dependencies` SET ?', dependencyRecords, function (err) {
+	    connection.query('INSERT INTO dependencies (assetId, entityId) VALUES ?', reformDependencyRecords(dependencyRecords), function (err, result) {
 	      if (err) {
 	        return callback(err);
 	      }
+        if (dependencyRecords.length > result.affectedRows) {
+          console.error("inserting dependencies for " + entityRecord.id + " has failed");
+          console.error(dependencyRecords);
+          return callback({message: "only " + result.affectedRows + "/" + dependencyRecords.length + "dependency records were updated for entity id " + entityRecord.id});
+        }
 	      console.log("Entity and " + dependencyRecords.length + " dependency records stored in SQL for id: " + entityRecord.id);
 	      return callback();
 	    });
