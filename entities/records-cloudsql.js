@@ -9,7 +9,7 @@ const async = require('async');
 var connection;
 
 function handleDisconnect() {
-  var connection = mysql.createConnection({
+  connection = mysql.createConnection({
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
     socketPath: process.env.MYSQL_SOCKET_PATH,
