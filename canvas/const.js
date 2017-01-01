@@ -1,10 +1,11 @@
 ASSET_PREFIX = "/canvas/";
 SCRIPT_PREFIX = "/canvas/";
-SCENE_PATH = "470616.json";
+SCENE_PATH = "486802.json";
 CONTEXT_OPTIONS = {
+    'antialias': true,
     'alpha': false,
     'preserveDrawingBuffer': false
 };
-SCRIPTS = [ 5454013, 5454014, 5454015, 5454016, 5485282, 5485279, 5485473 ];
+SCRIPTS = [ 6178173, 6178168, 6178178, 6178176, 6178172, 6178170, 6178175 ];
 CONFIG_FILENAME = "canvas/cfg.json";
 pc.script.legacy = false;
