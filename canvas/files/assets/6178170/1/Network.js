@@ -9,7 +9,7 @@ Network.prototype.initialize = function() {
     this.player = this.app.root.findByName('Player');
     this.other = this.app.root.findByName('Other');
 
-    var socket = io.connect('http://localhost:59595/');
+    var socket = io.connect('http://service.cybers.cafe:59595/');
     Network.socket = socket;
 
     socket.emit ('initialize');
