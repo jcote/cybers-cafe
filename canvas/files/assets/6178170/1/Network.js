@@ -118,7 +118,7 @@ Network.prototype.addAsset = function(data) {
     this.app.assets.add(asset);
     console.log('Asset Added');
     console.log(data);
-}
+};
 
 Network.prototype.addEntity = function(data) {
     var entity = new pc.Entity();
@@ -135,7 +135,7 @@ Network.prototype.addEntity = function(data) {
     }
 */
 
-    for (component in data.components) {
+    for (var component in data.components) {
         entity.addComponent(component, data.components[component]);
     }
 

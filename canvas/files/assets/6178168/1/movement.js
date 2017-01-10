@@ -1,18 +1,21 @@
 var Movement = pc.createScript('movement');
 
-// optional, assign a camera entity, otherwise one is created
 Movement.attributes.add('camera', {
     type: 'entity'
 });
 
-Movement.attributes.add('power', {
+Movement.attributes.add('keyPower', {
+    type: 'number'
+});
+
+Movement.attributes.add('touchPower', {
     type: 'number'
 });
 
 Movement.attributes.add('lookSpeed', {
-    type: 'number'
-//    default: 0.25,
-//    title: 'Look Speed'
+    type: 'number',
+    default: 0.25,
+    title: 'Look Speed'
 });
 
 Movement.prototype.tileGrid = [];
@@ -28,7 +31,7 @@ Movement.prototype.findGridOffset = function (point, range, scale) {
 //console.log("one pos: " + this.tileGrid[1][1].getLocalPosition().x + " " + this.tileGrid[0][1].getLocalPosition().z);
 //console.log("center pos: " + centerTilePosition.x + " " + centerTilePosition.z);
 //console.log("two pos: " + this.tileGrid[2][1].getLocalPosition().x + " " + this.tileGrid[2][1].getLocalPosition().z);
-console.log("player pos: " + point.x + " " + point.z);
+//console.log("player pos: " + point.x + " " + point.z);
 
     offset.x = findOffset(point.x, centerTilePosition.x, range, halfScale);
     offset.z = findOffset(point.z, centerTilePosition.z, range, halfScale);
@@ -72,34 +75,25 @@ Movement.prototype.createTileGrid = function (range, scale) {
 
 // initialize code called once per entity
 Movement.prototype.initialize = function() {
+    //  Infinite Tile start
     this.tile = this.app.root.findByName('Tile');
     this.range = 5;
     this.scale = 50;
     this.createTileGrid(this.range, this.scale);
+    // Infinite Tile end
 
     // FP start
     this.force = new pc.Vec3();
-    this.camera = null;
     this.eulers = new pc.Vec3();
     
     var app = this.app;
-
-    document.getElementById('drawer-icon-div').onmouseover = function () {
-        this.mouseOverDrawerIcon = true;
-    }
-
-    document.getElementById('drawer-icon-div').onmouseout = function () {
-        this.mouseOverDrawerIcon = false;
-    }
-
+    
     // Listen for mouse move events
     app.mouse.on("mousemove", this._onMouseMove, this);
 
     // when the mouse is clicked hide the cursor
     app.mouse.on("mousedown", function () {
-        if (this.mouseOverDrawerIcon) {
-            app.mouse.enablePointerLock();
-        }
+        app.mouse.enablePointerLock();
     }, this);            
 
     // Check for required components
@@ -111,16 +105,28 @@ Movement.prototype.initialize = function() {
         console.error("First Person Movement script needs to have a DYNAMIC 'rigidbody' component");
     }
     // FP end
+
+    this.lastTouch = null;
+    this.lastSecondTouch = null;
+    
+    this.touchForce = new pc.Vec3();
+        
+    // Percentage of lookDelay time that has elapsed or lingered
+    this.lookDelayPercent = 0;
+
+    // Only register touch events if the device supports touch
+    var touch = this.app.touch;
+    if (touch) {
+        touch.on(pc.EVENT_TOUCHSTART, this.onTouchStart, this);
+        touch.on(pc.EVENT_TOUCHMOVE, this.onTouchMove, this);
+        touch.on(pc.EVENT_TOUCHEND, this.onTouchEnd, this);
+        touch.on(pc.EVENT_TOUCHCANCEL, this.onTouchCancel, this);
+    }
 };
 
 // update code called every frame
 Movement.prototype.update = function(dt) {
-    // FP start
-    // If a camera isn't assigned from the Editor, create one
-    if (!this.camera) {
-        this._createCamera();
-    }
-    
+    // FP start    
     var force = this.force;
     var app = this.app;
 
@@ -135,40 +141,45 @@ Movement.prototype.update = function(dt) {
 
     // Use W-A-S-D keys to move player
     // Check for key presses
-    if (app.keyboard.isPressed(pc.KEY_A) || app.keyboard.isPressed(pc.KEY_Q)) {
+    if (app.keyboard.isPressed(pc.KEY_A) || app.keyboard.isPressed(pc.KEY_LEFT)) {
         x -= right.x;
         z -= right.z;
     }
 
-    if (app.keyboard.isPressed(pc.KEY_D)) {
+    if (app.keyboard.isPressed(pc.KEY_D) || app.keyboard.isPressed(pc.KEY_RIGHT)) {
         x += right.x;
         z += right.z;
     }
 
-    if (app.keyboard.isPressed(pc.KEY_W)) {
+    if (app.keyboard.isPressed(pc.KEY_W) || app.keyboard.isPressed(pc.KEY_UP)) {
         x += forward.x;
         z += forward.z;
     }
 
-    if (app.keyboard.isPressed(pc.KEY_S)) {
+    if (app.keyboard.isPressed(pc.KEY_S) || app.keyboard.isPressed(pc.KEY_DOWN)) {
         x -= forward.x;
         z -= forward.z;
     }
 
     // use direction from keypresses to apply a force to the character
     if (x !== 0 && z !== 0) {
-        force.set(x, 0, z).normalize().scale(this.power);
+        force.set(x, 0, z).normalize().scale(this.keyPower);
         this.entity.rigidbody.applyForce(force);
     }
 
-    // update camera angle from mouse events
+    // update camera angle from mouse and touch events
     this.camera.setLocalEulerAngles(this.eulers.y, this.eulers.x, 0);
+        
+    // Touch movement
+    if (this.app.touch) {
+        this.entity.rigidbody.applyForce(this.touchForce);
+    }
     // FP end
 
     // Infinite tile start
     var gridOffset = this.findGridOffset(this.entity.getLocalPosition(), this.range, this.scale);
     console.log("grid offset: " + gridOffset.x + " " + gridOffset.z);
-    // TESTED ON RANGE 1 ONLY
+
     this.treadmillX(gridOffset.x);
     this.treadmillZ(gridOffset.z);
     // Infinite tile end 
@@ -269,11 +280,65 @@ Movement.prototype._onMouseMove = function (e) {
     }            
 };
 
-Movement.prototype._createCamera = function () {
-    // If user hasn't assigned a camera, create a new one
-    this.camera = new pc.Entity();
-    this.camera.setName("First Person Camera");
-    this.camera.addComponent("camera");
-    this.entity.addChild(this.camera);
-    this.camera.translateLocal(0, 0.5, 0);
+Movement.prototype.onTouchStart = function (event) {
+    if (event.touches.length === 1) {
+        this.lastTouch = event.touches[0];
+    } else {
+        this.lastTouch = event.touches[0];
+        this.lastSecondTouch = event.touches[1];
+    }
+};
+
+
+Movement.prototype.onTouchMove = function (event) {
+    // Use only the first touch screen x y position to move the camera
+    var touch = event.touches[0];
+    var dx = touch.x - this.lastTouch.x;
+    var dy = touch.y - this.lastTouch.y;
+    if (event.touches.length == 1) {
+      this.eulers.x -= this.lookSpeed * dx;
+      this.eulers.y -= this.lookSpeed * dy;
+    } else {
+      // Use two touch to control movement
+      var touch2 = event.touches[1];
+      var dx2 = touch2.x - this.lastSecondTouch.x;
+      var dy2 = touch2.y - this.lastSecondTouch.y;
+      var dxAvg = (dx + dx2) / 2;
+      var dyAvg = (dy + dy2) / 2;
+      var forward = this.camera.forward;
+      var right = this.camera.right;
+      var x = right.x * dxAvg - forward.x * dyAvg;
+      var z = right.z * dxAvg - forward.z * dyAvg;
+      this.touchForce.set(x, 0, z).normalize().scale(this.touchPower);
+      this.lastSecondTouch = touch2;
+    }
+    this.lastTouch = touch;
+};
+
+
+Movement.prototype.onTouchEnd = function (event) {
+    if (event.touches.length === 0) {
+        // Change only if the last touch has ended
+        this.lastTouch = null;
+    } else if (event.touches.length === 1) {
+        // Change only if the second to last touch has ended
+        this.lastSecondTouch = null;
+        this.touchForce.x = 0;
+        this.touchForce.y = 0;
+        this.touchForce.z = 0;
+    }
+};
+
+
+Movement.prototype.onTouchCancel = function (event) {
+    if (event.touches.length === 0) {
+        // Change only if the last touch has ended
+        this.lastTouch = null;
+    } else if (event.touches.length === 1) {
+        // Change only if the second to last touch has ended
+        this.lastSecondTouch = null;
+        this.touchForce.x = 0;
+        this.touchForce.y = 0;
+        this.touchForce.z = 0;
+    }
 };
