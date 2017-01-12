@@ -6,13 +6,19 @@ Movement.attributes.add('camera', {
 });
 
 Movement.attributes.add('power', {
-    type: 'number'
+    type: 'number',
+    default: 150
 });
 
 Movement.attributes.add('lookSpeed', {
-    type: 'number'
-//    default: 0.25,
-//    title: 'Look Speed'
+    type: 'number',
+    default: 0.25,
+    title: 'Look Speed'
+});
+
+Movement.attributes.add('maxElevation', {
+    type: 'number',
+    default: 70
 });
 
 Movement.prototype.tileGrid = [];
@@ -28,7 +34,7 @@ Movement.prototype.findGridOffset = function (point, range, scale) {
 //console.log("one pos: " + this.tileGrid[1][1].getLocalPosition().x + " " + this.tileGrid[0][1].getLocalPosition().z);
 //console.log("center pos: " + centerTilePosition.x + " " + centerTilePosition.z);
 //console.log("two pos: " + this.tileGrid[2][1].getLocalPosition().x + " " + this.tileGrid[2][1].getLocalPosition().z);
-console.log("player pos: " + point.x + " " + point.z);
+//console.log("player pos: " + point.x + " " + point.z);
 
     offset.x = findOffset(point.x, centerTilePosition.x, range, halfScale);
     offset.z = findOffset(point.z, centerTilePosition.z, range, halfScale);
@@ -72,35 +78,87 @@ Movement.prototype.createTileGrid = function (range, scale) {
 
 // initialize code called once per entity
 Movement.prototype.initialize = function() {
+    var app = this.app;     
+
+    ////////////////////
+    // Touch controls //
+    ////////////////////
+    this.viewPos = new pc.Vec3();
+    this.targetViewPos = new pc.Vec3();
+    this.tempVec = new pc.Vec3();
+    
+    this.distance = 3;
+    this.targetDistance = 3;
+
+    this.rotX = -180;
+    this.rotY = 0;
+    this.targetRotX = 0;
+    this.targetRotY = 0;
+    this.quatX = new pc.Quat();
+    this.quatY = new pc.Quat();
+
+    this.transformStarted = false;
+
+    var options = {
+        prevent_default: true,
+        drag_max_touches: 2,
+        transform_min_scale: 0.08,
+        transform_min_rotation: 180,
+        transform_always_block: true,
+        touch: true,
+        transform: false,
+        hold: false,
+        release: false,
+        swipe: false,
+        tap: false
+    };
+    this.hammer = Hammer(app.graphicsDevice.canvas, options);
+    
+    // Orbit (1 finger) and pan (2 fingers)    
+    var cachedX, cachedY;
+    this.hammer.on("dragstart", function (event) {
+        if (!this.transformStarted) {
+            var gesture = event.gesture;
+            var numTouches = (gesture.touches !== undefined) ? gesture.touches.length : 1;
+            this.panning = (numTouches === 2);
+            this.dragStarted = true;
+
+            cachedX = gesture.center.pageX;
+            cachedY = gesture.center.pageY;
+        }
+    }.bind(this));
+    this.hammer.on("dragend", function (event) {
+        if (this.dragStarted) {
+            this.dragStarted = false;
+            this.panning = false;
+        }
+    }.bind(this));
+    this.hammer.on("drag", function (event) {
+        var gesture = event.gesture;
+        var dx = gesture.center.pageX - cachedX;
+        var dy = gesture.center.pageY - cachedY;
+        if (this.panning) {
+            this.pan(dx * -0.025, dy * 0.025);
+        } else {
+            this.orbit(dx * 0.5, dy * 0.5);
+        }
+        cachedX = gesture.center.pageX;
+        cachedY = gesture.center.pageY;
+    }.bind(this));
+
+    app.mouse.on(pc.input.EVENT_MOUSEMOVE, this.onMouseMove, this);
+    app.mouse.on(pc.input.EVENT_MOUSEWHEEL, this.onMouseWheel, this);
+
+    app.mouse.disableContextMenu();
+    
+    // Infinite tile
     this.tile = this.app.root.findByName('Tile');
     this.range = 5;
     this.scale = 50;
     this.createTileGrid(this.range, this.scale);
 
     // FP start
-    this.force = new pc.Vec3();
-    this.camera = null;
-    this.eulers = new pc.Vec3();
-    
-    var app = this.app;
-
-    document.getElementById('drawer-icon-div').onmouseover = function () {
-        this.mouseOverDrawerIcon = true;
-    }
-
-    document.getElementById('drawer-icon-div').onmouseout = function () {
-        this.mouseOverDrawerIcon = false;
-    }
-
-    // Listen for mouse move events
-    app.mouse.on("mousemove", this._onMouseMove, this);
-
-    // when the mouse is clicked hide the cursor
-    app.mouse.on("mousedown", function () {
-        if (this.mouseOverDrawerIcon) {
-            app.mouse.enablePointerLock();
-        }
-    }, this);            
+    this.force = new pc.Vec3();     
 
     // Check for required components
     if (!this.entity.collision) {
@@ -116,11 +174,6 @@ Movement.prototype.initialize = function() {
 // update code called every frame
 Movement.prototype.update = function(dt) {
     // FP start
-    // If a camera isn't assigned from the Editor, create one
-    if (!this.camera) {
-        this._createCamera();
-    }
-    
     var force = this.force;
     var app = this.app;
 
@@ -128,47 +181,68 @@ Movement.prototype.update = function(dt) {
     var forward = this.camera.forward;
     var right = this.camera.right;
        
-
     // movement
     var x = 0;
     var z = 0;
 
     // Use W-A-S-D keys to move player
     // Check for key presses
-    if (app.keyboard.isPressed(pc.KEY_A) || app.keyboard.isPressed(pc.KEY_Q)) {
+    if (app.keyboard.isPressed(pc.KEY_A) || app.keyboard.isPressed(pc.KEY_LEFT)) {
         x -= right.x;
         z -= right.z;
     }
 
-    if (app.keyboard.isPressed(pc.KEY_D)) {
+    if (app.keyboard.isPressed(pc.KEY_D) || app.keyboard.isPressed(pc.KEY_RIGHT)) {
         x += right.x;
         z += right.z;
     }
 
-    if (app.keyboard.isPressed(pc.KEY_W)) {
+    if (app.keyboard.isPressed(pc.KEY_W) || app.keyboard.isPressed(pc.KEY_UP)) {
         x += forward.x;
         z += forward.z;
     }
 
-    if (app.keyboard.isPressed(pc.KEY_S)) {
+    if (app.keyboard.isPressed(pc.KEY_S) || app.keyboard.isPressed(pc.KEY_DOWN)) {
         x -= forward.x;
         z -= forward.z;
     }
 
+    // use force last set by touch/mouse to force the character
+    if (force.x !== 0 || force.z !== 0) {
+        this.entity.rigidbody.applyForce(force);
+        console.log(force);
+    }
     // use direction from keypresses to apply a force to the character
-    if (x !== 0 && z !== 0) {
+    if (x !== 0 || z !== 0) {
         force.set(x, 0, z).normalize().scale(this.power);
         this.entity.rigidbody.applyForce(force);
     }
+    this.force.x = 0;
+    this.force.z = 0;
+    
+    // View
+    // Implement a delay in camera controls by lerping towards a target
+    this.viewPos.lerp(this.viewPos, this.targetViewPos, dt / 0.1);
+    this.distance = pc.math.lerp(this.distance, this.targetDistance, dt / 0.2);
+    this.rotX = pc.math.lerp(this.rotX, this.targetRotX, dt / 0.2);
+    this.rotY = pc.math.lerp(this.rotY, this.targetRotY, dt / 0.2);
 
-    // update camera angle from mouse events
-    this.camera.setLocalEulerAngles(this.eulers.y, this.eulers.x, 0);
+    // Calculate the camera's rotation
+    this.quatX.setFromAxisAngle(pc.Vec3.RIGHT, -this.rotY);
+    this.quatY.setFromAxisAngle(pc.Vec3.UP, -this.rotX);
+    this.quatY.mul(this.quatX);
+
+    // Set the camera's current orientation
+    //this.camera.setPosition(this.viewPos);
+    this.camera.setRotation(this.quatY);
+    //this.camera.translateLocal(0, 0, this.distance);
+
     // FP end
 
     // Infinite tile start
     var gridOffset = this.findGridOffset(this.entity.getLocalPosition(), this.range, this.scale);
-    console.log("grid offset: " + gridOffset.x + " " + gridOffset.z);
-    // TESTED ON RANGE 1 ONLY
+//    console.log("grid offset: " + gridOffset.x + " " + gridOffset.z);
+
     this.treadmillX(gridOffset.x);
     this.treadmillZ(gridOffset.z);
     // Infinite tile end 
@@ -220,7 +294,7 @@ Movement.prototype.treadmillZ = function(gridOffsetZ) {
         // get closest column's position
         var closePos = [];
         for (var i = 0; i <= this.range * 2; i++) {
-            console.log(this.tileGrid[i][gridOffsetZ].getLocalPosition());
+//            console.log(this.tileGrid[i][gridOffsetZ].getLocalPosition());
             closePos[i] = this.tileGrid[i][gridOffsetZ].getLocalPosition().clone();
         }
         // add or subtract a range based on what tile the player is now on
@@ -259,21 +333,41 @@ Movement.prototype.treadmillZ = function(gridOffsetZ) {
     }
 };
 
+        
+Movement.prototype.reset = function(target, distance) {
+    this.viewPos.copy(target);
+    this.targetViewPos.copy(target);
 
-Movement.prototype._onMouseMove = function (e) {
-    // If pointer is disabled
-    // If the left mouse button is down update the camera from mouse movement
-    if (pc.Mouse.isPointerLocked() || e.buttons[0]) {
-        this.eulers.x -= this.lookSpeed * e.dx;
-        this.eulers.y -= this.lookSpeed * e.dy;
-    }            
+    this.distance = distance;
+    this.targetDistance = distance;
+
+    this.rotX = -180;
+    this.rotY = 0;
+    this.targetRotX = 0;
+    this.targetRotY = 0;
+};
+            
+Movement.prototype.pan = function(movex, movey) {
+    // Pan around the entity in the XZ plane
+      var forward = this.camera.forward;
+      var right = this.camera.right;
+      var x = - right.x * movex - forward.x * movey;
+      var z = - right.z * movex - forward.z * movey;
+      this.force.set(x, 0, z).normalize().scale(this.power);
 };
 
-Movement.prototype._createCamera = function () {
-    // If user hasn't assigned a camera, create a new one
-    this.camera = new pc.Entity();
-    this.camera.setName("First Person Camera");
-    this.camera.addComponent("camera");
-    this.entity.addChild(this.camera);
-    this.camera.translateLocal(0, 0.5, 0);
+Movement.prototype.orbit = function (movex, movey) {
+    // Look around the character in XY plane
+    this.targetRotX += movex;
+    this.targetRotY += movey;
+    this.targetRotY = pc.math.clamp(this.targetRotY, -this.maxElevation, this.maxElevation);
+};
+
+Movement.prototype.onMouseMove = function (event) {
+    if (event.buttons[pc.input.MOUSEBUTTON_LEFT]) {
+        this.orbit(event.dx * 0.2, event.dy * 0.2);
+    } else if (event.buttons[pc.input.MOUSEBUTTON_RIGHT]) {
+        var factor = this.distance / 700;
+        this.pan(event.dx * -factor, event.dy * factor);
+    }
 };
