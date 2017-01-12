@@ -12,8 +12,14 @@ Movement.attributes.add('power', {
 
 Movement.attributes.add('lookSpeed', {
     type: 'number',
-    default: 0.25,
+    default: 0.5,
     title: 'Look Speed'
+});
+
+Movement.attributes.add('panSpeed', {
+    type: 'number',
+    default: 0.025,
+    title: 'Pan Speed'
 });
 
 Movement.attributes.add('maxElevation', {
@@ -138,9 +144,9 @@ Movement.prototype.initialize = function() {
         var dx = gesture.center.pageX - cachedX;
         var dy = gesture.center.pageY - cachedY;
         if (this.panning) {
-            this.pan(dx * -0.025, dy * 0.025);
+            this.pan(dx * -this.panSpeed, dy * this.panSpeed);
         } else {
-            this.orbit(dx * 0.5, dy * 0.5);
+            this.orbit(dx * this.lookSpeed, dy * this.lookSpeed);
         }
         cachedX = gesture.center.pageX;
         cachedY = gesture.center.pageY;
