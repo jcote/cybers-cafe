@@ -110,6 +110,18 @@ function getDependentAssetIdsFromEntity(entity) {
     return assetIds;
 }
 
+function arrayUnique(array) {
+    var a = array.concat();
+    for(var i=0; i<a.length; ++i) {
+        for(var j=i+1; j<a.length; ++j) {
+            if(a[i] === a[j])
+                a.splice(j--, 1);
+        }
+    }
+
+    return a;
+}
+
 var router = express.Router();
 
 // Automatically parse request body as JSON
@@ -153,19 +165,20 @@ function unzipEntries (req, res, next) {
 }
 
 function sendUploadToGCS (req, res, next) {
-  console.log("begin cloud upload");
+  console.log("begin cloud uploads");
   if (Object.keys(req.assetFiles).length == 0) {
     console.log("nothing to upload");
     return next();
   }
 
-  for (var assetFullPath in req.assetFiles) {
+  async.eachSeries(Object.keys(req.assetFiles), function(assetFullPath, callback) {
     var assetFile = req.assetFiles[assetFullPath];
-    var assetFilename =  Date.now() + "+" + assetFile.originalName;
-    const gcsname = assetFile.originalPath + assetFilename;
+//    var assetFilename =  Date.now() + "+" + assetFile.originalName;
+//    const gcsname = assetFile.originalPath + assetFilename;
+    const gcsname = Date.now() + "/" + assetFullPath;
     const file = bucket.file(gcsname);
 
-    console.log("begin upload: " + gcsname);
+    console.log("begin cloud upload: " + gcsname);
 
     const stream = file.createWriteStream({
       metadata: {
@@ -182,13 +195,19 @@ function sendUploadToGCS (req, res, next) {
     stream.on('finish', () => {
       assetFile.cloudStorageObject = gcsname;
       assetFile.cloudStoragePublicUrl = getPublicUrl(gcsname);
-      assetFile.filename = assetFilename;
-      console.log("finish cloud upload");
-      next();
+//      assetFile.filename = assetFilename;
+      console.log("finish cloud upload: " + gcsname);
+      callback();
     });
 
     stream.end(assetFile.data);
-  };
+  }, function(err, results) {
+    if (err) {
+      return next(err);
+    }
+    console.log("finish cloud uploads");
+    next();
+  });
 }
 
 function sendRecordToSql (entity, assets, callback) {
@@ -206,7 +225,7 @@ function sendRecordToSql (entity, assets, callback) {
     var asset = assets[key];
     if (assetIds.includes(parseInt(key))) {
       var depAssetsIds = getDependentAssetIdsFromAsset(asset);
-      assetIds = assetIds.concat(depAssetsIds);
+      assetIds = arrayUnique(assetIds.concat(depAssetsIds));
     }
   }
 
@@ -223,13 +242,17 @@ function sendEntitiesToDatastore (req, res, next) {
   }
 
   async.each(req.entities, function(entity, callback) {
+    if (!('components' in entity) || Object.keys(entity.components).length == 0) {
+      console.log("skipping entity with no components: " + entity.name);
+      return callback();
+    }
     // write to datastore
     getModel().create('Entity', entity, function (err, entity) {
       // on callback
       if (err) {
-        callback(err);
+        return callback(err);
       }
-      console.log("entity stored in DS: " + entity.name);
+      console.log("entity '" + entity.name + "' stored in DS: " + entity.id);
       sendRecordToSql(entity, req.assets, callback);
     });
   }, function(err, results) {
@@ -248,13 +271,13 @@ function sendAssetsToDatastore (req, res, next) {
     return next();
   }
 
-  // for each asset
+  // in parallel
   async.each(req.assets, function(asset, callback) {
     // write to datastore
     getModel().update('Asset', asset.id, asset, function (err, asset) {
       // on callback
       if (err) {
-        callback(err);
+        return callback(err);
       }
       console.log("asset stored: " + asset.name);
       callback(null);
@@ -278,12 +301,12 @@ function rewriteAssetUrls (req, res, next) {
   for (var key in req.assets) {
     var asset = req.assets[key];
     if (!asset.file || !asset.file.filename || !asset.file.url) {
-      console.log("no file info in asset");
+//      console.log("no file info in asset");
       continue;
     }
     
     if (! (asset.file.url in req.assetFiles)) {
-      console.log("asset file not found");
+      console.log("asset file not found: " + asset.file.url);
       continue;
     }
 
@@ -291,7 +314,7 @@ function rewriteAssetUrls (req, res, next) {
     asset.file.url = assetFile.cloudStoragePublicUrl; // writing here writes req.assets[key]
     asset.file.filename = assetFile.filename;
     asset.name = assetFile.filename;
-    console.log("asset url rewrite");
+    console.log("asset url rewrite: " + asset.file.url);
   }
 
   console.log("finish asset url rewrite");
@@ -299,37 +322,10 @@ function rewriteAssetUrls (req, res, next) {
 }
 
 /**
- * GET /api/entities
+ * POST /api/entities
  *
  * Retrieve a page of entities (up to ten at a time).
  */
-/*router.get('/', function list (req, res, next) {
-  getModel().list(10, req.query.pageToken, function (err, entities, cursor) {
-    if (err) {
-      return next(err);
-    }
-    res.json({
-      items: entities,
-      nextPageToken: cursor
-    });
-  });
-});
-*/
-/**
- * POST /api/entities
- *
- * Create a new entity.
- */
-/*router.post('/', function insert (req, res, next) {
-    console.log(req.files);
-  getModel().create(req.body, function (err, entity) {
-    if (err) {
-      return next(err);
-    }
-    res.json(entity);
-  });
-});
-*/
 router.post('/', multer.single('zipFile'), unzipEntries, sendUploadToGCS, rewriteAssetUrls, sendEntitiesToDatastore, sendAssetsToDatastore, function (req, res, next) {
 //  console.log(req.entities); 
 //  console.log(req.assets); 

@@ -37,7 +37,8 @@ var SQL_STRING_DEPENDENCY = 'CREATE TABLE dependencies (\n' +
 '    INDEX (entityId),\n' +
 '    FOREIGN KEY (entityId)\n' +
 '        REFERENCES entities(id)\n' +
-'        ON DELETE CASCADE\n' +
+'        ON DELETE CASCADE\n,' +
+'    UNIQUE (assetId, entityId)\n' +
 ');';
 
 function createEntitiesTable (connection, callback) {
