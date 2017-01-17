@@ -33,7 +33,7 @@ Network.prototype.initialize = function() {
     });
 
     socket.on ('addAsset', function (data) {
-        console.log('Add Asset');
+        console.log('Add assetet');
         self.addAsset (data.asset);
     });
 
@@ -45,7 +45,7 @@ Network.prototype.initialize = function() {
     setInterval (function () {
         if (self.initialized) {
             socket.emit('ping', Network.id);
-            console.log('pinged as #' + Network.id);
+            //console.log('pinged as #' + Network.id);
         }
     }, 1000);
 };
@@ -57,9 +57,9 @@ Network.prototype.initializePlayers = function (data) {
     for (i = 0; i < this.players.length; i++) {
         if (i !== Network.id && !this.players[i].deleted) {
             this.players[i].entity = this.createPlayerEntity(data.players[i]);
-            console.log('Found player.');
+//            console.log('Found player.');
         }
-        console.log(data);
+//        console.log(data);
     }
 
     this.initialized = true;
@@ -115,9 +115,10 @@ Network.prototype.addAsset = function(data) {
     asset.preload = data.preload ? data.preload : false;
     asset.tags.add(data.tags);
     asset.revision = data.revision;
+
     this.app.assets.add(asset);
-    console.log('Asset Added');
-    console.log(data);
+//    console.log('Asset Added');
+//    console.log(data);
 };
 
 Network.prototype.addEntity = function(data) {
@@ -136,6 +137,9 @@ Network.prototype.addEntity = function(data) {
 */
 
     for (var component in data.components) {
+    	if (component == "camera") {
+    		continue;
+    	}
         entity.addComponent(component, data.components[component]);
     }
 
@@ -147,6 +151,6 @@ Network.prototype.addEntity = function(data) {
     }
     this.app.root.addChild(entity);
 
-    console.log('Entity Added');
-    console.log(data);
+//    console.log('Entity Added');
+//    console.log(data);
 };
