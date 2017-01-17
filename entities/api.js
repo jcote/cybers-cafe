@@ -50,7 +50,7 @@ function getModel () {
 
 function getDependentAssetIdsFromAsset(asset) {
   var assetIds = [];
-  if ('data' in asset) {
+  if ('data' in asset && asset.data != null) {
     for (var key in asset.data) {
       if (key.endsWith('Map')) {
         if (typeof asset.data[key] === 'number' && asset.data[key] > 0 && !assetIds.includes(asset.data[key])) {
@@ -58,10 +58,10 @@ function getDependentAssetIdsFromAsset(asset) {
         }
       }
     }
-    if ('mapping' in asset.data) {
+    if ('mapping' in asset.data && asset.data.mapping != null) {
       for (var i=0; i < asset.data.mapping.length; i++) {
         var entry = asset.data.mapping[i];
-        if ('material' in entry) {
+        if ('material' in entry && entry.material != null) {
           var assetId = parseInt(entry.material);
           if (!isNaN(assetId)) {
             assetIds.push(assetId);
@@ -75,8 +75,8 @@ function getDependentAssetIdsFromAsset(asset) {
 
 function getDependentAssetIdsFromEntity(entity) {
     var assetIds = [];
-    if ('components' in entity) {
-      if ('model' in entity.components) {
+    if ('components' in entity && entity.components != null) {
+      if ('model' in entity.components && entity.components.model != null) {
         if ('asset' in entity.components.model) {
           if (typeof entity.components.model.asset === 'number') {
             assetIds.push(entity.components.model.asset);
@@ -88,15 +88,15 @@ function getDependentAssetIdsFromEntity(entity) {
           }
         }
       }
-      if ('collision' in entity.components) {
+      if ('collision' in entity.components && entity.components.collision != null) {
         if ('asset' in entity.components.collision) {
           if (typeof entity.components.collision.asset === 'number') {
             assetIds.push(entity.components.collision.asset);
           }
         }
       }
-      if ('animation' in entity.components) {
-        if ('asset' in entity.components.animation) {
+      if ('animation' in entity.components && entity.components.animation != null) {
+        if ('assets' in entity.components.animation) {
           if (Array.isArray(entity.components.animation.assets)) {
             if (entity.components.animation.assets.length > 0) {
               if (typeof entity.components.animation.assets[0] === 'number') {
