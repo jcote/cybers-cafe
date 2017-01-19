@@ -6,6 +6,6 @@ CONTEXT_OPTIONS = {
     'alpha': false,
     'preserveDrawingBuffer': false
 };
-SCRIPTS = [ 6178173, 6178178, 6178176, 6178172, 6178170, 6320036, 6320152 ];
+SCRIPTS = [ 6178173, 6178178, 6178176, 6178172, 6178170, 6320036, 6320152, 6426140 ];
 CONFIG_FILENAME = "canvas/cfg.json";
 pc.script.legacy = false;

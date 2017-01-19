@@ -33,19 +33,21 @@ Network.prototype.initialize = function() {
     });
 
     socket.on ('addAsset', function (data) {
-        console.log('Add assetet');
+        console.log('Add Asset');
         self.addAsset (data.asset);
     });
 
     socket.on ('addEntity', function (data) {
         console.log('Add Entity');
-        self.addEntity (data.entity);
+        setTimeout(function() {
+          self.addEntity (data.entity);
+        }, 5000);
     });
 
     setInterval (function () {
         if (self.initialized) {
             socket.emit('ping', Network.id);
-            //console.log('pinged as #' + Network.id);
+//            console.log('pinged as #' + Network.id);
         }
     }, 1000);
 };
