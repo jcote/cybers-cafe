@@ -4,10 +4,18 @@ var Network = pc.createScript('network');
 Network.id = null;
 Network.socket = null;
 
+function QueueItem(type, resource) {
+	this.type = type;
+	this.resource = resource;
+}
+
 // initialize code called once per entity
 Network.prototype.initialize = function() {
     this.player = this.app.root.findByName('Player');
     this.other = this.app.root.findByName('Other');
+
+    this.queue = new Queue();
+    this.isQueueRunning = false;
 
     var socket = io.connect('http://service.cybers.cafe:59595/');
     Network.socket = socket;
@@ -34,14 +42,18 @@ Network.prototype.initialize = function() {
 
     socket.on ('addAsset', function (data) {
         console.log('Add Asset');
-        self.addAsset (data.asset);
+        self.queue.enqueue(new QueueItem('asset', data.asset));
+        if (!self.isQueueRunning) {
+            self.popQueue();
+        }
     });
 
     socket.on ('addEntity', function (data) {
         console.log('Add Entity');
-        setTimeout(function() {
-          self.addEntity (data.entity);
-        }, 5000);
+        self.queue.enqueue(new QueueItem('entity', data.entity));
+        if (!self.isQueueRunning) {
+            self.popQueue();
+        }
     });
 
     setInterval (function () {
@@ -110,6 +122,27 @@ Network.prototype.updatePosition = function () {
     }
 };
 
+Network.prototype.popQueue = function() {
+	this.isQueueRunning = true;
+	if (this.queue.getLength() == 0) {
+    	this.isQueueRunning = false;
+	    return;
+	}
+
+	var queueItem = this.queue.dequeue();
+	if (queueItem.type == 'asset') {
+        this.addAsset (queueItem.resource);
+    } else if (queueItem.type == 'entity') {
+    	var self = this;
+        setTimeout(function() {
+          self.addEntity (queueItem.resource);
+        }, 100);
+    } else {
+    	console.log("Unknown QueueItem type: " + queueItem.type);
+    	this.popQueue();
+    }
+}
+
 Network.prototype.addAsset = function(data) {
     // from playcanvas application.js: _parseAssets()
     var asset = new pc.Asset(data.name, data.type, data.file, data.data);
@@ -121,6 +154,7 @@ Network.prototype.addAsset = function(data) {
     this.app.assets.add(asset);
 //    console.log('Asset Added');
 //    console.log(data);
+    this.popQueue();
 };
 
 Network.prototype.addEntity = function(data) {
@@ -155,4 +189,5 @@ Network.prototype.addEntity = function(data) {
 
 //    console.log('Entity Added');
 //    console.log(data);
+    this.popQueue();
 };
