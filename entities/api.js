@@ -321,12 +321,20 @@ function rewriteAssetUrls (req, res, next) {
   next();
 }
 
+function checkFormatZip (req, res, next) {
+  if (req.file == undefined) {
+    return res.json({"message":"No file given"});
+  }
+  if (req.file.mimetype != "application/x-zip-compressed") {
+    return res.json({"message":"Not zip format"});
+  }
+  next();
+}
 /**
  * POST /api/entities
  *
- * Retrieve a page of entities (up to ten at a time).
  */
-router.post('/', multer.single('zipFile'), unzipEntries, sendUploadToGCS, rewriteAssetUrls, sendEntitiesToDatastore, sendAssetsToDatastore, function (req, res, next) {
+router.post('/', multer.single('zipFile'), checkFormatZip, unzipEntries, sendUploadToGCS, rewriteAssetUrls, sendEntitiesToDatastore, sendAssetsToDatastore, function (req, res, next) {
 //  console.log(req.entities); 
 //  console.log(req.assets); 
   console.log(req.assetFiles);

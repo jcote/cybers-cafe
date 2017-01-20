@@ -31,7 +31,6 @@ app.use('/images', express.static('images'));
 app.use('/scripts', express.static('scripts'));
 
 // entities
-app.use('/entities', require('./entities/crud'));
 app.use('/api/entities', require('./entities/api'));
 
 // Home page with viewport + entities interface
@@ -45,11 +44,6 @@ app.get('/', function (req, res) {
 // Canvas viewport
 app.get('/viewport', function (req, res) {
   res.render("viewport.jade");
-});
-
-// Redirect /interface to /entities
-app.get('/interface', function (req, res) {
-  res.redirect('/entities');
 });
 
 // Basic 404 handler

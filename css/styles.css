@@ -13,37 +13,14 @@ body {
     width: 100%;
 }
 
-#frameset {
-    display: block;
-    position: relative;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-}
-
+/* the main screen (3d) */
 #viewport-frame,#viewport-div {
   width: 100%;
   height: calc(100%);
 }
 
-#interface-div {
-  width: 300px;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-color: white;
-  visibility: hidden;
-  resize: horizontal;
-  overflow: auto;
-}
-#form-ctl {
-  width: 300px;
-}
+/* the menu icon container
+   visible when interface is closed */
 #drawer-icon-div {
   width: 24px;
   height: 24px;
@@ -53,25 +30,34 @@ body {
   background-color: grey;
 }
 
-#interface-frame {
-  width: 50%;
-  height: 300px;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
+/* icon itself (2x) */
 .drawer-icon {
     font-size: 24px;
     width:24px;
     height:24px;
-}
-
-.drawer-icon-closed {
     position:absolute;
     bottom:0;
     left:0;
 }
+
+/* the entire side panel */
+#interface-div {
+  width: 350px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: white;
+  visibility: hidden;
+  resize: horizontal;
+  overflow: auto;
+}
+
+/* form controls for input  */
+#form-ctl {
+  width: 200px;
+}
+
 canvas:focus {
     outline: none;
 }

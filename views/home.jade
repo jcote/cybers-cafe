@@ -30,19 +30,23 @@ html(lang="en")
       script(src="/canvas/__start__.js")
       script(src="/canvas/__loading__.js")
       div(id="drawer-icon-div")
-        span.glyphicon.glyphicon-menu-hamburger.drawer-icon.drawer-icon-closed(onclick="drawer()")
+        span.glyphicon.glyphicon-menu-hamburger.drawer-icon(onclick="drawer()")
 
       div(id="interface-div")
-        span.glyphicon.glyphicon-menu-hamburger.drawer-icon.drawer-icon-closed(onclick="drawer()")
+        span.glyphicon.glyphicon-menu-hamburger.drawer-icon(onclick="drawer()")
 
         .navbar.navbar-default
           .container
-            .navbar-header
-              .navbar-brand /Cybers Cafe/
 
             ul.nav.navbar-nav
               li
-                a(href="/entities") Entities
+                a(id="imageLink", href="#") Image
+              li
+                a(id="audioLink", href="#") Audio
+              li
+                a(id="modelLink", href="#") 3d Model
+              li
+                a(id="functionLink", href="#") Function
 
         .container.container-div(id="formContainer")
           form(name="createEntity" method="post" enctype="multipart/form-data")
