@@ -1,0 +1,40 @@
+{
+    "position": [
+        0,
+        0.5,
+        0
+    ],
+    "scale": [
+        1,
+        1,
+        0.001
+    ],
+    "name": "Image",
+    "parent": null,
+    "resource_id": "6b37ab7c-df45-11e6-8b5f-22000ac481df",
+    "components": {
+        "model": {
+            "lightMapSizeMultiplier": 1,
+            "castShadows": true,
+            "castShadowsLightmap": true,
+            "lightmapped": false,
+            "materialAsset": 6451449,
+            "receiveShadows": true,
+            "enabled": true,
+            "castShadowsLightMap": false,
+            "asset": null,
+            "lightmapSizeMultiplier": 1,
+            "type": "box",
+            "lightMapped": false,
+            "isStatic": false
+        }
+    },
+    "rotation": [
+        0,
+        0,
+        0
+    ],
+    "enabled": true,
+    "children": [],
+    "tags": []
+}
