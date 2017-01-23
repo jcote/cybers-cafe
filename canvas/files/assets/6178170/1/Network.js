@@ -136,7 +136,7 @@ Network.prototype.popQueue = function() {
     	var self = this;
         setTimeout(function() {
           self.addEntity (queueItem.resource);
-        }, 100);
+        }, 500);
     } else {
     	console.log("Unknown QueueItem type: " + queueItem.type);
     	this.popQueue();

@@ -15,9 +15,9 @@ function drawer () {
 }
 
 $(function(){
-	var form = document.forms.namedItem("createEntity");
+	var form = document.forms.namedItem("createEntityModel");
 	form.addEventListener('submit', function(ev) {
-	  var oOutput = document.getElementById("formResultContainer"),
+	  var oOutput = document.getElementById("modelFormResultContainer"),
 	      oData = new FormData(form);
 
       oOutput.innerHTML = "Uploading...";
@@ -27,9 +27,10 @@ $(function(){
 	  oReq.open("POST", "api/entities", true);
 	  oReq.onload = function(oEvent) {
 	    if (oReq.status == 200) {
-	      oOutput.innerHTML = oReq.responseText;
+	      var responseJson = JSON.parse(oReq.responseText);
+	      oOutput.innerHTML = responseJson.message;
 	    } else {
-	      oOutput.innerHTML = "Error " + oReq.status + " occurred when trying to upload your file.<br \/>";
+	      oOutput.innerHTML = "Error occurred.<br \/>";
 	    }
 	  };
 

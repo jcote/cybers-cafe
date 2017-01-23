@@ -43,19 +43,32 @@ body {
 /* the entire side panel */
 #interface-div {
   width: 350px;
+  max-width: 350px;
   height: 100%;
+  margin:0 0 0 0;
+  padding: 0 0 0 0;
   position: absolute;
   top: 0;
   left: 0;
   background-color: white;
   visibility: hidden;
   resize: horizontal;
-  overflow: auto;
+  overflow: hidden;
+}
+.interface-part {
+  max-width: 350px;
+  width: 350px;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 /* form controls for input  */
-#form-ctl {
+.form-ctl {
   width: 200px;
+}
+
+.hide {
+  visibility: hidden;
 }
 
 canvas:focus {

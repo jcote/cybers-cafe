@@ -36,6 +36,10 @@ html(lang="en")
         span.glyphicon.glyphicon-menu-hamburger.drawer-icon(onclick="drawer()")
 
         .navbar.navbar-default
+          .navbar-header
+            .navbar-brand /Cybers Cafe/
+
+        .navbar.navbar-default
           .container
 
             ul.nav.navbar-nav
@@ -48,20 +52,31 @@ html(lang="en")
               li
                 a(id="functionLink", href="#") Function
 
-        .container.container-div(id="formContainer")
-          form(name="createEntity" method="post" enctype="multipart/form-data")
-            .form-group
-              label(for="title") Title : &nbsp;
-              input.form-ctl(type="text", name="title", id="title", value=entity.title)
-            .form-group
-              label(for="author") Author : &nbsp;
-              input.form-ctl(type="text", name="author", id="author", value=entity.author)
-            .form-group
-              label(for="description") Description : &nbsp;
-              input.form-ctl(type="text", name="description", id="description", value=entity.description)
-            .form-group
-              label(for="zipFile") Zip File : &nbsp;
-              input.form-ctl(type="file", name="zipFile", id="zipFile", value=entity.zipFile)
-            .form-group
-            button.btn.btn-success(type="submit") Upload
-        .container.container-div(id="formResultContainer") Ready...
+        form(name="createEntityModel" method="post" enctype="multipart/form-data")
+          .container.interface-part(id="modelFormContainer")
+            .row
+              .col-sm-4
+                label(for="title") Title :
+              .col-sm-8
+                input.form-ctl(type="text", name="title", id="title", value=entity.title)
+            .row
+              .col-sm-4
+                label(for="author") Author :
+              .col-sm-8
+                input.form-ctl(type="text", name="author", id="author", value=entity.author)
+            .row
+              .col-sm-4
+                label(for="description") Description :
+              .col-sm-8
+                input.form-ctl(type="text", name="description", id="description", value=entity.description)
+            .row
+              .col-sm-4
+                label(for="zipFile") Zip File :
+              .col-sm-8
+                input.form-ctl(type="file", name="zipFile", id="zipFile", value=entity.zipFile)
+            .row
+              .col-sm-4
+              .col-sm-4
+                button.btn.btn-success(type="submit") Upload
+              .col-sm-4
+        .container.interface-part(id="modelFormResultContainer") Ready...
