@@ -26,7 +26,7 @@ function selectForm (form) {
 $(function(){
 	var form = document.forms.namedItem("createEntityModel");
 	form.addEventListener('submit', function(ev) {
-	  var oOutput = document.getElementById("modelFormResultContainer"),
+	  var oOutput = document.getElementById("formResultContainer"),
 	      oData = new FormData(form);
 
       oOutput.innerHTML = "Uploading...";
@@ -51,7 +51,7 @@ $(function(){
 $(function(){
 	var form = document.forms.namedItem("createEntityImage");
 	form.addEventListener('submit', function(ev) {
-	  var oOutput = document.getElementById("imageFormResultContainer"),
+	  var oOutput = document.getElementById("formResultContainer"),
 	      oData = new FormData(form);
 
       oOutput.innerHTML = "Uploading...";

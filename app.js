@@ -31,7 +31,8 @@ app.use('/images', express.static('images'));
 app.use('/scripts', express.static('scripts'));
 
 // entities
-app.use('/api/entities', require('./entities/api'));
+app.use('/api/entities', require('./api/entities'));
+app.use('/api/image', require('./api/image'));
 
 // Home page with viewport + entities interface
 app.get('/', function (req, res) {

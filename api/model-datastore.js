@@ -146,6 +146,22 @@ function read (kind, id, cb) {
   });
 }
 
+function getHighestId (kind, cb) {
+  const query = ds.createQuery(kind)
+    .order('id', {
+      descending: true
+    })
+    .limit(1);
+
+  ds.runQuery(query, function (err, results, cursor) {
+      if (err) {
+        return cb(err);
+      }
+      const id = results[0].key.id;
+      cb(null, id);
+    });
+}
+
 function _delete (kind, id, cb) {
   var key = ds.key([kind, parseInt(id, 10)]);
   ds.delete(key, cb);
@@ -159,6 +175,7 @@ module.exports = {
   read: read,
   update: update,
   delete: _delete,
+  getHighestId: getHighestId,
   list: list
 };
 // [END exports]

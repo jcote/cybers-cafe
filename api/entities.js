@@ -334,7 +334,7 @@ function checkFormatZip (req, res, next) {
  * POST /api/entities
  *
  */
-router.post('/', multer.single('zipFile'), checkFormatZip, unzipEntries, sendUploadToGCS, rewriteAssetUrls, sendEntitiesToDatastore, sendAssetsToDatastore, function (req, res, next) {
+router.post('/', multer.single('zipFile'), checkFormatZip, unzipEntries, sendUploadToGCS, rewriteAssetUrls, sendAssetsToDatastore, sendEntitiesToDatastore, function (req, res, next) {
 //  console.log(req.entities); 
 //  console.log(req.assets); 
   console.log(req.assetFiles);
