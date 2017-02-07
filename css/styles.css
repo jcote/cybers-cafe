@@ -55,6 +55,7 @@ body {
   resize: horizontal;
   overflow: hidden;
 }
+
 .interface-part {
   max-width: 350px;
   width: 350px;
@@ -62,13 +63,17 @@ body {
   margin-right: 0;
 }
 
+#createEntityImageForm {
+  display: block;
+}
+
+#createEntityModelForm {
+  display: none;
+}
+
 /* form controls for input  */
 .form-ctl {
   width: 200px;
-}
-
-.hide {
-  visibility: hidden;
 }
 
 canvas:focus {

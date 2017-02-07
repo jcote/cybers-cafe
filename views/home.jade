@@ -44,16 +44,16 @@ html(lang="en")
 
             ul.nav.navbar-nav
               li
-                a(id="imageLink", href="#") Image
+                a(id="imageLink", href="#", onclick="selectForm('createEntityImageForm')") Image
               li
-                a(id="audioLink", href="#") Audio
+                a(id="audioLink", href="#", onclick="selectForm('createEntityAudioForm')") Audio
               li
-                a(id="modelLink", href="#") 3d Model
+                a(id="modelLink", href="#", onclick="selectForm('createEntityModelForm')") 3d Model
               li
-                a(id="functionLink", href="#") Function
+                a(id="functionLink", href="#", onclick="selectForm('createEntityFunctionForm')") Function
 
-        form(name="createEntityModel" method="post" enctype="multipart/form-data")
-          .container.interface-part(id="modelFormContainer")
+        form(id="createEntityImageForm" name="createEntityImage" method="post" enctype="multipart/form-data")
+          .container.interface-part(id="imageFormContainer")
             .row
               .col-sm-4
                 label(for="title") Title :
@@ -61,14 +61,21 @@ html(lang="en")
                 input.form-ctl(type="text", name="title", id="title", value=entity.title)
             .row
               .col-sm-4
-                label(for="author") Author :
+                label(for="imgFile") Image File :
               .col-sm-8
-                input.form-ctl(type="text", name="author", id="author", value=entity.author)
+                input.form-ctl(type="file", name="imgFile", id="imgFile", value=entity.imgFile)
             .row
               .col-sm-4
-                label(for="description") Description :
+              .col-sm-4
+                button.btn.btn-success(type="submit") Upload
+              .col-sm-4
+        form(id="createEntityModelForm" name="createEntityModel" method="post" enctype="multipart/form-data")
+          .container.interface-part(id="modelFormContainer")
+            .row
+              .col-sm-4
+                label(for="title") Title :
               .col-sm-8
-                input.form-ctl(type="text", name="description", id="description", value=entity.description)
+                input.form-ctl(type="text", name="title", id="title", value=entity.title)
             .row
               .col-sm-4
                 label(for="zipFile") Zip File :
