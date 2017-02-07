@@ -136,7 +136,7 @@ Network.prototype.popQueue = function() {
     	var self = this;
         setTimeout(function() {
           self.addEntity (queueItem.resource);
-        }, 1000);
+        }, 100);
     } else {
     	console.log("Unknown QueueItem type: " + queueItem.type);
     	this.popQueue();
@@ -153,8 +153,11 @@ Network.prototype.addAsset = function(data) {
 
     this.app.assets.add(asset);
 //    console.log('Asset Added');
-//    console.log(data);
-    this.popQueue();
+//    console.log(data);	
+    var self = this;
+    setTimeout(function() {
+      self.popQueue();
+    }, 50);
 };
 
 Network.prototype.addEntity = function(data) {
@@ -189,5 +192,8 @@ Network.prototype.addEntity = function(data) {
 
 //    console.log('Entity Added');
 //    console.log(data);
-    this.popQueue();
+    var self = this;
+    setTimeout(function() {
+      self.popQueue();
+    }, 50);
 };
