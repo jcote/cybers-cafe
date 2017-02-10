@@ -15,17 +15,11 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
-const Storage = require('@google-cloud/storage');
-var config = require('../config');
 var Multer  = require('multer')
 var AdmZip = require('adm-zip');
 const async = require('async');
 const sqlRecord = require('./records-cloudsql');
-const CLOUD_BUCKET = config.get('CLOUD_BUCKET');
-const storage = Storage({
-  projectId: config.get('GCLOUD_PROJECT')
-});
-const bucket = storage.bucket(CLOUD_BUCKET);
+const apiLib = require('./lib');
 
 const multer = Multer({dest:'uploads'
 /*  storage: Multer.MemoryStorage,
@@ -36,17 +30,6 @@ const multer = Multer({dest:'uploads'
 
 var entitiesRe = /^\d{6}\.json$/;
 var assetFilesRe = /^files\/assets\/\d{7}\/\d{1}\/.+$/;
-
-// Returns the public, anonymously accessable URL to a given Cloud Storage
-// object.
-// The object's ACL has to be set to public read.
-function getPublicUrl (filename) {
-  return `https://storage.googleapis.com/${CLOUD_BUCKET}/${filename}`;
-}
-
-function getModel () {
-  return require('./model-' + config.get('DATA_BACKEND'));
-}
 
 function getDependentAssetIdsFromAsset(asset) {
   var assetIds = [];
@@ -164,53 +147,25 @@ function unzipEntries (req, res, next) {
   next();
 }
 
-function sendUploadToGCS (req, res, next) {
-  console.log("begin cloud uploads");
-  if (Object.keys(req.assetFiles).length == 0) {
-    console.log("nothing to upload");
-    return next();
-  }
-
-  async.eachSeries(Object.keys(req.assetFiles), function(assetFullPath, callback) {
-    var assetFile = req.assetFiles[assetFullPath];
-//    var assetFilename =  Date.now() + "+" + assetFile.originalName;
-//    const gcsname = assetFile.originalPath + assetFilename;
-    const gcsname = Date.now() + "/" + assetFullPath;
-    const file = bucket.file(gcsname);
-
-    console.log("begin cloud upload: " + gcsname);
-
-    const stream = file.createWriteStream({
-      metadata: {
-  //      contentType: req.file.mimetype
-      }
-    });
-
-    stream.on('error', (err) => {
-      req.cloudStorageError = err;
-      console.log("error in cloud upload");
-      next(err);
-    });
-
-    stream.on('finish', () => {
-      assetFile.cloudStorageObject = gcsname;
-      assetFile.cloudStoragePublicUrl = getPublicUrl(gcsname);
-//      assetFile.filename = assetFilename;
-      console.log("finish cloud upload: " + gcsname);
-      callback();
-    });
-
-    stream.end(assetFile.data);
+function sendRecordsToSql(req, res, next) {
+  console.log("begin sql stores");
+  async.each(req.entities, function(entity, callback) {
+    if (!('components' in entity) || Object.keys(entity.components).length == 0) {
+      return callback();
+    }
+    sendRecordToSql(entity, req.assets, callback);
   }, function(err, results) {
+    // after all the callbacks
     if (err) {
       return next(err);
     }
-    console.log("finish cloud uploads");
+    console.log("end sql stores");
     next();
   });
 }
 
 function sendRecordToSql (entity, assets, callback) {
+  console.log("begin sql store");
   var entityRecord = {};
   entityRecord.id = entity.id; // should now exist after DS write
   entityRecord.posX = entity.position[0];
@@ -232,93 +187,7 @@ function sendRecordToSql (entity, assets, callback) {
   entityRecord.assetIds = assetIds;
 
   sqlRecord.insertEntityRecord(entityRecord, callback);
-}
-
-function sendEntitiesToDatastore (req, res, next) {
-  console.log("begin entity processing");
-  if (Object.keys(req.entities).length == 0) {
-    console.log("no entities");
-    return next();
-  }
-
-  async.each(req.entities, function(entity, callback) {
-    if (!('components' in entity) || Object.keys(entity.components).length == 0) {
-      console.log("skipping entity with no components: " + entity.name);
-      return callback();
-    }
-    // write to datastore
-    getModel().create('Entity', entity, function (err, entity) {
-      // on callback
-      if (err) {
-        return callback(err);
-      }
-      console.log("entity '" + entity.name + "' stored in DS: " + entity.id);
-      sendRecordToSql(entity, req.assets, callback);
-    });
-  }, function(err, results) {
-    // after all the callbacks
-    if (err) {
-      return next(err);
-    }
-    next();
-  });
-}
-
-function sendAssetsToDatastore (req, res, next) {
-  console.log("begin asset processing");
-  if (Object.keys(req.assets).length == 0) {
-    console.log("no assets");
-    return next();
-  }
-
-  // in parallel
-  async.each(req.assets, function(asset, callback) {
-    // write to datastore
-    getModel().update('Asset', asset.id, asset, function (err, asset) {
-      // on callback
-      if (err) {
-        return callback(err);
-      }
-      console.log("asset stored: " + asset.name);
-      callback(null);
-    });
-  }, function(err, results) {
-    // after all the callbacks
-    if (err) {
-      return next(err);
-    }
-    next();
-  });
-}
-
-function rewriteAssetUrls (req, res, next) {
-  console.log("begin asset url rewrite");
-  if (!Object.keys(req.assets).length) {
-    console.log("no assets");
-    return next();
-  }
-
-  for (var key in req.assets) {
-    var asset = req.assets[key];
-    if (!asset.file || !asset.file.filename || !asset.file.url) {
-//      console.log("no file info in asset");
-      continue;
-    }
-    
-    if (! (asset.file.url in req.assetFiles)) {
-      console.log("asset file not found: " + asset.file.url);
-      continue;
-    }
-
-    var assetFile = req.assetFiles[asset.file.url];
-    asset.file.url = assetFile.cloudStoragePublicUrl; // writing here writes req.assets[key]
-    asset.file.filename = assetFile.filename;
-    asset.name = assetFile.filename;
-    console.log("asset url rewrite: " + asset.file.url);
-  }
-
-  console.log("finish asset url rewrite");
-  next();
+  console.log("entity '" + entity.name + "' stored in SQL: " + entity.id);
 }
 
 function checkFormatZip (req, res, next) {
@@ -334,7 +203,7 @@ function checkFormatZip (req, res, next) {
  * POST /api/entities
  *
  */
-router.post('/', multer.single('zipFile'), checkFormatZip, unzipEntries, sendUploadToGCS, rewriteAssetUrls, sendAssetsToDatastore, sendEntitiesToDatastore, function (req, res, next) {
+router.post('/', multer.single('zipFile'), checkFormatZip, unzipEntries, apiLib.sendUploadToGCS, apiLib.rewriteAssetUrls, apiLib.sendAssetsToDatastore, apiLib.sendEntitiesToDatastore, sendRecordsToSql, function (req, res, next) {
 //  console.log(req.entities); 
 //  console.log(req.assets); 
   console.log(req.assetFiles);
@@ -360,7 +229,7 @@ router.post('/', multer.single('zipFile'), checkFormatZip, unzipEntries, sendUpl
  * Retrieve a entity.
  */
 router.get('/:entity', function get (req, res, next) {
-  getModel().read(req.params.entity, function (err, entity) {
+  apiLib.getModel().read(req.params.entity, function (err, entity) {
     if (err) {
       return next(err);
     }
@@ -374,7 +243,7 @@ router.get('/:entity', function get (req, res, next) {
  * Update a entity.
  */
 router.put('/:entity', function update (req, res, next) {
-  getModel().update(req.params.entity, req.body, function (err, entity) {
+  apiLib.getModel().update(req.params.entity, req.body, function (err, entity) {
     if (err) {
       return next(err);
     }
@@ -388,7 +257,7 @@ router.put('/:entity', function update (req, res, next) {
  * Delete a entity.
  */
 router.delete('/:entity', function _delete (req, res, next) {
-  getModel().delete(req.params.entity, function (err) {
+  apiLib.getModel().delete(req.params.entity, function (err) {
     if (err) {
       return next(err);
     }
