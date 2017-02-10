@@ -17,7 +17,7 @@ Network.prototype.initialize = function() {
     this.queue = new Queue();
     this.isQueueRunning = false;
 
-    var socket = io.connect('http://localhost:59595/');
+    var socket = io.connect('http://service.cybers.cafe:59595/');
     Network.socket = socket;
 
     socket.emit ('initialize');
@@ -136,7 +136,7 @@ Network.prototype.popQueue = function() {
     	var self = this;
         setTimeout(function() {
           self.addEntity (queueItem.resource);
-        }, 100);
+        }, 500);
     } else {
     	console.log("Unknown QueueItem type: " + queueItem.type);
     	this.popQueue();
