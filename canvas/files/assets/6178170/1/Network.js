@@ -124,7 +124,7 @@ Network.prototype.updatePosition = function () {
 
 Network.prototype.popQueue = function() {
 	this.isQueueRunning = true;
-	if (this.queue.getLength() == 0) {
+	if (this.queue.getLength() === 0) {
     	this.isQueueRunning = false;
 	    return;
 	}
@@ -133,15 +133,12 @@ Network.prototype.popQueue = function() {
 	if (queueItem.type == 'asset') {
         this.addAsset (queueItem.resource);
     } else if (queueItem.type == 'entity') {
-    	var self = this;
-        setTimeout(function() {
-          self.addEntity (queueItem.resource);
-        }, 500);
+        this.addEntity (queueItem.resource);
     } else {
     	console.log("Unknown QueueItem type: " + queueItem.type);
     	this.popQueue();
     }
-}
+};
 
 Network.prototype.addAsset = function(data) {
     // from playcanvas application.js: _parseAssets()
@@ -153,11 +150,21 @@ Network.prototype.addAsset = function(data) {
 
     this.app.assets.add(asset);
 //    console.log('Asset Added');
-//    console.log(data);	
+//    console.log(data);
+    
     var self = this;
-    setTimeout(function() {
-      self.popQueue();
-    }, 50);
+    var onAssetLoad = function() {
+        self.popQueue();
+    };
+    
+    if (asset.resource) {
+        // The asset has already been loaded 
+        onAssetLoad();
+    } else {
+        // Start async loading the asset
+        asset.once('load', onAssetLoad);
+        this.app.assets.load(asset);
+    }
 };
 
 Network.prototype.addEntity = function(data) {
@@ -192,8 +199,5 @@ Network.prototype.addEntity = function(data) {
 
 //    console.log('Entity Added');
 //    console.log(data);
-    var self = this;
-    setTimeout(function() {
-      self.popQueue();
-    }, 50);
+    this.popQueue();
 };
