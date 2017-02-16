@@ -208,7 +208,7 @@ router.post('/', multer.single('zipFile'), checkFormatZip, unzipEntries, apiLib.
 //  console.log(req.assets); 
   console.log(req.assetFiles);
   if (!req.entities) {
-    res.json({"message":"No entities found"});
+    res.status(400).json({"message":"No entities found"});
   }
   if (!req.assets) {
     req.assets = [];
@@ -217,9 +217,9 @@ router.post('/', multer.single('zipFile'), checkFormatZip, unzipEntries, apiLib.
     req.assetFiles = [];
   }
   if (req.cloudStorageError) {
-    res.json({"message":"Trouble uploading to cloud: " + req.cloudStorageError});
+    res.status(500).json({"message":"Trouble uploading to cloud: " + req.cloudStorageError});
   } else {
-    res.json({"message":"Found "  + Object.keys(req.entities).length + " entities, " + Object.keys(req.assets).length + " assets and " + Object.keys(req.assetFiles).length + " asset files"});
+    res.status(200).json({"message":"Found "  + Object.keys(req.entities).length + " entities, " + Object.keys(req.assets).length + " assets and " + Object.keys(req.assetFiles).length + " asset files"});
   }
 });
 
