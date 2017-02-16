@@ -11,6 +11,9 @@ const storage = Storage({
 });
 const bucket = storage.bucket(CLOUD_BUCKET);
 
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
 
 function getModel () {
   return require('./model-' + config.get('DATA_BACKEND'));
@@ -167,6 +170,7 @@ function rewriteAssetUrls (req, res, next) {
 }
 
 module.exports = {
+  isNumeric: isNumeric,
   getModel: getModel,
   sendUploadToGCS: sendUploadToGCS,
   sendEntitiesToDatastore: sendEntitiesToDatastore,
