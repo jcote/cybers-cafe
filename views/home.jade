@@ -40,50 +40,109 @@ html(lang="en")
             .navbar-brand /Cybers Cafe/
 
         .navbar.navbar-default
-          .container
+          ul.nav.navbar-nav
+            li
+              a(id="createLink", href="#", onclick="selectSection('createSection')") Create
+            li
+              a(id="editLink", href="#", onclick="selectSection('editSection')") Edit
 
-            ul.nav.navbar-nav
-              li
-                a(id="imageLink", href="#", onclick="selectForm('createEntityImageForm')") Image
-              li
-                a(id="audioLink", href="#", onclick="selectForm('createEntityAudioForm')") Audio
-              li
-                a(id="modelLink", href="#", onclick="selectForm('createEntityModelForm')") 3d Model
-              li
-                a(id="functionLink", href="#", onclick="selectForm('createEntityFunctionForm')") Function
+        div(id="createSection")
+          .navbar.navbar-default
+            .container.interface-part
+              ul.nav.navbar-nav
+                li
+                  a(id="imageLink", href="#", onclick="selectForm('createEntityImageForm')") Image
+                li
+                  a(id="htmlLink", href="#", onclick="selectForm('createEntityHtmlForm')") HTML
+                li
+                  a(id="modelLink", href="#", onclick="selectForm('createEntityModelForm')") 3d Model
+                li
+                  a(id="functionLink", href="#", onclick="selectForm('createEntityFunctionForm')") Function
 
-        form(id="createEntityImageForm" name="createEntityImage" method="post" enctype="multipart/form-data")
-          .container.interface-part(id="imageFormContainer")
-            .row
-              .col-sm-4
-                label(for="title") Title :
-              .col-sm-8
-                input.form-ctl(type="text", name="title", id="title", value=entity.title)
-            .row
-              .col-sm-4
-                label(for="imgFile") Image File :
-              .col-sm-8
-                input.form-ctl(type="file", name="imgFile", id="imgFile", value=entity.imgFile)
-            .row
-              .col-sm-4
-              .col-sm-4
-                button.btn.btn-success(type="submit") Upload
-              .col-sm-4
-        form(id="createEntityModelForm" name="createEntityModel" method="post" enctype="multipart/form-data")
-          .container.interface-part(id="modelFormContainer")
-            .row
-              .col-sm-4
-                label(for="title") Title :
-              .col-sm-8
-                input.form-ctl(type="text", name="title", id="title", value=entity.title)
-            .row
-              .col-sm-4
-                label(for="zipFile") Zip File :
-              .col-sm-8
-                input.form-ctl(type="file", name="zipFile", id="zipFile", value=entity.zipFile)
-            .row
-              .col-sm-4
-              .col-sm-4
-                button.btn.btn-success(type="submit") Upload
-              .col-sm-4
-        .container.interface-part(id="formResultContainer") Ready...
+          form(id="createEntityImageForm" name="createEntityImage" method="post" enctype="multipart/form-data")
+            .container.interface-part
+              .row
+                .col-sm-4
+                  label(for="title") Title :
+                .col-sm-8
+                  input.form-ctl(type="text", name="title", id="title", value=entity.title)
+              .row
+                .col-sm-4
+                  label(for="imgFile") Image File :
+                .col-sm-8
+                  input.form-ctl(type="file", name="imgFile", id="imgFile", value=entity.imgFile)
+              .row
+                .col-sm-4
+                .col-sm-4
+                  button.btn.btn-success(type="submit") Upload
+                .col-sm-4
+          form(id="createEntityModelForm" name="createEntityModel" method="post" enctype="multipart/form-data")
+            .container.interface-part
+              .row
+                .col-sm-4
+                  label(for="title") Title :
+                .col-sm-8
+                  input.form-ctl(type="text", name="title", id="title", value=entity.title)
+              .row
+                .col-sm-4
+                  label(for="zipFile") Zip File :
+                .col-sm-8
+                  input.form-ctl(type="file", name="zipFile", id="zipFile", value=entity.zipFile)
+              .row
+                .col-sm-4
+                .col-sm-4
+                  button.btn.btn-success(type="submit") Upload
+                .col-sm-4
+          .container.interface-part(id="createFormResultContainer") Ready...
+
+
+        div(id="editSection")
+          .navbar.navbar-default
+            .container.interface-part
+              ul.nav.navbar-nav
+                li
+                  a(id="moveLink", href="#", onclick="selectForm('editEntityMoveForm')") Move
+                li
+                  a(id="rotateLink", href="#", onclick="selectForm('editEntityRotateForm')") Rotate
+                li
+                  a(id="scaleLink", href="#", onclick="selectForm('editEntityScaleForm')") Scale
+                li
+                  a(id="removeLink", href="#", onclick="selectForm('editEntityRemoveForm')") Remove
+          form(id="editEntityMoveForm" name="editEntityMove" method="post")
+            .container.interface-part
+              .row
+                .col-sm-4
+                  label(for="entity") Select an Entity :
+                .col-sm-8
+                  button.btn.btn-outline-info(type="button", id="selectEntityMoveButton") Select
+              .row
+                .col-sm-4
+                  label(for="title") Title :
+                .col-sm-8
+                  input.form-ctl(type="text", name="title", id="selectEntityMoveTitle", value=entity.title)
+              .row
+                .col-sm-4
+                  label(for="title") Id :
+                .col-sm-8
+                  input.form-ctl(type="text", name="id", id="selectEntityMoveId", value=entity.id)
+              .row
+                .col-sm-4
+                  label(for="imgFile") Position X :
+                .col-sm-8
+                  input.form-ctl(type="number", name="posX", id="selectEntityMovePosX", value=entity.posX)
+              .row
+                .col-sm-4
+                  label(for="imgFile") Position Y :
+                .col-sm-8
+                  input.form-ctl(type="number", name="posY", id="selectEntityMovePosY", value=entity.posY)
+              .row
+                .col-sm-4
+                  label(for="imgFile") Position Z :
+                .col-sm-8
+                  input.form-ctl(type="number", name="posZ", id="selectEntityMovePosZ", value=entity.posZ)
+              .row
+                .col-sm-4
+                .col-sm-4
+                  button.btn.btn-success(type="submit") Update
+                .col-sm-4
+          .container.interface-part(id="editFormResultContainer") Ready...

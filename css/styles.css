@@ -63,11 +63,35 @@ body {
   margin-right: 0;
 }
 
+#createSection {
+  display: block;
+}
+
 #createEntityImageForm {
   display: block;
 }
 
 #createEntityModelForm {
+  display: none;
+}
+
+#editSection {
+  display: none;
+}
+
+#editEntityMoveForm {
+  display: block;
+}
+
+#editEntityRotateForm {
+  display: none;
+}
+
+#editEntityScaleForm {
+  display: none;
+}
+
+#editEntityRemoveForm {
   display: none;
 }
 
