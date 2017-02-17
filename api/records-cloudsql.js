@@ -127,7 +127,7 @@ function insertEntityRecord (entityRecord, callback) {
 	      return callback();
 	    });
     } else {
-        console.log("Entity record stored in SQL for id: " + entityRecord.id);
+      console.log("Entity record stored in SQL for id: " + entityRecord.id);
 	    return callback();
     }
   });
@@ -180,6 +180,18 @@ function listEntityRecords (point, range, limit, token, callback) {
         callback(null, res, hasMore);
       });
     });
+}
+
+function updateEntityRecordPos(entityRecord, posX, posY, posZ, callback) {
+  var posSet = {posX: posX, posY: posY, posZ: posZ};
+  connection.query('UPDATE entities SET ? WHERE id = ?', posSet, entityRecord.id, function (err) {
+    if (err) {
+      return callback(err);
+    }
+    console.log("Entity record updated in SQL for id: " + entityRecord.id + 
+      " from pos: " + entityRecord.posX + "," + entityRecord.posY + "," + entityRecord.posZ +
+      " to pos: " + posX + "," + posY + "," + posZ);
+    return callback();
 }
 
 
