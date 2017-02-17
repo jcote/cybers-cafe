@@ -195,6 +195,7 @@ Network.prototype.addEntity = function(data) {
     if (entity.rigidbody) {
       entity.rigidbody.teleport(data.position[0],data.position[1],data.position[2]);
     }
+    entity.id = data.id;
     this.app.root.addChild(entity);
 
 //    console.log('Entity Added');

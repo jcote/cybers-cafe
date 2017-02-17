@@ -1,6 +1,5 @@
 var Movement = pc.createScript('movement');
 
-// optional, assign a camera entity, otherwise one is created
 Movement.attributes.add('camera', {
     type: 'entity'
 });
@@ -89,6 +88,7 @@ Movement.prototype.initialize = function() {
     ////////////////////
     // Touch controls //
     ////////////////////
+    this.inputEnabled = true;
     this.viewPos = new pc.Vec3();
     this.targetViewPos = new pc.Vec3();
     this.tempVec = new pc.Vec3();
@@ -123,14 +123,16 @@ Movement.prototype.initialize = function() {
     // Orbit (1 finger) and pan (2 fingers)    
     var cachedX, cachedY;
     this.hammer.on("dragstart", function (event) {
-        if (!this.transformStarted) {
-            var gesture = event.gesture;
-            var numTouches = (gesture.touches !== undefined) ? gesture.touches.length : 1;
-            this.panning = (numTouches === 2);
-            this.dragStarted = true;
+        if (this.inputEnabled) {
+            if (!this.transformStarted) {
+                var gesture = event.gesture;
+                var numTouches = (gesture.touches !== undefined) ? gesture.touches.length : 1;
+                this.panning = (numTouches === 2);
+                this.dragStarted = true;
 
-            cachedX = gesture.center.pageX;
-            cachedY = gesture.center.pageY;
+                cachedX = gesture.center.pageX;
+                cachedY = gesture.center.pageY;
+            }
         }
     }.bind(this));
     this.hammer.on("dragend", function (event) {
@@ -140,16 +142,18 @@ Movement.prototype.initialize = function() {
         }
     }.bind(this));
     this.hammer.on("drag", function (event) {
-        var gesture = event.gesture;
-        var dx = gesture.center.pageX - cachedX;
-        var dy = gesture.center.pageY - cachedY;
-        if (this.panning) {
-            this.pan(dx * -this.panSpeed, dy * this.panSpeed);
-        } else {
-            this.orbit(dx * this.lookSpeed, dy * this.lookSpeed);
+        if (this.inputEnabled) {
+            var gesture = event.gesture;
+            var dx = gesture.center.pageX - cachedX;
+            var dy = gesture.center.pageY - cachedY;
+            if (this.panning) {
+                this.pan(dx * -this.panSpeed, dy * this.panSpeed);
+            } else {
+                this.orbit(dx * this.lookSpeed, dy * this.lookSpeed);
+            }
+            cachedX = gesture.center.pageX;
+            cachedY = gesture.center.pageY;
         }
-        cachedX = gesture.center.pageX;
-        cachedY = gesture.center.pageY;
     }.bind(this));
 
     app.mouse.on(pc.input.EVENT_MOUSEMOVE, this.onMouseMove, this);
@@ -193,30 +197,31 @@ Movement.prototype.update = function(dt) {
 
     // Use W-A-S-D keys to move player
     // Check for key presses
-    if (app.keyboard.isPressed(pc.KEY_A) || app.keyboard.isPressed(pc.KEY_LEFT)) {
+    if (this.inputEnabled) {
+      if (app.keyboard.isPressed(pc.KEY_A) || app.keyboard.isPressed(pc.KEY_LEFT)) {
         x -= right.x;
         z -= right.z;
-    }
+      }
 
-    if (app.keyboard.isPressed(pc.KEY_D) || app.keyboard.isPressed(pc.KEY_RIGHT)) {
+      if (app.keyboard.isPressed(pc.KEY_D) || app.keyboard.isPressed(pc.KEY_RIGHT)) {
         x += right.x;
         z += right.z;
-    }
+      }
 
-    if (app.keyboard.isPressed(pc.KEY_W) || app.keyboard.isPressed(pc.KEY_UP)) {
+      if (app.keyboard.isPressed(pc.KEY_W) || app.keyboard.isPressed(pc.KEY_UP)) {
         x += forward.x;
         z += forward.z;
-    }
+      }
 
-    if (app.keyboard.isPressed(pc.KEY_S) || app.keyboard.isPressed(pc.KEY_DOWN)) {
+      if (app.keyboard.isPressed(pc.KEY_S) || app.keyboard.isPressed(pc.KEY_DOWN)) {
         x -= forward.x;
         z -= forward.z;
+      }
     }
 
     // use force last set by touch/mouse to force the character
     if (force.x !== 0 || force.z !== 0) {
         this.entity.rigidbody.applyForce(force);
-        console.log(force);
     }
     // use direction from keypresses to apply a force to the character
     if (x !== 0 || z !== 0) {
@@ -370,10 +375,20 @@ Movement.prototype.orbit = function (movex, movey) {
 };
 
 Movement.prototype.onMouseMove = function (event) {
-    if (event.buttons[pc.input.MOUSEBUTTON_LEFT]) {
+    if (this.inputEnabled) {
+      if (event.buttons[pc.input.MOUSEBUTTON_LEFT]) {
         this.orbit(event.dx * 0.2, event.dy * 0.2);
-    } else if (event.buttons[pc.input.MOUSEBUTTON_RIGHT]) {
+      } else if (event.buttons[pc.input.MOUSEBUTTON_RIGHT]) {
         var factor = this.distance / 700;
         this.pan(event.dx * -factor, event.dy * factor);
+      }
     }
+};
+
+Movement.prototype.enableInput = function () {
+  this.inputEnabled = true;
+};
+
+Movement.prototype.disableInput = function () {
+  this.inputEnabled = false;
 };
