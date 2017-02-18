@@ -157,8 +157,12 @@ function getHighestId (kind, cb) {
       if (err) {
         return cb(err);
       }
-      const id = results[0].key.id;
-      cb(null, id);
+      if (results.length > 0) {
+        const id = results[0].key.id;
+        cb(null, id);
+      } else {
+        cb(null, 10000000);
+      }
     });
 }
 
