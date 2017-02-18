@@ -123,15 +123,17 @@ function sendRecordsToSql(req, res, next) {
 
 function sendRecordToSql (entity, assets, callback) {
   var entityRecord = {};
-  entityRecord.id = entity.id; // should now exist after DS write
+  entityRecord.objectId = entity.id; // should now exist after DS write
   entityRecord.posX = entity.position[0];
   entityRecord.posY = entity.position[1];
   entityRecord.posZ = entity.position[2];
 
   entityRecord.assetIds = Object.keys(assets);
 
-  sqlRecord.insertEntityRecord(entityRecord, callback);
-  console.log("entity '" + entity.name + "' stored in SQL: " + entity.id);
+  sqlRecord.insertEntityRecord(entityRecord, function (err, resultId) {
+    console.log("entity '" + entity.name + "' stored in SQL: " + resultId);
+    callback();    
+  });
 }
 
 var imgMimeTypes = ["image/gif", "image/jpeg", "image/png", "image/svg+xml"];

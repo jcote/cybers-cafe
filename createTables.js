@@ -23,7 +23,8 @@ const async = require('async');
 
 // [START createTable]
 var SQL_STRING_ENTITY = 'CREATE TABLE entities (\n' +
-  '  id BIGINT UNSIGNED NOT NULL,\n' +
+  '  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,\n' +
+  '  objectId BIGINT UNSIGNED NOT NULL,\n' +
   '  timestamp DATETIME NULL,\n' +
   '  posX FLOAT NULL,\n' +
   '  posY FLOAT NULL,\n' +
@@ -32,13 +33,10 @@ var SQL_STRING_ENTITY = 'CREATE TABLE entities (\n' +
   ');';
 
 var SQL_STRING_DEPENDENCY = 'CREATE TABLE dependencies (\n' +
-'    assetId INT UNSIGNED NOT NULL,\n' +
-'    entityId BIGINT UNSIGNED NOT NULL,\n' +
-'    INDEX (entityId),\n' +
-'    FOREIGN KEY (entityId)\n' +
-'        REFERENCES entities(id)\n' +
-'        ON DELETE CASCADE\n,' +
-'    UNIQUE (assetId, entityId)\n' +
+'    assetId BIGINT UNSIGNED NOT NULL,\n' +
+'    objectId BIGINT UNSIGNED NOT NULL,\n' +
+'    INDEX (objectId),\n' +
+'    UNIQUE (assetId, objectId)\n' +
 ');';
 
 function createEntitiesTable (connection, callback) {

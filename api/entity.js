@@ -68,20 +68,11 @@ router.put('/pos/:entity', function update (req, res, next) {
   if (!apiLib.isNumeric(req.params.entity.id)) {
     res.status(400).json({"message":"Must supply numeric id."});
   }
-  if (!(apiLib.isNumeric(req.params.entity.posX) && apiLib.isNumeric(req.params.entity.posY) && apiLib.isNumeric(req.params.entity.posZ))) {
-    res.status(400).json({"message":"Must supply numeric original position."});
-  }
   if (!(apiLib.isNumeric(req.body.posX) && apiLib.isNumeric(req.body.posY) && apiLib.isNumeric(req.body.posZ))) {
-    res.status(400).json({"message":"Must supply numeric update position."});
+    res.status(400).json({"message":"Must supply numeric position."});
   }
-  var entityRecord = {
-    id: req.params.entity.id,
-    posX: req.body.posX,
-    posY: req.body.posY,
-    posZ: req.body.posZ,
-  };
 
-  sqlRecord.updateEntityRecordPos(entityRecord, posX, posY, posZ, callback);
+  sqlRecord.updateEntityRecordPos(req.params.entity.id, req.body.posX, req.body.posY, req.body.posZ, callback);
 });
 
 /**
