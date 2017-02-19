@@ -15,11 +15,11 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
-
+var Multer  = require('multer');
+const apiLib = require('./lib');
+const sqlRecord = require('./records-cloudsql');
+const multer = Multer();
 var router = express.Router();
-
-// Automatically parse request body as JSON
-router.use(bodyParser.json());
 
 /**
  * POST /api/entities
@@ -64,15 +64,25 @@ router.get('/:entity', function get (req, res, next) {
  *
  * Update a entity's position from the req.params.entity pos to the req.body pos
  */
-router.put('/pos/:entity', function update (req, res, next) {
-  if (!apiLib.isNumeric(req.params.entity.id)) {
-    res.status(400).json({"message":"Must supply numeric id."});
+router.put('/pos/:entityId', multer.none(), function update (req, res, next) {
+  console.log(req.body);
+  if (!apiLib.isNumeric(req.params.entityId)) {
+    return res.status(400).json({"message":"Must supply numeric entity id."});
   }
-  if (!(apiLib.isNumeric(req.body.posX) && apiLib.isNumeric(req.body.posY) && apiLib.isNumeric(req.body.posZ))) {
-    res.status(400).json({"message":"Must supply numeric position."});
+  if (apiLib.isNumeric(req.posX) && apiLib.isNumeric(req.posY) && apiLib.isNumeric(req.posZ)) {
+    return res.status(400).json({"message":"Must supply numeric position."});
   }
 
-  sqlRecord.updateEntityRecordPos(req.params.entity.id, req.body.posX, req.body.posY, req.body.posZ, callback);
+  sqlRecord.updateEntityRecordPos(req.params.entityId, req.body.posX, req.body.posY, req.body.posZ, function (err, result) {
+    if (err) {
+      return next(err);
+    }
+    if (result.affectedRows !== 1) {
+      return res.status(404).json({"message":"Entity not found."});
+    }
+    console.log("Entity position updated for id: " + req.params.entityId);
+    return res.status(200).json({"message":"Entity position updated."});
+  });
 });
 
 /**

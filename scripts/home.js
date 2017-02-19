@@ -80,7 +80,7 @@ $(function(){
 	      var responseJson = JSON.parse(oReq.responseText);
 	      oOutput.innerHTML = responseJson.message;
 	    } else {
-	      oOutput.innerHTML = "Error occurred. <br \/>" + responseJson.message;
+	      oOutput.innerHTML = "Error occurred: <br \/>" + responseJson.message;
 	    }
 	  };
 
@@ -99,16 +99,16 @@ $(function(){
 	      oData = new FormData(form);
 
       oOutput.innerHTML = "Updating...";
-	//  oData.append("CustomField", "This is some extra data");
 
 	  var oReq = new XMLHttpRequest();
-	  oReq.open("PUT", "api/entity/pos", true);
+	  oReq.open("PUT", "api/entity/pos/" + oData.get("id"), true);
+	  
 	  oReq.onload = function(oEvent) {
 	    if (oReq.status == 200) {
 	      var responseJson = JSON.parse(oReq.responseText);
 	      oOutput.innerHTML = responseJson.message;
 	    } else {
-	      oOutput.innerHTML = "Error occurred.<br \/>";
+	      oOutput.innerHTML = "Error occurred: <br \/>" + responseJson.message;
 	    }
 	  };
 
@@ -121,23 +121,27 @@ $(function(){
 });
 
 // Edit select Entity
-
 $(function(){
   var onClick = function(ev) { 
   	// get playcanvas objects
 	var app = pc.Application.getApplication("application-canvas");
 	var context = app.context;
 	var playerEntity = context.root.findByName("Player");
-  	// Switch to entity selection mode
     var movementEntity = playerEntity.script.movement;
-    movementEntity.disableInput();
     var raycastEntity = playerEntity.script.raycast;
-    raycastEntity.enableInput();
+  	// Switch to entity selection mode
+	movementEntity.disableInput();
+	raycastEntity.enableInput();  	
     
     // bind event listener for selected entity
     var onEntityHit = function(hitEntity) {
       document.getElementById("selectEntityMoveId").value = hitEntity.id;
       document.getElementById("selectEntityMoveTitle").value = hitEntity.name;
+      document.getElementById("selectEntityMovePosX").value = hitEntity.position.x;
+      document.getElementById("selectEntityMovePosY").value = hitEntity.position.y;
+      document.getElementById("selectEntityMovePosZ").value = hitEntity.position.z;
+	  movementEntity.enableInput();
+	  raycastEntity.disableInput();
     };
     raycastEntity.on('hit', onEntityHit);
   };
@@ -145,3 +149,4 @@ $(function(){
   var button = document.getElementById("selectEntityMoveButton");
   button.addEventListener('click', onClick, false);
 });
+

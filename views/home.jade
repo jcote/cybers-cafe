@@ -108,7 +108,7 @@ html(lang="en")
                   a(id="scaleLink", href="#", onclick="selectForm('editEntityScaleForm')") Scale
                 li
                   a(id="removeLink", href="#", onclick="selectForm('editEntityRemoveForm')") Remove
-          form(id="editEntityMoveForm" name="editEntityMove" method="post")
+          form(id="editEntityMoveForm" name="editEntityMove" method="put")
             .container.interface-part
               .row
                 .col-sm-4
@@ -124,22 +124,22 @@ html(lang="en")
                 .col-sm-4
                   label(for="title") Id :
                 .col-sm-8
-                  input.form-ctl(type="text", name="id", id="selectEntityMoveId", value=entity.id)
+                  input.form-ctl(type="text", name="id", min="0", id="selectEntityMoveId", value=entity.id)
               .row
                 .col-sm-4
                   label(for="imgFile") Position X :
                 .col-sm-8
-                  input.form-ctl(type="number", name="posX", id="selectEntityMovePosX", value=entity.posX)
+                  input.form-ctl(type="number", step="any", name="posX", id="selectEntityMovePosX", value=entity.posX)
               .row
                 .col-sm-4
                   label(for="imgFile") Position Y :
                 .col-sm-8
-                  input.form-ctl(type="number", name="posY", id="selectEntityMovePosY", value=entity.posY)
+                  input.form-ctl(type="number", step="any", name="posY", id="selectEntityMovePosY", value=entity.posY)
               .row
                 .col-sm-4
                   label(for="imgFile") Position Z :
                 .col-sm-8
-                  input.form-ctl(type="number", name="posZ", id="selectEntityMovePosZ", value=entity.posZ)
+                  input.form-ctl(type="number", step="any", name="posZ", id="selectEntityMovePosZ", value=entity.posZ)
               .row
                 .col-sm-4
                 .col-sm-4

@@ -15,7 +15,7 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
-var Multer  = require('multer')
+var Multer  = require('multer');
 var AdmZip = require('adm-zip');
 const async = require('async');
 const sqlRecord = require('./records-cloudsql');

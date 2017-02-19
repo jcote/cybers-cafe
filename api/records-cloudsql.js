@@ -184,12 +184,12 @@ function listEntityRecords (point, range, limit, token, callback) {
 
 function updateEntityRecordPos(id, posX, posY, posZ, callback) {
   var posSet = {posX: posX, posY: posY, posZ: posZ};
-  connection.query('UPDATE entities SET ? WHERE id = ?', posSet, id, function (err) {
+  connection.query('UPDATE entities SET ? WHERE id = ?', [posSet, id], function (err, res) {
     if (err) {
       return callback(err);
     }
     console.log("Entity record updated in SQL for id: " + id + " to pos: " + posX + "," + posY + "," + posZ);
-    return callback();
+    return callback(null, res);
   });
 }
 
