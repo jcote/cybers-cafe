@@ -124,9 +124,19 @@ function sendRecordsToSql(req, res, next) {
 function sendRecordToSql (entity, assets, callback) {
   var entityRecord = {};
   entityRecord.objectId = entity.id; // should now exist after DS write
+
   entityRecord.posX = entity.position[0];
   entityRecord.posY = entity.position[1];
   entityRecord.posZ = entity.position[2];
+  
+  entityRecord.rotW = 1;
+  entityRecord.rotX = entity.rotation[0];
+  entityRecord.rotY = entity.rotation[1];
+  entityRecord.rotZ = entity.rotation[2];
+  
+  entityRecord.sclX = entity.scale[0];
+  entityRecord.sclY = entity.scale[1];
+  entityRecord.sclZ = entity.scale[2];
 
   entityRecord.assetIds = Object.keys(assets);
 
@@ -157,7 +167,7 @@ router.post('/', multer.single('imgFile'), checkFormatImg, createImageAssetsAndE
 //  console.log(req.assets); 
 //  console.log(req.assetFiles);
   if (!req.entities) {
-    res.json({"message":"No entities found"});
+    return res.status(400).json({"message":"No entities found"});
   }
   if (!req.assets) {
     req.assets = [];
@@ -166,9 +176,10 @@ router.post('/', multer.single('imgFile'), checkFormatImg, createImageAssetsAndE
     req.assetFiles = [];
   }
   if (req.cloudStorageError) {
-    res.json({"message":"Trouble uploading to cloud: " + req.cloudStorageError});
+    return res.status(500).json({"message":"Trouble uploading to cloud: " + req.cloudStorageError});
   } else {
-    res.json({"message":"Found "  + Object.keys(req.entities).length + " entities, " + Object.keys(req.assets).length + " assets and " + Object.keys(req.assetFiles).length + " asset files"});
+    console.log("completed storage");
+    return res.status(200).json({"message":"Created "  + Object.keys(req.entities).length + " entities, " + Object.keys(req.assets).length + " assets and " + Object.keys(req.assetFiles).length + " asset files"});
   }
 });
 
