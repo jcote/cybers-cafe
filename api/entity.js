@@ -64,24 +64,31 @@ router.get('/:entity', function get (req, res, next) {
  *
  * Update a entity's position from the req.params.entity pos to the req.body pos
  */
-router.put('/pos/:entityId', multer.none(), function update (req, res, next) {
-  console.log(req.body);
+router.put('/:entityId', multer.none(), function update (req, res, next) {
   if (!apiLib.isNumeric(req.params.entityId)) {
     return res.status(400).json({"message":"Must supply numeric entity id."});
   }
-  if (apiLib.isNumeric(req.posX) && apiLib.isNumeric(req.posY) && apiLib.isNumeric(req.posZ)) {
+  if (!(apiLib.isNumeric(req.body.posX) && apiLib.isNumeric(req.body.posY) && apiLib.isNumeric(req.body.posZ))) {
     return res.status(400).json({"message":"Must supply numeric position."});
   }
-
-  sqlRecord.updateEntityRecordPos(req.params.entityId, req.body.posX, req.body.posY, req.body.posZ, function (err, result) {
+  if (!(apiLib.isNumeric(req.body.rotW) && apiLib.isNumeric(req.body.rotX) && apiLib.isNumeric(req.body.rotY) && apiLib.isNumeric(req.body.rotZ))) {
+    return res.status(400).json({"message":"Must supply numeric rotation."});
+  }
+  if (!(apiLib.isNumeric(req.body.sclX) && apiLib.isNumeric(req.body.sclY) && apiLib.isNumeric(req.body.sclZ))) {
+    return res.status(400).json({"message":"Must supply numeric scale."});
+  }
+  sqlRecord.updateEntityRecord(req.params.entityId, 
+      req.body.posX, req.body.posY, req.body.posZ, 
+      req.body.rotW, req.body.rotX, req.body.rotY, req.body.rotZ,
+      req.body.sclX, req.body.sclY, req.body.sclZ, function (err, result) {
     if (err) {
       return next(err);
     }
     if (result.affectedRows !== 1) {
-      return res.status(404).json({"message":"Entity not found."});
+      return res.status(404).json({"message":"Entity could not be updated (not found?)."});
     }
     console.log("Entity position updated for id: " + req.params.entityId);
-    return res.status(200).json({"message":"Entity position updated."});
+    return res.status(200).json({"message":"Entity updated."});
   });
 });
 

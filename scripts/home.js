@@ -27,7 +27,7 @@ function selectSection(section) {
 
 // Form Select
 var createForms = ["createEntityImageForm", "createEntityModelForm"];
-var editForms = ["editEntityMoveForm", "editEntityRotateForm", "editEntityScaleForm", "editEntityRemoveForm"];
+var editForms = ["editEntityMoveForm", "editEntityRotateForm", "editEntityScaleForm"];
 
 function selectForm (form) {
   var forms = form.startsWith("create") ? createForms : editForms;
@@ -92,7 +92,7 @@ $(function(){
   form.addEventListener('submit', onUpload, false);
 });
 
-// Edit Form logic
+// Edit Form mov/rot/scale logic
 $(function(){
   var onUpload = function(ev) {
 	  var oOutput = document.getElementById("editFormResultContainer"),
@@ -101,14 +101,18 @@ $(function(){
       oOutput.innerHTML = "Updating...";
 
 	  var oReq = new XMLHttpRequest();
-	  oReq.open("PUT", "api/entity/pos/" + oData.get("id"), true);
+	  oReq.open("PUT", "api/entity/" + oData.get("id"), true);
 	  
 	  oReq.onload = function(oEvent) {
+	    var responseJson = JSON.parse(oReq.responseText);
 	    if (oReq.status == 200) {
-	      var responseJson = JSON.parse(oReq.responseText);
 	      oOutput.innerHTML = responseJson.message;
 	    } else {
-	      oOutput.innerHTML = "Error occurred: <br \/>" + responseJson.message;
+	    	if (responseJson != undefined) {
+  	      oOutput.innerHTML = "Error occurred (" + oReq.status + "): <br \/>" + responseJson.message;	    		
+	    	} else {
+          oOutput.innerHTML = "Error occurred (" + oReq.status + "): <br \/>" + oReq.responseText;
+	    	}
 	    }
 	  };
 
@@ -116,14 +120,14 @@ $(function(){
 	  ev.preventDefault();
   };
 
-  var form = document.forms.namedItem("editEntityMove");
+  var form = document.forms.namedItem("editEntity");
   form.addEventListener('submit', onUpload, false);
 });
 
 // Edit select Entity
 $(function(){
   var onClick = function(ev) { 
-  	// get playcanvas objects
+  	// get "playcanvas entity" objects
 	var app = pc.Application.getApplication("application-canvas");
 	var context = app.context;
 	var playerEntity = context.root.findByName("Player");
@@ -135,18 +139,31 @@ $(function(){
     
     // bind event listener for selected entity
     var onEntityHit = function(hitEntity) {
-      document.getElementById("selectEntityMoveId").value = hitEntity.id;
-      document.getElementById("selectEntityMoveTitle").value = hitEntity.name;
-      document.getElementById("selectEntityMovePosX").value = hitEntity.position.x;
-      document.getElementById("selectEntityMovePosY").value = hitEntity.position.y;
-      document.getElementById("selectEntityMovePosZ").value = hitEntity.position.z;
-	  movementEntity.enableInput();
-	  raycastEntity.disableInput();
+      document.getElementById("editEntityId").value = hitEntity.id;
+      document.getElementById("editEntityTitle").value = hitEntity.name;
+      if ("localPosition" in hitEntity) {
+	      document.getElementById("editEntityPosX").value = hitEntity.localPosition.x;
+	      document.getElementById("editEntityPosY").value = hitEntity.localPosition.y;
+	      document.getElementById("editEntityPosZ").value = hitEntity.localPosition.z;
+	    }
+      if ("localRotation" in hitEntity) {
+	      document.getElementById("editEntityRotW").value = hitEntity.localRotation.w;
+	      document.getElementById("editEntityRotX").value = hitEntity.localRotation.x;
+	      document.getElementById("editEntityRotY").value = hitEntity.localRotation.y;
+	      document.getElementById("editEntityRotZ").value = hitEntity.localRotation.z;
+      }
+      if ("localScale" in hitEntity) {
+      	document.getElementById("editEntitySclX").value = hitEntity.localScale.x;
+      	document.getElementById("editEntitySclY").value = hitEntity.localScale.y;
+        document.getElementById("editEntitySclZ").value = hitEntity.localScale.z;
+      }
+	    movementEntity.enableInput();
+	    raycastEntity.disableInput();
     };
     raycastEntity.on('hit', onEntityHit);
   };
 
-  var button = document.getElementById("selectEntityMoveButton");
+  var button = document.getElementById("editEntitySelectButton");
   button.addEventListener('click', onClick, false);
 });
 

@@ -182,13 +182,13 @@ function listEntityRecords (point, range, limit, token, callback) {
     });
 }
 
-function updateEntityRecordPos(id, posX, posY, posZ, callback) {
-  var posSet = {posX: posX, posY: posY, posZ: posZ};
-  connection.query('UPDATE entities SET ? WHERE id = ?', [posSet, id], function (err, res) {
+function updateEntityRecord(id, posX, posY, posZ, rotW, rotX, rotY, rotZ, sclX, sclY, sclZ, callback) {
+  var set = {posX: posX, posY: posY, posZ: posZ, rotW: rotW, rotX: rotX, rotY: rotY, rotZ: rotZ, sclX: sclX, sclY: sclY, sclZ: sclZ};
+  connection.query('UPDATE entities SET ? WHERE id = ?', [set, id], function (err, res) {
     if (err) {
       return callback(err);
     }
-    console.log("Entity record updated in SQL for id: " + id + " to pos: " + posX + "," + posY + "," + posZ);
+    console.log("Entity record updated in SQL for id: " + id);
     return callback(null, res);
   });
 }
@@ -197,5 +197,5 @@ function updateEntityRecordPos(id, posX, posY, posZ, callback) {
 module.exports = {
   insertEntityRecord: insertEntityRecord,
   listEntityRecords: listEntityRecords,
-  updateEntityRecordPos: updateEntityRecordPos
+  updateEntityRecord: updateEntityRecord
 };
