@@ -232,7 +232,7 @@ router.post('/', multer.single('zipFile'), checkFormatZip, unzipEntries, apiLib.
     return res.status(500).json({"message":"Trouble uploading to cloud: " + req.cloudStorageError});
   } else {
     console.log("completed storage");
-    return res.status(200).json({"message":"Found "  + Object.keys(req.entities).length + " entities, " + Object.keys(req.assets).length + " assets and " + Object.keys(req.assetFiles).length + " asset files"});
+    return res.status(200).json({"message":"Created "  + Object.keys(req.entities).length + " entities, " + Object.keys(req.assets).length + " assets and " + Object.keys(req.assetFiles).length + " asset files"});
   }
 });
 

@@ -135,7 +135,8 @@ $(function(){
     var raycastEntity = playerEntity.script.raycast;
   	// Switch to entity selection mode
 	movementEntity.disableInput();
-	raycastEntity.enableInput();  	
+	raycastEntity.enableInput();
+	raycastEntity.modeFramebuffer();
     
     // bind event listener for selected entity
     var onEntityHit = function(hitEntity) {
