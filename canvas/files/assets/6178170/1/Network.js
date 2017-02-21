@@ -191,12 +191,10 @@ Network.prototype.addEntity = function(data) {
 
     entity.setLocalPosition(data.position[0],data.position[1],data.position[2]);
     entity.setLocalScale(data.scale[0],data.scale[1],data.scale[2]);
-    entity.setLocalRotation(data.rotation[0],data.rotation[1],data.rotation[2],data.rotation[3]);
+    entity.setLocalRotation(data.rotation[0],data.rotation[1],data.rotation[2],1);
     if (entity.rigidbody) {
       entity.rigidbody.teleport(data.position[0],data.position[1],data.position[2]);
     }
-    entity.id = data.id;
-    entity.objectId = data.objectId;
     this.app.root.addChild(entity);
 
 //    console.log('Entity Added');
