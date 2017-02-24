@@ -95,6 +95,47 @@ body {
   display: none;
 }
 
+#modeLabel {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+}
+
+.label-mode-movement,
+.label-mode-movement:hover,
+.label-mode-movement.active,
+.label-mode-movement.active:hover {
+  background-color: #9EB9D4;
+}
+
+.label-mode-select,
+.label-mode-select:hover,
+.label-mode-select.active,
+.label-mode-select.active:hover {
+  background-color: #DAA520;
+}
+
+.label-mode-translate,
+.label-mode-translate:hover,
+.label-mode-translate.active,
+.label-mode-translate.active:hover {
+  background-color: #00FF7F;
+}
+
+.label-mode-rotate,
+.label-mode-rotate:hover,
+.label-mode-rotate.active,
+.label-mode-rotate.active:hover {
+  background-color: #FA8072;
+}
+
+.label-mode-scale,
+.label-mode-scale:hover,
+.label-mode-scale.active,
+.label-mode-scale.active:hover {
+  background-color: #966FD6;
+}
+
 /* form controls for input  */
 .form-ctl {
   width: 200px;

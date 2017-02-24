@@ -133,11 +133,15 @@ $(function(){
 	var playerEntity = context.root.findByName("Player");
     var movementEntity = playerEntity.script.movement;
     var raycastEntity = playerEntity.script.raycast;
+    var transformEntity = playerEntity.script.transform;
   	// Switch to entity selection mode
 	movementEntity.disableInput();
 	raycastEntity.enableInput();
+	transformEntity.disableInput();
 	raycastEntity.modeFramebuffer();
-    
+    document.getElementById("modeLabel").innerHTML = "Select Mode";
+    document.getElementById("modeLabel").className = "label label-mode-select";
+
     // bind event listener for selected entity
     var onEntityHit = function(hitEntity) {
       document.getElementById("editEntityId").value = hitEntity.id;
@@ -160,6 +164,8 @@ $(function(){
       }
 	    movementEntity.enableInput();
 	    raycastEntity.disableInput();
+      document.getElementById("modeLabel").innerHTML = "Movement Mode";
+      document.getElementById("modeLabel").className = "label label-mode-movement";
     };
     raycastEntity.on('hit', onEntityHit);
   };
@@ -168,3 +174,126 @@ $(function(){
   button.addEventListener('click', onClick, false);
 });
 
+// Move entity in Edit mode
+$(function(){
+  var onClick = function(ev) { 
+		// get entity to move
+		var app = pc.Application.getApplication("application-canvas");
+    var entityId = document.getElementById("editEntityId").value;
+    if (!$.isNumeric(entityId) || !(entityId in app.entities)) {
+      alert("Select an Entity first.");
+      return;
+    }
+    var entity = app.entities[entityId];
+  	// get "playcanvas entity" objects
+		var context = app.context;
+		var playerEntity = context.root.findByName("Player");
+    var movementEntity = playerEntity.script.movement;
+    var raycastEntity = playerEntity.script.raycast;
+    var transformEntity = playerEntity.script.transform;
+  	// Switch to entity move mode
+		movementEntity.disableInput();
+		raycastEntity.disableInput();
+		transformEntity.modeMove();
+		transformEntity.setEntity(entity);
+		transformEntity.enableInput();
+    document.getElementById("modeLabel").innerHTML = "Translate Mode";
+    document.getElementById("modeLabel").className = "label label-mode-translate";
+
+    // bind event listener for entity movement
+    var onEntityMove = function(entityId) {
+      if ("localPosition" in entity) {
+	      document.getElementById("editEntityPosX").value = entity.localPosition.x;
+	      document.getElementById("editEntityPosY").value = entity.localPosition.y;
+	      document.getElementById("editEntityPosZ").value = entity.localPosition.z;
+	    }
+    };
+    transformEntity.on('move', onEntityMove);
+  };
+
+  var link = document.getElementById("moveLink");
+  link.addEventListener('click', onClick, false);
+});
+
+// Rotate entity in Edit mode
+$(function(){
+  var onClick = function(ev) { 
+		// get entity to move
+		var app = pc.Application.getApplication("application-canvas");
+    var entityId = document.getElementById("editEntityId").value;
+    if (!$.isNumeric(entityId) || !(entityId in app.entities)) {
+      alert("Select an Entity first.");
+      return;
+    }
+    var entity = app.entities[entityId];
+  	// get "playcanvas entity" objects
+		var context = app.context;
+		var playerEntity = context.root.findByName("Player");
+    var movementEntity = playerEntity.script.movement;
+    var raycastEntity = playerEntity.script.raycast;
+    var transformEntity = playerEntity.script.transform;
+  	// Switch to entity move mode
+		movementEntity.disableInput();
+		raycastEntity.disableInput();
+		transformEntity.modeRotate();
+		transformEntity.setEntity(entity);
+		transformEntity.enableInput();
+    document.getElementById("modeLabel").innerHTML = "Rotate Mode";
+    document.getElementById("modeLabel").className = "label label-mode-rotate";
+
+    // bind event listener for entity rotation
+    var onEntityRotate = function(entityId) {
+      if ("localRotation" in entity) {
+	      document.getElementById("editEntityRotW").value = entity.localRotation.w;
+	      document.getElementById("editEntityRotX").value = entity.localRotation.x;
+	      document.getElementById("editEntityRotY").value = entity.localRotation.y;
+	      document.getElementById("editEntityRotZ").value = entity.localRotation.z;
+      }
+    };
+    transformEntity.on('rotate', onEntityRotate);
+  };
+
+  var link = document.getElementById("rotateLink");
+  link.addEventListener('click', onClick, false);
+});
+
+// Scale entity in Edit mode
+$(function(){
+  var onClick = function(ev) { 
+		// get entity to move
+		var app = pc.Application.getApplication("application-canvas");
+    var entityId = document.getElementById("editEntityId").value;
+    if (!$.isNumeric(entityId) || !(entityId in app.entities)) {
+      alert("Select an Entity first.");
+      return;
+    }
+    var entity = app.entities[entityId];
+  	// get "playcanvas entity" objects
+		var context = app.context;
+		var playerEntity = context.root.findByName("Player");
+    var movementEntity = playerEntity.script.movement;
+    var raycastEntity = playerEntity.script.raycast;
+    var transformEntity = playerEntity.script.transform;
+  	// Switch to entity move mode
+		movementEntity.disableInput();
+		raycastEntity.disableInput();
+		transformEntity.modeScale();
+		transformEntity.setEntity(entity);
+		transformEntity.enableInput();
+    document.getElementById("modeLabel").innerHTML = "Scale Mode";
+    document.getElementById("modeLabel").className = "label label-mode-scale";
+
+    // bind event listener for entity rotation
+    var onEntityScale = function(entityId) {
+      if ("localScale" in entity) {
+      	document.getElementById("editEntitySclX").value = entity.localScale.x;
+      	document.getElementById("editEntitySclY").value = entity.localScale.y;
+        document.getElementById("editEntitySclZ").value = entity.localScale.z;
+      }
+    };
+    transformEntity.on('scale', onEntityScale);
+  };
+
+  var link = document.getElementById("scaleLink");
+  link.addEventListener('click', onClick, false);
+});

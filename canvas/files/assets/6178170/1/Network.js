@@ -20,6 +20,8 @@ Network.prototype.initialize = function() {
     var socket = io.connect('http://service.cybers.cafe:59595/');
     Network.socket = socket;
 
+    this.app.entities = {};
+
     socket.emit ('initialize');
 
     var self = this;
@@ -189,6 +191,9 @@ Network.prototype.addEntity = function(data) {
         entity.addComponent(component, data.components[component]);
     }
 
+    entity.id = data.id;
+    entity.objectId = data.objectId;
+    entity.name = data.name;
     entity.setLocalPosition(data.position[0],data.position[1],data.position[2]);
     entity.setLocalScale(data.scale[0],data.scale[1],data.scale[2]);
     entity.setLocalRotation(data.rotation[0],data.rotation[1],data.rotation[2],1);
@@ -196,6 +201,7 @@ Network.prototype.addEntity = function(data) {
       entity.rigidbody.teleport(data.position[0],data.position[1],data.position[2]);
     }
     this.app.root.addChild(entity);
+    this.app.entities[entity.id] = entity;
 
 //    console.log('Entity Added');
 //    console.log(data);
