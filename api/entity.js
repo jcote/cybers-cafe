@@ -71,7 +71,7 @@ router.put('/:entityId', multer.none(), function update (req, res, next) {
   if (!(apiLib.isNumeric(req.body.posX) && apiLib.isNumeric(req.body.posY) && apiLib.isNumeric(req.body.posZ))) {
     return res.status(400).json({"message":"Must supply numeric position."});
   }
-  if (!(apiLib.isNumeric(req.body.rotW) && apiLib.isNumeric(req.body.rotX) && apiLib.isNumeric(req.body.rotY) && apiLib.isNumeric(req.body.rotZ))) {
+  if (!(apiLib.isNumeric(req.body.rotX) && apiLib.isNumeric(req.body.rotY) && apiLib.isNumeric(req.body.rotZ))) {
     return res.status(400).json({"message":"Must supply numeric rotation."});
   }
   if (!(apiLib.isNumeric(req.body.sclX) && apiLib.isNumeric(req.body.sclY) && apiLib.isNumeric(req.body.sclZ))) {
@@ -79,7 +79,7 @@ router.put('/:entityId', multer.none(), function update (req, res, next) {
   }
   sqlRecord.updateEntityRecord(req.params.entityId, 
       req.body.posX, req.body.posY, req.body.posZ, 
-      req.body.rotW, req.body.rotX, req.body.rotY, req.body.rotZ,
+      req.body.rotX, req.body.rotY, req.body.rotZ,
       req.body.sclX, req.body.sclY, req.body.sclZ, function (err, result) {
     if (err) {
       return next(err);

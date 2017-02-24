@@ -109,14 +109,14 @@ html(lang="en")
               br
               .row
                 .col-sm-4
-                  label(for="title") Title :
-                .col-sm-8
-                  input.form-ctl(type="text", name="title", id="editEntityTitle", value=entity.title)
-              .row
-                .col-sm-4
                   label(for="title") Id :
                 .col-sm-8
                   input.form-ctl(type="text", name="id", min="0", id="editEntityId", value=entity.id)
+              .row
+                .col-sm-4
+                  label(for="title") Title :
+                .col-sm-8
+                  input.form-ctl(type="text", name="title", id="editEntityTitle", value=entity.title)
             br
             .container.interface-part
               .navbar.navbar-default
@@ -144,11 +144,6 @@ html(lang="en")
                 .col-sm-8
                   input.form-ctl(type="number", step="any", name="posZ", id="editEntityPosZ", value=entity.posZ)
             .container.interface-part(id="editEntityRotateForm")
-              .row
-                .col-sm-4
-                  label(for="rotX") Rotation W :
-                .col-sm-8
-                  input.form-ctl(type="number", step="any", name="rotW", id="editEntityRotW", value=entity.rotW)
               .row
                 .col-sm-4
                   label(for="rotX") Rotation X :
@@ -186,7 +181,8 @@ html(lang="en")
                 .col-sm-4
                   button.btn.btn-danger(type="button") Remove
                 .col-sm-4
+                  button.btn.btn-info(type="button" id="editEntityProofButton") Proof
                 .col-sm-4
-                  button.btn.btn-success(type="submit") Update
+                  button.btn.btn-success(type="submit") Commit
           br
           .container.interface-part(id="editFormResultContainer") Ready...

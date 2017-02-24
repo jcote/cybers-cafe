@@ -7,7 +7,7 @@
     "scale": [
         1,
         1,
-        0.001
+        1
     ],
     "name": "Image",
     "parent": null,
@@ -24,13 +24,13 @@
             "castShadowsLightMap": false,
             "asset": null,
             "lightmapSizeMultiplier": 1,
-            "type": "box",
+            "type": "plane",
             "lightMapped": false,
             "isStatic": false
         }
     },
     "rotation": [
-        0,
+        90,
         0,
         0
     ],

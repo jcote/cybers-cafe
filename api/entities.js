@@ -173,7 +173,6 @@ function sendRecordToSql (entity, assets, callback) {
   entityRecord.posY = entity.position[1];
   entityRecord.posZ = entity.position[2];
   
-  entityRecord.rotW = 1;
   entityRecord.rotX = entity.rotation[0];
   entityRecord.rotY = entity.rotation[1];
   entityRecord.rotZ = entity.rotation[2];

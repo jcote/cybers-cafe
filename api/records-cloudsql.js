@@ -182,8 +182,8 @@ function listEntityRecords (point, range, limit, token, callback) {
     });
 }
 
-function updateEntityRecord(id, posX, posY, posZ, rotW, rotX, rotY, rotZ, sclX, sclY, sclZ, callback) {
-  var set = {posX: posX, posY: posY, posZ: posZ, rotW: rotW, rotX: rotX, rotY: rotY, rotZ: rotZ, sclX: sclX, sclY: sclY, sclZ: sclZ};
+function updateEntityRecord(id, posX, posY, posZ, rotX, rotY, rotZ, sclX, sclY, sclZ, callback) {
+  var set = {posX: posX, posY: posY, posZ: posZ, rotX: rotX, rotY: rotY, rotZ: rotZ, sclX: sclX, sclY: sclY, sclZ: sclZ};
   connection.query('UPDATE entities SET ? WHERE id = ?', [set, id], function (err, res) {
     if (err) {
       return callback(err);

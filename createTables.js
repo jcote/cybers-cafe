@@ -29,7 +29,6 @@ var SQL_STRING_ENTITY = 'CREATE TABLE entities (\n' +
   '  posX FLOAT NULL,\n' +
   '  posY FLOAT NULL,\n' +
   '  posZ FLOAT NULL,\n' +
-  '  rotW FLOAT NULL,\n' +
   '  rotX FLOAT NULL,\n' +
   '  rotY FLOAT NULL,\n' +
   '  rotZ FLOAT NULL,\n' +

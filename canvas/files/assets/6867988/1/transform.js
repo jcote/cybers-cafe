@@ -52,13 +52,13 @@ Transform.moveVec = new pc.Vec3();
 
 Transform.prototype.move = function (dx, dy) {
     var moveVec = Transform.moveVec;
-    moveVec.x = - dx * this.translateSensitivity;
+    moveVec.x = dx * this.translateSensitivity;
     if (this.app.keyboard.isPressed(pc.KEY_SHIFT)) {
       moveVec.y = - dy * this.translateSensitivity;
       moveVec.z = 0;
     } else {
       moveVec.y = 0;
-      moveVec.z = - dy * this.translateSensitivity;
+      moveVec.z = dy * this.translateSensitivity;
     }
     
     this.entity.translate(moveVec);

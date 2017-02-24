@@ -124,6 +124,26 @@ $(function(){
   form.addEventListener('submit', onUpload, false);
 });
 
+var populateInputsForSelectedEntity = function (entity) {
+    document.getElementById("editEntityTitle").value = entity.name;
+    if ("localPosition" in entity) {
+      document.getElementById("editEntityPosX").value = entity.localPosition.x;
+      document.getElementById("editEntityPosY").value = entity.localPosition.y;
+      document.getElementById("editEntityPosZ").value = entity.localPosition.z;
+    }
+    if ("localRotation" in entity) {
+      	var eulerAngles = entity.getLocalEulerAngles();
+	      document.getElementById("editEntityRotX").value = eulerAngles.x;
+	      document.getElementById("editEntityRotY").value = eulerAngles.y;
+	      document.getElementById("editEntityRotZ").value = eulerAngles.z;
+    }
+    if ("localScale" in entity) {
+    	document.getElementById("editEntitySclX").value = entity.localScale.x;
+    	document.getElementById("editEntitySclY").value = entity.localScale.y;
+      document.getElementById("editEntitySclZ").value = entity.localScale.z;
+    }
+}
+
 // Edit select Entity
 $(function(){
   var onClick = function(ev) { 
@@ -145,23 +165,7 @@ $(function(){
     // bind event listener for selected entity
     var onEntityHit = function(hitEntity) {
       document.getElementById("editEntityId").value = hitEntity.id;
-      document.getElementById("editEntityTitle").value = hitEntity.name;
-      if ("localPosition" in hitEntity) {
-	      document.getElementById("editEntityPosX").value = hitEntity.localPosition.x;
-	      document.getElementById("editEntityPosY").value = hitEntity.localPosition.y;
-	      document.getElementById("editEntityPosZ").value = hitEntity.localPosition.z;
-	    }
-      if ("localRotation" in hitEntity) {
-	      document.getElementById("editEntityRotW").value = hitEntity.localRotation.w;
-	      document.getElementById("editEntityRotX").value = hitEntity.localRotation.x;
-	      document.getElementById("editEntityRotY").value = hitEntity.localRotation.y;
-	      document.getElementById("editEntityRotZ").value = hitEntity.localRotation.z;
-      }
-      if ("localScale" in hitEntity) {
-      	document.getElementById("editEntitySclX").value = hitEntity.localScale.x;
-      	document.getElementById("editEntitySclY").value = hitEntity.localScale.y;
-        document.getElementById("editEntitySclZ").value = hitEntity.localScale.z;
-      }
+      populateInputsForSelectedEntity(hitEntity);
 	    movementEntity.enableInput();
 	    raycastEntity.disableInput();
       document.getElementById("modeLabel").innerHTML = "Movement Mode";
@@ -244,10 +248,10 @@ $(function(){
     // bind event listener for entity rotation
     var onEntityRotate = function(entityId) {
       if ("localRotation" in entity) {
-	      document.getElementById("editEntityRotW").value = entity.localRotation.w;
-	      document.getElementById("editEntityRotX").value = entity.localRotation.x;
-	      document.getElementById("editEntityRotY").value = entity.localRotation.y;
-	      document.getElementById("editEntityRotZ").value = entity.localRotation.z;
+      	var eulerAngles = entity.getLocalEulerAngles();
+	      document.getElementById("editEntityRotX").value = eulerAngles.x;
+	      document.getElementById("editEntityRotY").value = eulerAngles.y;
+	      document.getElementById("editEntityRotZ").value = eulerAngles.z;
       }
     };
     transformEntity.on('rotate', onEntityRotate);
@@ -296,4 +300,64 @@ $(function(){
 
   var link = document.getElementById("scaleLink");
   link.addEventListener('click', onClick, false);
+});
+
+// onBlur ID
+$(function() {
+	var onBlur = function(ev) {
+		var app = pc.Application.getApplication("application-canvas");
+		if (input.value in app.entities) {
+			populateInputsForSelectedEntity(app.entities[input.value]);
+		}
+	};
+	var input = document.getElementById("editEntityId");
+	input.addEventListener('blur', onBlur, false);
+});
+
+// Edit Entity Proof button
+$(function(){
+  var onClick = function(ev) { 
+  	// get "playcanvas entity" objects
+		var app = pc.Application.getApplication("application-canvas");
+    var entityId = document.getElementById("editEntityId").value;
+    if (!$.isNumeric(entityId) || !(entityId in app.entities)) {
+      alert("Select an Entity first.");
+      return;
+    }
+    var entity = app.entities[entityId];
+		var context = app.context;
+		var playerEntity = context.root.findByName("Player");
+    var movementEntity = playerEntity.script.movement;
+    var raycastEntity = playerEntity.script.raycast;
+    var transformEntity = playerEntity.script.transform;
+  	// Switch to movement mode
+		movementEntity.enableInput();
+		raycastEntity.disableInput();
+		transformEntity.disableInput();
+	  document.getElementById("modeLabel").innerHTML = "Movement Mode";
+	  document.getElementById("modeLabel").className = "label label-mode-movement";
+    // gather all the data
+    var posX = document.getElementById("editEntityPosX").value;
+	  var posY = document.getElementById("editEntityPosY").value;
+	  var posZ = document.getElementById("editEntityPosZ").value;
+    var rotX = document.getElementById("editEntityRotX").value;
+    var rotY = document.getElementById("editEntityRotY").value;
+    var rotZ = document.getElementById("editEntityRotZ").value;
+  	var sclX = document.getElementById("editEntitySclX").value;
+  	var sclY = document.getElementById("editEntitySclY").value;
+    var sclZ = document.getElementById("editEntitySclZ").value;
+    if (!($.isNumeric(posX) && $.isNumeric(posY) && $.isNumeric(posZ) && 
+    	    $.isNumeric(rotX) && $.isNumeric(rotY) && $.isNumeric(rotZ) && 
+    	    $.isNumeric(sclX) && $.isNumeric(sclY) && $.isNumeric(sclZ) )) {
+      alert("Values must be numeric.");
+      return;
+    }
+    // update the entity
+    entity.setLocalPosition(new pc.Vec3(posX, posY, posZ));
+    entity.setLocalEulerAngles(new pc.Vec3(rotX, rotY, rotZ));
+    entity.setLocalScale(new pc.Vec3(sclX, sclY, sclZ));
+  };
+
+  var button = document.getElementById("editEntityProofButton");
+  button.addEventListener('click', onClick, false);
 });
