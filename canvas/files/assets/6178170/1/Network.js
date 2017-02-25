@@ -38,7 +38,7 @@ Network.prototype.initialize = function() {
         self.movePlayer(data);
     });
 
-    socket.on ('killPlayer', function (data) {
+    socket.on ('playerDropped', function (data) {
         self.removePlayer(data);
     });
 
@@ -73,9 +73,7 @@ Network.prototype.initializePlayers = function (data) {
     for (i = 0; i < this.players.length; i++) {
         if (i !== Network.id && !this.players[i].deleted) {
             this.players[i].entity = this.createPlayerEntity(data.players[i]);
-//            console.log('Found player.');
         }
-//        console.log(data);
     }
 
     this.initialized = true;
@@ -96,7 +94,7 @@ Network.prototype.movePlayer = function (data) {
 Network.prototype.removePlayer = function (data) {
     if (this.players[data].entity) {
         this.players[data].entity.destroy ();
-        this.players[data].deleted = true;
+        delete this.players[data];
     }
 };
 
