@@ -42,64 +42,69 @@ function createImageAssetsAndEntity (req, res, next) {
   
   // Obtain new id's for assets
   // TODO: have the datastore model create 2 blank assets to reserve these ids
-  apiLib.getModel().reserveIdCreate('Asset', function(err, highestId) {
+  apiLib.getModel().reserveIdCreate('Asset', function(err, reservedId1) {
     if (err) {
       return next(err);
     }
-
-    var assetFileId = highestId + 1;
-    var assetMaterialId = assetFileId + 1;
-
-    // Populate Asset Files and save to req
-    var assetFullPath = "files/assets/" + assetFileId + "/1/" + req.file.originalname;
-    req.assetFiles[assetFullPath] = req.file;
-
-    fs.readFile("stock/asset/image.json", function(err, assetStockBuf) {
+      apiLib.getModel().reserveIdCreate('Asset', function(err, reservedId2) {
       if (err) {
         return next(err);
       }
-      var assetStockJson = JSON.parse(assetStockBuf);
 
-      // populate the stock File Asset
-      var fileAsset = assetStockJson[6451433];
-      fileAsset.id = assetFileId;
-      fileAsset.name = req.file.originalname;
-      fileAsset.file.filename = assetFullPath;
-      fileAsset.file.size = req.file.size;
-      fileAsset.file.url = assetFullPath;
+      var assetFileId = reservedId1;
+      var assetMaterialId = reservedId2;
 
-      fs.readFile("uploads/" + req.file.filename, function(err, assetFileBuf) {
+      // Populate Asset Files and save to req
+      var assetFullPath = "files/assets/" + assetFileId + "/1/" + req.file.originalname;
+      req.assetFiles[assetFullPath] = req.file;
+
+      fs.readFile("stock/asset/image.json", function(err, assetStockBuf) {
         if (err) {
           return next(err);
         }
-        fileAsset.file.hash = md5(assetFileBuf);
+        var assetStockJson = JSON.parse(assetStockBuf);
 
-        // Populate the stock Material Asset
-        var materialAsset = assetStockJson[6451449];
-        materialAsset.id = assetMaterialId;
-        materialAsset.data.diffuseMap = assetFileId;
-        materialAsset.data.emissiveMap = assetFileId;
+        // populate the stock File Asset
+        var fileAsset = assetStockJson[6451433];
+        fileAsset.id = assetFileId;
+        fileAsset.name = req.file.originalname;
+        fileAsset.file.filename = assetFullPath;
+        fileAsset.file.size = req.file.size;
+        fileAsset.file.url = assetFullPath;
 
-        // save assets to req
-        req.assets[assetFileId] = fileAsset;
-        req.assets[assetMaterialId] = materialAsset;
-
-        fs.readFile("stock/entity/image.json", function(err, entityStockBuf) {
+        fs.readFile("uploads/" + req.file.filename, function(err, assetFileBuf) {
           if (err) {
             return next(err);
           }
-          var entityStockJson = JSON.parse(entityStockBuf);
+          fileAsset.file.hash = md5(assetFileBuf);
 
-          // Populate the stock Entity
-          var entity = entityStockJson;
-          entity.components.model.materialAsset = assetMaterialId;
-          req.entities[entity.id] = entity;
+          // Populate the stock Material Asset
+          var materialAsset = assetStockJson[6451449];
+          materialAsset.id = assetMaterialId;
+          materialAsset.data.diffuseMap = assetFileId;
+          materialAsset.data.emissiveMap = assetFileId;
 
-          //console.log(req.assets);
-          //console.log(req.assetFiles);
-          //console.log(req.entities);
-          console.log("finish create image assets + entity");
-          next();
+          // save assets to req
+          req.assets[assetFileId] = fileAsset;
+          req.assets[assetMaterialId] = materialAsset;
+
+          fs.readFile("stock/entity/image.json", function(err, entityStockBuf) {
+            if (err) {
+              return next(err);
+            }
+            var entityStockJson = JSON.parse(entityStockBuf);
+
+            // Populate the stock Entity
+            var entity = entityStockJson;
+            entity.components.model.materialAsset = assetMaterialId;
+            req.entities[entity.id] = entity;
+
+            //console.log(req.assets);
+            //console.log(req.assetFiles);
+            //console.log(req.entities);
+            console.log("finish create image assets + entity");
+            next();
+          });
         });
       });
     });

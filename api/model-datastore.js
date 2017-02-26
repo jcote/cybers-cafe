@@ -148,7 +148,7 @@ function read (kind, id, cb) {
 
 function reserveIdCreate (kind, cb) {
   var key = ds.key(kind);
-console.log("h "+key.id);
+
   var entity = {
     key: key,
     data: []
@@ -160,7 +160,6 @@ console.log("h "+key.id);
       cb(err, err ? null : entity.key.id);
     }
   );
-
 }
 
 function _delete (kind, id, cb) {
