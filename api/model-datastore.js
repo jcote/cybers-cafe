@@ -146,24 +146,21 @@ function read (kind, id, cb) {
   });
 }
 
-function getHighestId (kind, cb) {
-  const query = ds.createQuery(kind)
-    .order('id', {
-      descending: true
-    })
-    .limit(1);
+function reserveIdCreate (kind, cb) {
+  var key = ds.key(kind);
+console.log("h "+key.id);
+  var entity = {
+    key: key,
+    data: []
+  };
 
-  ds.runQuery(query, function (err, results, cursor) {
-      if (err) {
-        return cb(err);
-      }
-      if (results.length > 0) {
-        const id = results[0].key.id;
-        cb(null, id);
-      } else {
-        cb(null, 10000000);
-      }
-    });
+  ds.save(
+    entity,
+    function (err) {
+      cb(err, err ? null : entity.key.id);
+    }
+  );
+
 }
 
 function _delete (kind, id, cb) {
@@ -179,7 +176,7 @@ module.exports = {
   read: read,
   update: update,
   delete: _delete,
-  getHighestId: getHighestId,
+  reserveIdCreate: reserveIdCreate,
   list: list
 };
 // [END exports]

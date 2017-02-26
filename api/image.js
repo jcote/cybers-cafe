@@ -42,7 +42,7 @@ function createImageAssetsAndEntity (req, res, next) {
   
   // Obtain new id's for assets
   // TODO: have the datastore model create 2 blank assets to reserve these ids
-  apiLib.getModel().getHighestId('Asset', function(err, highestId) {
+  apiLib.getModel().reserveIdCreate('Asset', function(err, highestId) {
     if (err) {
       return next(err);
     }
