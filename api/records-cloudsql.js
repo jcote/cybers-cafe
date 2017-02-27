@@ -11,6 +11,7 @@ var pool;
 function handleDisconnect() {
   pool = mysql.createPool({
     connectionLimit : 10,
+    acquireTimeout: 30000, //30 secs
     host            : 'localhost',
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
@@ -151,8 +152,6 @@ function listEntityRecords (point, range, limit, token, callback) {
     connection.query('SELECT * FROM entities ' +
       'WHERE posX < ? ' +
       'AND posX > ? ' +
-      'AND posY < ? ' +
-      'AND posY > ? ' +
       'AND posZ < ? ' +
       'AND posZ > ? ' +
       'LIMIT ? ' +
@@ -200,10 +199,21 @@ function updateEntityRecord(id, posX, posY, posZ, rotX, rotY, rotZ, sclX, sclY, 
   });
 }
 
+function updateEntityPosition(id, posX, posY, posZ, callback) {
+  var set = {posX: posX, posY: posY, posZ: posZ};
+  pool.query('UPDATE entities SET ? WHERE id = ?', [set, id], function (err, res) {
+    if (err) {
+      return callback(err);
+    }
+    console.log("Entity record updated in SQL for id: " + id);
+    return callback(null, res);
+  });
+}
 
 
 module.exports = {
   insertEntityRecord: insertEntityRecord,
   listEntityRecords: listEntityRecords,
-  updateEntityRecord: updateEntityRecord
+  updateEntityRecord: updateEntityRecord,
+  updateEntityPosition: updateEntityPosition
 };
