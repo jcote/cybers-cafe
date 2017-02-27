@@ -37,7 +37,82 @@ function selectForm (form) {
   document.getElementById(form).style.display = 'block';
 }
 
-// Create Form logic
+// ---CREATE---
+
+// Place entity and render onscreen from a create response
+function entityPlacement (ev) {
+	var button = ev.target;
+	var data = button.entry;
+ 	// get "playcanvas entity" objects
+	var app = pc.Application.getApplication("application-canvas");
+	var context = app.context;
+	var playerEntity = context.root.findByName("Player");
+  var movementEntity = playerEntity.script.movement;
+  var raycastEntity = playerEntity.script.raycast;
+  var transformEntity = playerEntity.script.transform;
+  // Switch to entity placement mode
+	movementEntity.disableInput();
+	raycastEntity.enableInput();
+	transformEntity.disableInput();
+	raycastEntity.modeRaycast();
+  document.getElementById("modeLabel").innerHTML = "Placement Mode";
+  document.getElementById("modeLabel").className = "label label-mode-placement";
+
+  // bind event listener for selected entity
+	var sceneEntity = context.root.findByName("scene");
+  var networkEntity = sceneEntity.script.network;
+  var alreadyHit = false;
+  var onHit = function(hit) {
+  	if (alreadyHit) {
+  		return;
+  	}
+  	alreadyHit = true;
+  	if ('assets' in data) {
+  		Object.keys(data.assets).forEach(function (assetId) {
+        networkEntity.queue.enqueue(new QueueItem('asset', data.assets[assetId]));
+        if (!networkEntity.isQueueRunning) {
+            networkEntity.popQueue();
+        }
+	    });
+	  }
+	  data.entity.position = [hit.point.x, hit.point.y, hit.point.z];
+    networkEntity.queue.enqueue(new QueueItem('entity', data.entity));
+    if (!networkEntity.isQueueRunning) {
+        networkEntity.popQueue();
+    }
+	  // Switch to movement mode
+    movementEntity.enableInput();
+    raycastEntity.disableInput();
+    document.getElementById("modeLabel").innerHTML = "Movement Mode";
+    document.getElementById("modeLabel").className = "label label-mode-movement";
+    // effect in UI
+    button.className += " disabled";
+    var oOutput = document.getElementById("createFormResultContainer")
+    oOutput.appendChild(document.createTextNode("Placing entity..."));
+    // Report position to server
+	  var oData = new FormData();
+	  oData.append("posX", hit.point.x);
+	  oData.append("posY", hit.point.y);
+	  oData.append("posZ", hit.point.z);
+	  var oReq = new XMLHttpRequest();
+	  oReq.open("PUT", "api/entities/position/" + data.entity.id, true);
+	  oReq.onload = function(oEvent) {
+	    if (oReq.status == 200) {
+	      var responseJson = JSON.parse(oReq.responseText);
+	      oOutput.appendChild(document.createTextNode(responseJson.message));
+	    } else {
+	      oOutput.appendChild(document.createTextNode("Error occurred: "));
+	      if (responseJson) {
+	        oOutput.appendChild(document.createTextNode(responseJson.message));
+	      }
+	    }
+	  };
+	  oReq.send(oData);
+  };
+  raycastEntity.on('hit', onHit);
+};
+
+// Create form logic
 $(function(){
   var onUpload = function(ev) {
 	  var oOutput = document.getElementById("createFormResultContainer"),
@@ -51,7 +126,31 @@ $(function(){
 	  oReq.onload = function(oEvent) {
 	    if (oReq.status == 200) {
 	      var responseJson = JSON.parse(oReq.responseText);
-	      oOutput.innerHTML = responseJson.message;
+	      oOutput.appendChild(document.createTextNode(responseJson.message));
+	      if (responseJson.records) {
+	      	var entityChooseList = document.getElementById("entityChooseList");
+	      	Object.keys(responseJson.records).forEach(function(entityId) {
+	      		// gather together the entity itself and its assets so we can render them
+	      		var objectId = responseJson.records[entityId].objectId;
+	      		var entity = responseJson.entities[objectId];
+	      		entity.id = entityId;
+	      		entity.objectId = objectId;
+	      		var assets = responseJson.records[entityId].assetIds.reduce(
+	      			function(o, k) {
+	      				o[k] = responseJson.assets[k];
+	      				return o;
+	      			}, {}); // select dependent assets from aggregate
+	      		// create a button in the list that will drop entity
+	      		var entityButton = document.createElement("button");
+	      		entityButton.type = "button";
+	      		entityButton.className = "list-group-item";
+	      		entityButton.appendChild(document.createTextNode(entity.name + " : " + entity.id));
+	      		entityButton.addEventListener('click', entityPlacement);
+	      	  entityButton.entry = {"entity": entity, "assets": assets};
+	      		entityChooseList.appendChild(entityButton);
+	      		oOutput.appendChild(document.createTextNode("Ready to place entity..."));
+	      	});
+	      }
 	    } else {
 	      oOutput.innerHTML = "Error occurred. <br \/>" + responseJson.message;
 	    }
@@ -92,6 +191,7 @@ $(function(){
   form.addEventListener('submit', onUpload, false);
 });
 
+//---EDIT---
 // Edit Form mov/rot/scale logic
 $(function(){
   var onUpload = function(ev) {

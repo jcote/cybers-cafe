@@ -108,6 +108,13 @@ body {
   background-color: #9EB9D4;
 }
 
+.label-mode-placement,
+.label-mode-placement:hover,
+.label-mode-placement.active,
+.label-mode-placement.active:hover {
+  background-color: #01C5BB;
+}
+
 .label-mode-select,
 .label-mode-select:hover,
 .label-mode-select.active,
