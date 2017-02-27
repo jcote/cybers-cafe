@@ -117,6 +117,7 @@ function unzipEntries (req, res, next) {
   req.assetFiles = {};
   req.assets = {};
   req.entities = {};
+  req.records = {};
 
   zipEntries.forEach(function(zipEntry) {
     //console.log(zipEntry.toString()); // outputs zip entries information 
@@ -153,7 +154,7 @@ function sendRecordsToSql(req, res, next) {
     if (!('components' in entity) || Object.keys(entity.components).length == 0) {
       return callback();
     }
-    sendRecordToSql(entity, req.assets, callback);
+    sendRecordToSql(req, entity, req.assets, callback);
   }, function(err, results) {
     // after all the callbacks
     if (err) {
@@ -164,14 +165,14 @@ function sendRecordsToSql(req, res, next) {
   });
 }
 
-function sendRecordToSql (entity, assets, callback) {
+function sendRecordToSql (req, entity, assets, callback) {
   console.log("begin sql store");
   var entityRecord = {};
   entityRecord.objectId = entity.id; // latter should now exist after DS write
 
-  entityRecord.posX = entity.position[0];
-  entityRecord.posY = entity.position[1];
-  entityRecord.posZ = entity.position[2];
+  entityRecord.posX = null;
+  entityRecord.posY = null;
+  entityRecord.posZ = null;
   
   entityRecord.rotX = entity.rotation[0];
   entityRecord.rotY = entity.rotation[1];
@@ -197,6 +198,8 @@ function sendRecordToSql (entity, assets, callback) {
 
   sqlRecord.insertEntityRecord(entityRecord, function (err, resultId) {
     console.log("entity '" + entity.name + "' stored in SQL: " + resultId);
+    var record = {"objectId": entityRecord.objectId, "assetIds": entityRecord.assetIds};
+    req.records[resultId] = record;
     callback();  
   });
 }
@@ -222,16 +225,27 @@ router.post('/', multer.single('zipFile'), checkFormatZip, unzipEntries, apiLib.
     return res.status(400).json({"message":"No entities found"});
   }
   if (!req.assets) {
-    req.assets = [];
+    req.assets = {};
   }
   if (!req.assetFiles) {
-    req.assetFiles = [];
+    req.assetFiles = {};
   }
   if (req.cloudStorageError) {
     return res.status(500).json({"message":"Trouble uploading to cloud: " + req.cloudStorageError});
   } else {
+    var entitiesByObjectId = {};
+    Object.keys(req.entities).forEach(function (guid) {
+      var objectId = req.entities[guid].id;
+      if (objectId) {
+        entitiesByObjectId[objectId] = req.entities[guid];
+      }
+    });
     console.log("completed storage");
-    return res.status(200).json({"message":"Created "  + Object.keys(req.entities).length + " entities, " + Object.keys(req.assets).length + " assets and " + Object.keys(req.assetFiles).length + " asset files"});
+    return res.status(200).json({
+      "message":"Found "  + Object.keys(req.entities).length + " entities, " + Object.keys(req.assets).length + " assets and " + Object.keys(req.assetFiles).length + " asset files...",
+      "records": req.records,
+      "entities": entitiesByObjectId,
+      "assets": req.assets});
   }
 });
 
@@ -254,12 +268,23 @@ router.get('/:entity', function get (req, res, next) {
  *
  * Update a entity.
  */
-router.put('/:entity', function update (req, res, next) {
-  apiLib.getModel().update(req.params.entity, req.body, function (err, entity) {
+router.put('/position/:entityId', multer.none(), function updatePosition (req, res, next) {
+  if (!apiLib.isNumeric(req.params.entityId)) {
+    return res.status(400).json({"message":"Must supply numeric entity id."});
+  }
+  if (!(apiLib.isNumeric(req.body.posX) && apiLib.isNumeric(req.body.posY) && apiLib.isNumeric(req.body.posZ))) {
+    return res.status(400).json({"message":"Must supply numeric position."});
+  }
+
+  sqlRecord.updateEntityPosition(req.params.entityId, req.body.posX, req.body.posY, req.body.posZ, function (err, result) {
     if (err) {
       return next(err);
     }
-    res.json(entity);
+    if (result.affectedRows !== 1) {
+      return res.status(404).json({"message":"Entity could not be updated (not found?)."});
+    }
+    console.log("Entity position updated for id: " + req.params.entityId);
+    return res.status(200).json({"message":"Entity updated."});
   });
 });
 
