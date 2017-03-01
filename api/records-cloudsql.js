@@ -12,7 +12,6 @@ function handleDisconnect() {
   pool = mysql.createPool({
     connectionLimit : 10,
     acquireTimeout: 30000, //30 secs
-    host            : 'localhost',
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
     socketPath: process.env.MYSQL_SOCKET_PATH,
