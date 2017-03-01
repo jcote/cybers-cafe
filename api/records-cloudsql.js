@@ -156,7 +156,7 @@ function listEntityRecords (point, range, limit, token, callback) {
       'AND posZ > ? ' +
       'LIMIT ? ' +
       'OFFSET ?',
-      [x + range, x - range, y + range, y - range, z + range, z - range, limit, token ], 
+      [x + range, x - range, z + range, z - range, limit, token ], 
       function (err, results) {
         if (err) {
           return callback(err);
