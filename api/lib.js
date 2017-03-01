@@ -82,12 +82,12 @@ function sendUploadToGCS (req, res, next) {
 
 function sendEntitiesToDatastore (req, res, next) {
   console.log("begin entity processing");
-  if (Object.keys(req.entities).length == 0) {
+  if (Object.keys(req.entities).length == 0 && (!req.entitiesWithNoKey || req.entitiesWithNoKey.length == 0)) {
     console.log("no entities");
     return next();
   }
 
-  async.each(req.entities, function(entity, callback) {
+  var processEntityDS = function (entity, callback) {
     if (!('components' in entity) || Object.keys(entity.components).length == 0) {
       console.log("skipping entity with no components: " + entity.name);
       return callback();
@@ -98,16 +98,24 @@ function sendEntitiesToDatastore (req, res, next) {
       if (err) {
         return callback(err);
       }
+      req.entities[entity.id] = entity;
       console.log("entity '" + entity.name + "' stored in DS: " + entity.id);
       callback(null);
     });
-  }, function(err, results) {
+  };
+
+  async.each(req.entities, processEntityDS, function(err, results) {
     // after all the callbacks
     if (err) {
-      console.log("end entity processing");
       return next(err);
     }
-    next();
+    async.each(req.entitiesWithNoKey, processEntityDS, function(err, results) {
+      // after all the callbacks
+      if (err) {
+        return next(err);
+      }
+      next();
+    });
   });
 }
 

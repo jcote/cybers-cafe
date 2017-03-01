@@ -39,6 +39,8 @@ function createImageAssetsAndEntity (req, res, next) {
   req.assets = {};
   req.assetFiles = {};
   req.entities = {};
+  req.entitiesWithNoKey = [];
+  req.records = {};
   
   // Obtain new id's for assets
   // TODO: have the datastore model create 2 blank assets to reserve these ids
@@ -97,7 +99,7 @@ function createImageAssetsAndEntity (req, res, next) {
             // Populate the stock Entity
             var entity = entityStockJson;
             entity.components.model.materialAsset = assetMaterialId;
-            req.entities[entity.id] = entity;
+            req.entitiesWithNoKey.push(entity);
 
             //console.log(req.assets);
             //console.log(req.assetFiles);
@@ -116,7 +118,7 @@ function sendRecordsToSql(req, res, next) {
     if (!('components' in entity) || Object.keys(entity.components).length == 0) {
       return callback();
     }
-    sendRecordToSql(entity, req.assets, callback);
+    sendRecordToSql(req, entity, req.assets, callback);
   }, function(err, results) {
     // after all the callbacks
     if (err) {
@@ -126,13 +128,13 @@ function sendRecordsToSql(req, res, next) {
   });
 }
 
-function sendRecordToSql (entity, assets, callback) {
+function sendRecordToSql (req, entity, assets, callback) {
   var entityRecord = {};
   entityRecord.objectId = entity.id; // should now exist after DS write
 
-  entityRecord.posX = entity.position[0];
-  entityRecord.posY = entity.position[1];
-  entityRecord.posZ = entity.position[2];
+  entityRecord.posX = null;
+  entityRecord.posY = null;
+  entityRecord.posZ = null;
   
   entityRecord.rotX = entity.rotation[0];
   entityRecord.rotY = entity.rotation[1];
@@ -146,6 +148,7 @@ function sendRecordToSql (entity, assets, callback) {
 
   sqlRecord.insertEntityRecord(entityRecord, function (err, resultId) {
     console.log("entity '" + entity.name + "' stored in SQL: " + resultId);
+    req.records[resultId] = entityRecord;
     callback();    
   });
 }
@@ -183,7 +186,11 @@ router.post('/', multer.single('imgFile'), checkFormatImg, createImageAssetsAndE
     return res.status(500).json({"message":"Trouble uploading to cloud: " + req.cloudStorageError});
   } else {
     console.log("completed storage");
-    return res.status(200).json({"message":"Created "  + Object.keys(req.entities).length + " entities, " + Object.keys(req.assets).length + " assets and " + Object.keys(req.assetFiles).length + " asset files"});
+    return res.status(200).json({
+      "message":"Created "  + Object.keys(req.entities).length + " entities, " + Object.keys(req.assets).length + " assets and " + Object.keys(req.assetFiles).length + " asset files...",
+      "records": req.records,
+      "entities": req.entities,
+      "assets": req.assets});
   }
 });
 

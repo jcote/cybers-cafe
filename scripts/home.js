@@ -101,7 +101,7 @@ function entityPlacement (ev) {
 	      var responseJson = JSON.parse(oReq.responseText);
 	      oOutput.appendChild(document.createTextNode(responseJson.message));
 	    } else {
-	      oOutput.appendChild(document.createTextNode("Error occurred: "));
+	      oOutput.appendChild(document.createTextNode("Error occurred. "));
 	      if (responseJson) {
 	        oOutput.appendChild(document.createTextNode(responseJson.message));
 	      }
@@ -112,14 +112,25 @@ function entityPlacement (ev) {
   raycastEntity.on('hit', onHit);
 };
 
-// Create form logic
+function createPlacementButton(entity, assets) {
+	// create a button in the list that will drop entity
+	var entityButton = document.createElement("button");
+	entityButton.type = "button";
+	entityButton.className = "list-group-item";
+	entityButton.appendChild(document.createTextNode(entity.name + " : " + entity.id));
+	entityButton.addEventListener('click', entityPlacement);
+  entityButton.entry = {"entity": entity, "assets": assets};
+	var entityChooseList = document.getElementById("entityChooseList");
+	entityChooseList.appendChild(entityButton);
+}
+
+// Create 3D Model
 $(function(){
   var onUpload = function(ev) {
 	  var oOutput = document.getElementById("createFormResultContainer"),
 	      oData = new FormData(form);
 
       oOutput.innerHTML = "Uploading...";
-	//  oData.append("CustomField", "This is some extra data");
 
 	  var oReq = new XMLHttpRequest();
 	  oReq.open("POST", "api/entities", true);
@@ -128,31 +139,24 @@ $(function(){
 	      var responseJson = JSON.parse(oReq.responseText);
 	      oOutput.appendChild(document.createTextNode(responseJson.message));
 	      if (responseJson.records) {
-	      	var entityChooseList = document.getElementById("entityChooseList");
 	      	Object.keys(responseJson.records).forEach(function(entityId) {
 	      		// gather together the entity itself and its assets so we can render them
 	      		var objectId = responseJson.records[entityId].objectId;
 	      		var entity = responseJson.entities[objectId];
 	      		entity.id = entityId;
 	      		entity.objectId = objectId;
+	      		// select dependent assets from aggregate
 	      		var assets = responseJson.records[entityId].assetIds.reduce(
 	      			function(o, k) {
 	      				o[k] = responseJson.assets[k];
 	      				return o;
-	      			}, {}); // select dependent assets from aggregate
-	      		// create a button in the list that will drop entity
-	      		var entityButton = document.createElement("button");
-	      		entityButton.type = "button";
-	      		entityButton.className = "list-group-item";
-	      		entityButton.appendChild(document.createTextNode(entity.name + " : " + entity.id));
-	      		entityButton.addEventListener('click', entityPlacement);
-	      	  entityButton.entry = {"entity": entity, "assets": assets};
-	      		entityChooseList.appendChild(entityButton);
+	      			}, {});
+            createPlacementButton(entity, assets);
 	      		oOutput.appendChild(document.createTextNode("Ready to place entity..."));
 	      	});
 	      }
 	    } else {
-	      oOutput.innerHTML = "Error occurred. <br \/>" + responseJson.message;
+	      oOutput.appendChild(document.createTextNode("Error occurred. " + responseJson.message));
 	    }
 	  };
 
@@ -164,22 +168,30 @@ $(function(){
   form.addEventListener('submit', onUpload, false);
 });
 
+// Create Image
 $(function(){
   var onUpload = function(ev) {
 	  var oOutput = document.getElementById("createFormResultContainer"),
 	      oData = new FormData(form);
 
       oOutput.innerHTML = "Uploading...";
-	//  oData.append("CustomField", "This is some extra data");
 
 	  var oReq = new XMLHttpRequest();
 	  oReq.open("POST", "api/image", true);
 	  oReq.onload = function(oEvent) {
 	    if (oReq.status == 200) {
 	      var responseJson = JSON.parse(oReq.responseText);
-	      oOutput.innerHTML = responseJson.message;
+	      oOutput.appendChild(document.createTextNode(responseJson.message));
+    	  var entityId = Object.keys(responseJson.records)[0]; // only one entity right now...
+    	  var objectId = responseJson.records[entityId].objectId;
+	      var entity = responseJson.entities[objectId];
+	      var assets = responseJson.assets;
+	      entity.id = entityId;
+    		entity.objectId =  responseJson.records[entityId].objectId;
+        createPlacementButton(entity, assets);
+    		oOutput.appendChild(document.createTextNode("Ready to place entity..."));
 	    } else {
-	      oOutput.innerHTML = "Error occurred: <br \/>" + responseJson.message;
+	      oOutput.appendChild(document.createTextNode("Error occurred. " + responseJson.message));
 	    }
 	  };
 
