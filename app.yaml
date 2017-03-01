@@ -12,7 +12,8 @@
 # limitations under the License.
 #
 runtime: nodejs
-vm: true
+vm: true 
+#env: flex
 
 # Temporary setting to keep gcloud from uploading node_modules
 skip_files:
@@ -31,7 +32,7 @@ env_variables:
   MYSQL_DATABASE: cyberscafe
   # This path was printed to the console when you started the proxy, and is of
   # the format: `/[DIR]/[YOUR_PROJECT_ID]:[YOUR_REGION]:[YOUR_INSTANCE_NAME]`
-  INSTANCE_CONNECTION_NAME: /cloudsql/cybers-cafe:us-east1:cybers-cafe
+  MYSQL_SOCKET_PATH: /cloudsql/cybers-cafe:us-east1:cybers-cafe
 # [END env]
 
 # [START cloudsql_settings]
