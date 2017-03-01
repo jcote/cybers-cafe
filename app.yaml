@@ -27,6 +27,7 @@ network:
 
 # [START env]
 env_variables:
+  NODE_ENV: development
   MYSQL_USER: appeng
   MYSQL_PASSWORD: sparkle8twilight
   MYSQL_DATABASE: cyberscafe
