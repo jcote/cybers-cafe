@@ -18,13 +18,18 @@ html(lang="en")
     meta(charset='utf-8')
     link(rel="stylesheet" type="text/css" href="/css/styles.css")
     title Cybers Cafe
+
     link(rel="stylesheet", href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css")
+    link(rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css")
     link(rel="stylesheet" type="text/css" href="/canvas/styles.css")
     link(rel="manifest" href="/canvas/manifest.json")
+
     script(src="/scripts/jquery-3.1.1.min.js")
+    script(type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js")
     script(src="/canvas/playcanvas-stable.min.js")
     script(src="/canvas/const.js")
     script(src="/scripts/home.js")
+
   body
       div(id="viewport-div")
       script(src="/canvas/__start__.js")
@@ -89,6 +94,11 @@ html(lang="en")
                   label(for="zipFile") Zip File :
                 .col-sm-8
                   input.form-ctl(type="file", name="zipFile", id="zipFile", value=entity.zipFile)
+              br
+              .row
+                .col-sm-4
+                .col-sm-8
+                  a(href="#" data-toggle="modal" data-target="#zipModal") Convert a 3D model to Zip
               br
               .row
                 .col-sm-4
@@ -188,3 +198,33 @@ html(lang="en")
                   button.btn.btn-success(type="submit") Commit
           br
           .container.interface-part(id="editFormResultContainer") Ready...
+
+      .modal.fade.bd-example-modal-lg(id="zipModal" tabindex="-1" role="dialog" aria-labelledby="zipModal" aria-hidden="true")
+        .modal-dialog.modal-lg
+          .modal-content
+            .jumbotron
+              h1.display-3 How to Convert 3D model to Zip
+              ol(type="1")
+                li
+                  p.lead 
+                    a(href="https://login.playcanvas.com/" target="_blank") Login to PlayCanvas
+                    p using these credentials or use your own "Personal" account ($15 per month)
+                    ul
+                      li
+                        p username: anon@cybers.cafe
+                      li
+                        p password: sunrisedoctrine
+                li
+                  p.lead Click New+
+                li
+                  p.lead Blank Project
+                li
+                  p.lead Editor
+                li
+                  p.lead On the bottom panel, click Add Asset then Upload your 3d model file
+                li
+                  p.lead After the import, click and drag the main json file to the center viewport
+                li
+                  p.lead On the far left click the last icon for Publish/Download and select Download
+                li
+                  p.lead Click Web Download to download your zip  
