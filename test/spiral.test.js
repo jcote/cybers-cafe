@@ -164,10 +164,26 @@ describe('Spiral', function() {
     });
   });
 
-  describe('#getNeighborhood()', function() {
+  describe('#walkNearby()', function() {
     it('returns a populated neighborhood array', function() {
-      assert.deepEqual(spiral.getNeighborhood(15,1), [ [5,4,3], [16,15,14], [35,34,33] ]);
+    	var range = 1;
+			var neighborhood = [];
+			for (var i = 0; i < range * 2 + 1; i++) neighborhood.push([]);
+			spiral.walkNearby(15, [0,0], 1, neighborhood);
+      assert.deepEqual(neighborhood, [ [], [16,15,14], [] ]);
+
+			var neighborhood = [];
+			for (var i = 0; i < range * 2 + 1; i++) neighborhood.push([]);
+			spiral.walkNearby(33, [1,1], 1, neighborhood);
+      assert.deepEqual(neighborhood, [ [], [], [35,34,33] ]);
     });
   });
+
+  // describe('#getNeighborhood()', function() {
+  //   var range = 1;
+  //   it('returns a populated neighborhood array', function() {
+  //     assert.deepEqual(spiral.getNeighborhood(15,range), [ [5,4,3], [16,15,14], [35,34,33] ]);
+  //   });
+  // });
 
 });
