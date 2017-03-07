@@ -167,15 +167,42 @@ describe('Spiral', function() {
   describe('#walkNearby()', function() {
     it('returns a populated neighborhood array', function() {
     	var range = 1;
+
+    	// 15 center, start
 			var neighborhood = [];
 			for (var i = 0; i < range * 2 + 1; i++) neighborhood.push([]);
-			spiral.walkNearby(15, [0,0], 1, neighborhood);
+			spiral.walkNearby(15, [0,0], range, neighborhood);
       assert.deepEqual(neighborhood, [ [], [16,15,14], [] ]);
 
+    	// 15 center, +1
+			neighborhood = [];
+			for (var i = 0; i < range * 2 + 1; i++) neighborhood.push([]);
+			spiral.walkNearby(34, [1,0], range, neighborhood);
+      assert.deepEqual(neighborhood, [ [], [], [35,34,33] ]);
+
+    	// 15 center, -1
+			neighborhood = [];
+			for (var i = 0; i < range * 2 + 1; i++) neighborhood.push([]);
+			spiral.walkNearby(4, [-1,0], range, neighborhood);
+      assert.deepEqual(neighborhood, [ [5,4,3], [], [] ]);
+
+    	// 43 center, start
 			var neighborhood = [];
 			for (var i = 0; i < range * 2 + 1; i++) neighborhood.push([]);
-			spiral.walkNearby(33, [1,1], 1, neighborhood);
-      assert.deepEqual(neighborhood, [ [], [], [35,34,33] ]);
+			spiral.walkNearby(43, [0,0], range, neighborhood);
+      assert.deepEqual(neighborhood, [ [], [,43,44], [,42,] ]);
+
+    	// 43 center, +1
+			neighborhood = [];
+			for (var i = 0; i < range * 2 + 1; i++) neighborhood.push([]);
+			spiral.walkNearby(73, [-1,-1], range, neighborhood);
+      assert.deepEqual(neighborhood, [ [73,74,75], [72,,], [71,,] ]);
+
+    	// 43 center, -1
+			neighborhood = [];
+			for (var i = 0; i < range * 2 + 1; i++) neighborhood.push([]);
+			spiral.walkNearby(21, [1,1], range, neighborhood);
+      assert.deepEqual(neighborhood, [ [], [], [,,21] ]);
     });
   });
 

@@ -140,7 +140,7 @@ function walkNearby (x, currentVectorFromStart, range, neighborhood) {
 // find the value which is nearby but in the next level
 // use the current step and remainder on the next level
 function getNextLevelValue (x, currentLevel, currentStep, currentRemainder) {
-  var nextLevel = currentLevel + 1; // is this guaranteed? maybe + 2
+  var nextLevel = currentLevel + 1; // is this guaranteed? no: scale with level ##########################################
   var nextStartOfStep = getStartOfStep(nextLevel, currentStep);
   var nextValue = nextStartOfStep + currentRemainder;
   return nextValue;
@@ -149,7 +149,7 @@ function getNextLevelValue (x, currentLevel, currentStep, currentRemainder) {
 // find the value which is nearby but in the lower level
 // use the current step and remainder on the previous level
 function getLowerLevelValue (x, currentLevel, currentStep, currentRemainder) {
-  var lowerLevel = currentLevel - 1;
+  var lowerLevel = currentLevel - 1; // is this guaranteed? no: scale with level ########################################
   var lowerStartOfStep = getStartOfStep(lowerLevel, currentStep);
   var lowerSizeOfStep = lowerLevel;
   var lowerValue = lowerStartOfStep + ((currentRemainder < lowerSizeOfStep) ? currentRemainder : lowerSizeOfStep);
