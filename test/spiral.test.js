@@ -203,14 +203,100 @@ describe('Spiral', function() {
 			for (var i = 0; i < range * 2 + 1; i++) neighborhood.push([]);
 			spiral.walkNearby(21, [1,1], range, neighborhood);
       assert.deepEqual(neighborhood, [ [], [], [,,21] ]);
+
+    	// 1 center, start
+			var neighborhood = [];
+			for (var i = 0; i < range * 2 + 1; i++) neighborhood.push([]);
+			spiral.walkNearby(1, [0,0], range, neighborhood, true);
+      assert.deepEqual(neighborhood, [ [], [,1,], [] ]);
+
+    	// 1 center, +1
+			neighborhood = [];
+			for (var i = 0; i < range * 2 + 1; i++) neighborhood.push([]);
+			spiral.walkNearby(2, [0,1], range, neighborhood, true);
+      assert.deepEqual(neighborhood, [ [7,8,9], [6,,2], [5,4,3] ]);
+
+      range = 2;
+
+    	// 1 center, start
+			var neighborhood = [];
+			for (var i = 0; i < range * 2 + 1; i++) neighborhood.push([]);
+			spiral.walkNearby(1, [0,0], range, neighborhood, true);
+      assert.deepEqual(neighborhood, [ [], [], [,,1,,], [], [] ]);
+
+    	// 1 center, +1
+			neighborhood = [];
+			for (var i = 0; i < range * 2 + 1; i++) neighborhood.push([]);
+			spiral.walkNearby(2, [0,1], range, neighborhood, true);
+      assert.deepEqual(neighborhood, [ [], [,7,8,9,], [,6,,2,], [,5,4,3,], [] ]);
+
     });
   });
 
-  // describe('#getNeighborhood()', function() {
-  //   var range = 1;
-  //   it('returns a populated neighborhood array', function() {
-  //     assert.deepEqual(spiral.getNeighborhood(15,range), [ [5,4,3], [16,15,14], [35,34,33] ]);
-  //   });
-  // });
+  describe('#getNextLevelValue()', function() {
+    it('returns the correct near value on next level', function() {
+    	assert.equal(spiral.getNextLevelValue(1,0,0), 2);
+      assert.equal(spiral.getNextLevelValue(2,0,0), 11);
+      assert.equal(spiral.getNextLevelValue(2,0,1), 12);
+      assert.equal(spiral.getNextLevelValue(2,1,0), 15);
+      assert.equal(spiral.getNextLevelValue(2,1,1), 16);
+      assert.equal(spiral.getNextLevelValue(2,2,0), 19);
+      assert.equal(spiral.getNextLevelValue(2,2,1), 20);
+      assert.equal(spiral.getNextLevelValue(2,3,0), 23);
+      assert.equal(spiral.getNextLevelValue(2,3,1), 24);
+      assert.equal(spiral.getNextLevelValue(3,0,0), 27);
+      assert.equal(spiral.getNextLevelValue(3,0,1), 28);
+      assert.equal(spiral.getNextLevelValue(3,0,2), 29);
+      assert.equal(spiral.getNextLevelValue(3,0,3), 30);
+      assert.equal(spiral.getNextLevelValue(3,1,0), 33);
+      assert.equal(spiral.getNextLevelValue(4,1,0), 59);
+    });
+  });
+
+  describe('#getLowerLevelValue()', function() {
+    it('returns the correct near value on previous level', function() {
+      assert.equal(spiral.getLowerLevelValue(2,0,0), 1);
+      assert.equal(spiral.getLowerLevelValue(2,0,1), 1);
+      assert.equal(spiral.getLowerLevelValue(2,1,0), 1);
+      assert.equal(spiral.getLowerLevelValue(2,1,1), 1);
+      assert.equal(spiral.getLowerLevelValue(2,2,0), 1);
+      assert.equal(spiral.getLowerLevelValue(2,2,1), 1);
+      assert.equal(spiral.getLowerLevelValue(2,3,0), 1);
+      assert.equal(spiral.getLowerLevelValue(2,3,1), 1);
+      assert.equal(spiral.getLowerLevelValue(3,0,0), 1);//2);
+      assert.equal(spiral.getLowerLevelValue(3,0,1), 2);
+      assert.equal(spiral.getLowerLevelValue(3,0,2), 3);
+      assert.equal(spiral.getLowerLevelValue(3,0,3), 3);
+      assert.equal(spiral.getLowerLevelValue(3,1,0), 3);
+      assert.equal(spiral.getLowerLevelValue(3,1,1), 4);
+      assert.equal(spiral.getLowerLevelValue(3,1,2), 5);
+      assert.equal(spiral.getLowerLevelValue(3,1,3), 5);
+      assert.equal(spiral.getLowerLevelValue(3,2,0), 5);
+      assert.equal(spiral.getLowerLevelValue(3,2,1), 6);
+      assert.equal(spiral.getLowerLevelValue(3,2,2), 7);
+      assert.equal(spiral.getLowerLevelValue(3,2,3), 7);
+      assert.equal(spiral.getLowerLevelValue(3,3,0), 7);
+      assert.equal(spiral.getLowerLevelValue(3,3,1), 8);
+      assert.equal(spiral.getLowerLevelValue(3,3,2), 9);
+      assert.equal(spiral.getLowerLevelValue(3,3,3), 9);//10);
+      assert.equal(spiral.getLowerLevelValue(4,0,0), 9);//10);
+      assert.equal(spiral.getLowerLevelValue(4,0,1), 10);
+      assert.equal(spiral.getLowerLevelValue(4,0,2), 11);
+      assert.equal(spiral.getLowerLevelValue(4,0,3), 12);
+
+    });
+  });
+
+  describe('#getNeighborhood()', function() {
+    it('returns a populated neighborhood array', function() {
+    	var range = 1;
+      assert.deepEqual(spiral.getNeighborhood(1,range), [ [7,8,9], [6,1,2], [5,4,3] ]);
+      assert.deepEqual(spiral.getNeighborhood(15,range), [ [5,4,3], [16,15,14], [35,34,33] ]);
+      range = 2;
+      
+      assert.deepEqual(spiral.getNeighborhood(15,range), [ [19,6,1,2,11], [18,5,4,3,12], [17,16,15,14,13], [36,35,34,33,32], [63,62,61,60,59] ]);
+      //assert.deepEqual(spiral.getNeighborhood(1,range), [ [21,22,23,24,25], [20,7,8,9,10], [19,6,1,2,11], [18,5,4,3,12], [17,16,15,14,13] ]);
+    });
+  });
 
 });

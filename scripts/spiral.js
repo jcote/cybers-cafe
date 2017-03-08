@@ -92,7 +92,7 @@ function walk (currentVector, currentValue, currentStep, currentLevel, currentRe
   // check if in range
   currentVectorFromStart[0] += currentVector[0];
   currentVectorFromStart[1] += currentVector[1];
-  console.log(currentValue + ": " + currentVector);
+  console.log(currentValue + ": " + currentVector + " : " + currentVectorFromStart);
   if (Math.abs(currentVectorFromStart[0]) <= range && Math.abs(currentVectorFromStart[1]) <= range) {
     // add current value to neighborhood
     // remember that there are no negatives in array offsets
@@ -101,7 +101,7 @@ function walk (currentVector, currentValue, currentStep, currentLevel, currentRe
   }
 }
 
-function walkNearby (x, currentVectorFromStart, range, neighborhood) {
+function walkNearby (x, currentVectorFromStart, range, neighborhood, isCentered) {
   var startingVectorFromStart = currentVectorFromStart.slice();
 
 	var level = getLevel(x);
@@ -117,19 +117,25 @@ function walkNearby (x, currentVectorFromStart, range, neighborhood) {
 //  var currentVectorFromStart = [0,0];
   // add starting point
   if (Math.abs(currentVectorFromStart[0]) <= range && Math.abs(currentVectorFromStart[1]) <= range) {
-		console.log((currentVectorFromStart[0] + range ) + ":" + (currentVectorFromStart[1] + range ) + " -> " + startValue);
+		// console.log((currentVectorFromStart[0] + range ) + ":" + (currentVectorFromStart[1] + range ) + " -> " + startValue);
     neighborhood[ currentVectorFromStart[0] + range  ][ currentVectorFromStart[1] + range ] = startValue;
   }
   // walk counter-clockwise with current* vars
-  for (var i = startValue + 1; i <= startValue + range * 2; i++) {
-  	console.log("forward " + i + ": " + startValue);
+  var min = startValue + 1;
+  var max = startValue + range * 2;
+  if (isCentered) max = 4 * currentLevel + 1; // center (1) is equidistant to all steps in level
+  for (var i = min; i <= max; i++) {
+  	// console.log("forward " + i + ": " + startValue);
+    if (getLevel(i) > currentLevel) break;
     walk (currentVector, i, currentStep, currentLevel, currentRemainder, currentVectorFromStart, range, "high", neighborhood);
   }
   // walk clockwise with current* vars
   // call by value so we use the same current* vars as above except this one
   currentVectorFromStart = startingVectorFromStart.slice();
   for (var i = startValue - 1; i >= startValue - range * 2; i--) {
-  	console.log("backward " + i + ": " + startValue);
+  	if (i < 1) break;
+    if (getLevel(i) < currentLevel) break;
+  	// console.log("backward " + i + ": " + startValue);
     walk (currentVector, i, currentStep, currentLevel, currentRemainder, currentVectorFromStart, range, "low", neighborhood);
   }
   // var stepStart = getStartOfStep(level, step);
@@ -139,20 +145,25 @@ function walkNearby (x, currentVectorFromStart, range, neighborhood) {
 
 // find the value which is nearby but in the next level
 // use the current step and remainder on the next level
-function getNextLevelValue (x, currentLevel, currentStep, currentRemainder) {
-  var nextLevel = currentLevel + 1; // is this guaranteed? no: scale with level ##########################################
+function getNextLevelValue (currentLevel, currentStep, currentRemainder) {
+  if (currentLevel == 1) return 2;
+//  if (currentLevel == 2 ) return 11;
+  var nextLevel = currentLevel + 1;
   var nextStartOfStep = getStartOfStep(nextLevel, currentStep);
-  var nextValue = nextStartOfStep + currentRemainder;
+  var nextValue = nextStartOfStep + currentRemainder + 1;
   return nextValue;
 }
 
 // find the value which is nearby but in the lower level
 // use the current step and remainder on the previous level
-function getLowerLevelValue (x, currentLevel, currentStep, currentRemainder) {
-  var lowerLevel = currentLevel - 1; // is this guaranteed? no: scale with level ########################################
+function getLowerLevelValue (currentLevel, currentStep, currentRemainder) {
+  var lowerLevel = currentLevel - 1;
+  if (lowerLevel <= 1) {
+    return 1;
+  }
   var lowerStartOfStep = getStartOfStep(lowerLevel, currentStep);
   var lowerSizeOfStep = lowerLevel;
-  var lowerValue = lowerStartOfStep + ((currentRemainder < lowerSizeOfStep) ? currentRemainder : lowerSizeOfStep);
+  var lowerValue = lowerStartOfStep + ((currentRemainder < lowerSizeOfStep) ? currentRemainder : lowerSizeOfStep) - 1;
   return lowerValue;
 }
 
@@ -162,9 +173,10 @@ function getNeighborhood (x, range) {
 		neighborhood.push([]);
 	}
   var currentVectorFromStart = [0,0];
-	
+	var isCentered = x == 1;
+
 	// walk the starting level
-  walkNearby(x, currentVectorFromStart, range, neighborhood);
+  walkNearby(x, currentVectorFromStart, range, neighborhood, isCentered);
 
   // walk each level above starting level, in range
   var	currentLevel = getLevel(x);
@@ -174,38 +186,42 @@ function getNeighborhood (x, range) {
   }
   var currentStep = result.step;
   var currentRemainder = result.remainder;
-  var currentValue = x + 1;
+  console.log("### level " + currentLevel +" step " + currentStep + " rem " + currentRemainder);
+  var currentValue = getNextLevelValue(currentLevel, currentStep, currentRemainder);
   var vectorAwayFromStartIndex = (currentStep > 0) ? currentStep - 1 : 3;
   var vectorAwayFromStart = vectors[vectorAwayFromStartIndex];
   currentVectorFromStart = vectorAwayFromStart.slice();
   for (var i = 0; i < range; i++) {
-  	// currentValue and currentLevel go to next level
-  	// currentStep stays the same
-  	// and currentRemainder inches upward
-  	currentValue = getNextLevelValue(currentValue, currentLevel, currentStep, currentRemainder);
-  	currentLevel++;
-  	currentRemainder++;
-  	currentVectorFromStart[0] += vectorAwayFromStart[0];
-  	currentVectorFromStart[1] += vectorAwayFromStart[1];
-  	walkNearby(currentValue, currentVectorFromStart, range, neighborhood);
+    console.log(i + " levels above. currentValue " + currentValue + ", currentVectorFromStart " + currentVectorFromStart + " vectorAwayFromStart " +vectorAwayFromStart);
+    // currentRemainder inches upward to compensate
+    currentLevel++;
+    currentRemainder++;
+  	walkNearby(currentValue, currentVectorFromStart, range, neighborhood, isCentered);
+    // currentValue and currentLevel go to next level
+    // currentStep stays the same
+    currentValue = getNextLevelValue(currentLevel, currentStep, currentRemainder);
+    currentVectorFromStart[0] = vectorAwayFromStart[0] * (i+2);
+    currentVectorFromStart[1] = vectorAwayFromStart[1] * (i+2);
   }
 
   // walk each level below starting level, in range
   currentLevel = getLevel(x);
   currentStep = result.step;
   currentRemainder = result.remainder;
-  currentValue = x - 1;
+  currentValue = getLowerLevelValue(currentLevel, currentStep, currentRemainder);
   vectorAwayFromStartIndex = (currentStep < 3) ? currentStep + 1 : 0;
   vectorAwayFromStart = vectors[vectorAwayFromStartIndex];
   currentVectorFromStart = vectorAwayFromStart.slice();
   for (var i = 0; i < range; i++) {
-  	// currentValue goes to previous level
-  	currentValue = getLowerLevelValue(currentValue, currentLevel, currentStep, currentRemainder);
-  	currentLevel--;
-  	currentRemainder--;
-  	currentVectorFromStart[0] += vectorAwayFromStart[0];
-  	currentVectorFromStart[1] += vectorAwayFromStart[1];
-  	walkNearby(currentValue, currentVectorFromStart, range, neighborhood);
+  	if (currentLevel <= 1) break;
+    console.log(i + " levels below. value " + currentValue + ", vectorFromStart " + currentVectorFromStart);
+    currentLevel--;
+    currentRemainder--;
+  	walkNearby(currentValue, currentVectorFromStart, range, neighborhood, isCentered);
+    // currentValue goes to previous level
+    currentValue = getLowerLevelValue(currentLevel, currentStep, currentRemainder);
+    currentVectorFromStart[0] = vectorAwayFromStart[0] * (i+2);
+    currentVectorFromStart[1] = vectorAwayFromStart[1] * (i+2);
   }
 
   return neighborhood;
@@ -216,5 +232,7 @@ module.exports = {
 	getStepAndRemainder: getStepAndRemainder,
 	getStartOfStep: getStartOfStep,
 	walkNearby: walkNearby,
+  getNextLevelValue: getNextLevelValue,
+  getLowerLevelValue: getLowerLevelValue,
 	getNeighborhood: getNeighborhood
 };
