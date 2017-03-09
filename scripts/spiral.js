@@ -62,14 +62,13 @@ function getStartOfStep (level, step) {
 
 
 function walk (currentVector, currentValue, currentStep, currentLevel, currentRemainder, currentVectorFromStart, range, direction, neighborhood) {
-  console.log("walk value " + currentValue + " level " + currentLevel);
+  // console.log("walk value " + currentValue + " level " + currentLevel);
   // use for calculating vector (hack for backwards)
   var effectiveValue = (direction == "low") ? currentValue + 1 : currentValue;
 
   var result = getStepAndRemainder(effectiveValue, currentLevel);
   if ('err' in result) {
     if (result.err == direction) {
-    	console.log("err");
     	// transition to next step (turn 90 degrees clockwise for high/up, clockwise for low/down)
     	currentLevel += (direction == "high") ? 1 : -1;
     	result = getStepAndRemainder(effectiveValue, currentLevel);
@@ -84,7 +83,7 @@ function walk (currentVector, currentValue, currentStep, currentLevel, currentRe
   	currentStep += (currentStep > 1) ? -2 : 2;
   }
   currentRemainder = result["remainder"];
-    console.log("step " + currentStep + " rem " + currentRemainder);
+    // console.log("step " + currentStep + " rem " + currentRemainder);
   currentVector = vectors[currentStep];
   // if (currentLevel != level) {
   // 	throw new Error("currentLevel " + currentLevel + " is unexpectedly not level " + level);
@@ -92,11 +91,11 @@ function walk (currentVector, currentValue, currentStep, currentLevel, currentRe
   // check if in range
   currentVectorFromStart[0] += currentVector[0];
   currentVectorFromStart[1] += currentVector[1];
-  console.log(currentValue + ": " + currentVector + " : " + currentVectorFromStart);
+  // console.log(currentValue + ": " + currentVector + " : " + currentVectorFromStart);
   if (Math.abs(currentVectorFromStart[0]) <= range && Math.abs(currentVectorFromStart[1]) <= range) {
     // add current value to neighborhood
     // remember that there are no negatives in array offsets
-    console.log((currentVectorFromStart[0] + range ) + ":" + (currentVectorFromStart[1] + range ) + " -> " + currentValue);
+    // console.log((currentVectorFromStart[0] + range ) + ":" + (currentVectorFromStart[1] + range ) + " -> " + currentValue);
     neighborhood[ currentVectorFromStart[0] + range ][ currentVectorFromStart[1] + range ] = currentValue;
   }
 }
@@ -186,13 +185,13 @@ function getNeighborhood (x, range) {
   }
   var currentStep = result.step;
   var currentRemainder = result.remainder;
-  console.log("### level " + currentLevel +" step " + currentStep + " rem " + currentRemainder);
+  // console.log("### level " + currentLevel +" step " + currentStep + " rem " + currentRemainder);
   var currentValue = getNextLevelValue(currentLevel, currentStep, currentRemainder);
   var vectorAwayFromStartIndex = (currentStep > 0) ? currentStep - 1 : 3;
   var vectorAwayFromStart = vectors[vectorAwayFromStartIndex];
   currentVectorFromStart = vectorAwayFromStart.slice();
   for (var i = 0; i < range; i++) {
-    console.log(i + " levels above. currentValue " + currentValue + ", currentVectorFromStart " + currentVectorFromStart + " vectorAwayFromStart " +vectorAwayFromStart);
+    // console.log(i + " levels above. currentValue " + currentValue + ", currentVectorFromStart " + currentVectorFromStart + " vectorAwayFromStart " +vectorAwayFromStart);
     // currentRemainder inches upward to compensate
     currentLevel++;
     currentRemainder++;
@@ -214,7 +213,7 @@ function getNeighborhood (x, range) {
   currentVectorFromStart = vectorAwayFromStart.slice();
   for (var i = 0; i < range; i++) {
   	if (currentLevel <= 1) break;
-    console.log(i + " levels below. value " + currentValue + ", vectorFromStart " + currentVectorFromStart);
+    // console.log(i + " levels below. value " + currentValue + ", vectorFromStart " + currentVectorFromStart);
     currentLevel--;
     currentRemainder--;
   	walkNearby(currentValue, currentVectorFromStart, range, neighborhood, isCentered);

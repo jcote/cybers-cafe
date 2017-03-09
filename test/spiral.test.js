@@ -292,6 +292,7 @@ describe('Spiral', function() {
     	var range = 1;
       assert.deepEqual(spiral.getNeighborhood(1,range), [ [7,8,9], [6,1,2], [5,4,3] ]);
       assert.deepEqual(spiral.getNeighborhood(15,range), [ [5,4,3], [16,15,14], [35,34,33] ]);
+      //assert.deepEqual(spiral.getNeighborhood(49,range), [ [79,80,81], [48,49,50], [25,26,51] ]);
       range = 2;
       
       assert.deepEqual(spiral.getNeighborhood(15,range), [ [19,6,1,2,11], [18,5,4,3,12], [17,16,15,14,13], [36,35,34,33,32], [63,62,61,60,59] ]);
