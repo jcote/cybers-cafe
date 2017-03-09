@@ -16,6 +16,8 @@ Network.prototype.initialize = function() {
 
     this.queue = new Queue();
     this.isQueueRunning = false;
+    this.progress = 0;
+    this.progressExpected = 0;
 
     var socket = io.connect('http://service.cybers.cafe:59595/');
     Network.socket = socket;
@@ -40,6 +42,10 @@ Network.prototype.initialize = function() {
 
     socket.on ('playerDropped', function (data) {
         self.removePlayer(data);
+    });
+    
+    socket.on ('expect', function (data) {
+        self.progressExpected += data;
     });
 
     socket.on ('addAsset', function (data) {
@@ -92,7 +98,7 @@ Network.prototype.movePlayer = function (data) {
 };
 
 Network.prototype.removePlayer = function (data) {
-    if (this.players[data].entity) {
+    if (data in this.players && this.players[data].entity) {
         this.players[data].entity.destroy ();
         delete this.players[data];
     }
@@ -123,11 +129,36 @@ Network.prototype.updatePosition = function () {
 };
 
 Network.prototype.popQueue = function() {
-	this.isQueueRunning = true;
 	if (this.queue.getLength() === 0) {
-    	this.isQueueRunning = false;
-	    return;
+		this.isQueueRunning = false;
+
+		var self = this;
+		setTimeout(function(){
+			if (!self.isQueueRunning) {
+				self.progress = 0;
+			  self.progressExpected = 0;
+	      $('#progress-inner-div').attr('aria-valuenow', 100).css('width','100%');
+	      setTimeout(function(){
+			    $('#progress-div').css('visibility', 'hidden');
+			  },2000);
+			}			
+		},10000);
+
+    return;
 	}
+
+	if (!this.isQueueRunning) {
+		$('#progress-inner-div').attr('aria-valuenow', 0).css('width',0);
+		$('#progress-div').css('visibility', 'visible');
+	}
+
+	this.isQueueRunning = true;
+
+  this.progress++;
+  if (this.progressExpected) {
+  	var percent = this.progress / this.progressExpected * 100;
+	  $('#progress-inner-div').attr('aria-valuenow', percent).css('width',percent + '%');
+  }
 
 	var queueItem = this.queue.dequeue();
 	if (queueItem.type == 'asset') {

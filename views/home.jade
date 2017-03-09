@@ -37,6 +37,10 @@ html(lang="en")
       div(id="drawer-icon-div")
         span.glyphicon.glyphicon-menu-hamburger.drawer-icon(onclick="drawer()")
 
+      .progress(id="progress-div")
+        .progress-bar(id="progress-inner-div" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100")
+          span.sr-only(id="progress-span")
+
       div(id="interface-div")
         span.glyphicon.glyphicon-menu-hamburger.drawer-icon(onclick="drawer()")
         span.label.label-mode-movement(id="modeLabel") Movement Mode

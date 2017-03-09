@@ -40,6 +40,23 @@ body {
     left:0;
 }
 
+/* the progress bar */
+#progress-div {
+  width: 200px;
+  height: 20px;
+  position: absolute;
+  left:50%;
+  margin-left:-100px;
+  bottom: 30px;
+  visibility: hidden;
+}
+
+#progress-inner-div {
+}
+
+#progress-span {
+}
+
 /* the entire side panel */
 #interface-div {
   width: 350px;
