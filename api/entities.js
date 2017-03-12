@@ -169,6 +169,9 @@ function sendRecordToSql (req, entity, assets, callback) {
   console.log("begin sql store");
   var entityRecord = {};
   entityRecord.objectId = entity.id; // latter should now exist after DS write
+  
+  entityRecord.locX = null; // will write after user places entity
+  entityRecord.locZ = null;
 
   entityRecord.posX = null;
   entityRecord.posY = null;

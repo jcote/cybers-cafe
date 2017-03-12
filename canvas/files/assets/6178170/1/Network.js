@@ -3,6 +3,8 @@ var Network = pc.createScript('network');
 // static variables
 Network.id = null;
 Network.socket = null;
+Network.range = 2; // how many 'position' XZ tiles out from player to transmit data 
+Network.scale = 50; // size of XZ tiles. MUST BE THE SAME AS IN movement.js
 
 function QueueItem(type, resource) {
 	this.type = type;
@@ -18,6 +20,8 @@ Network.prototype.initialize = function() {
     this.isQueueRunning = false;
     this.progress = 0;
     this.progressExpected = 0;
+
+    this.origin = [0, 0];
 
     var socket = io.connect('http://service.cybers.cafe:59595/');
     Network.socket = socket;
@@ -93,7 +97,8 @@ Network.prototype.addPlayer = function (data) {
 
 Network.prototype.movePlayer = function (data) {
     if (this.initialized && !this.players[data.id].deleted) {
-        this.players[data.id].entity.rigidbody.teleport(data.x, data.y, data.z);
+    	  var relativePosition = MathUtils.getRelativePosition(data.position, data.location, this.origin, Network.scale);
+        this.players[data.id].entity.rigidbody.teleport(relativePosition[0], relativePosition[1], relativePosition[2]);
     }
 };
 
@@ -110,9 +115,10 @@ Network.prototype.createPlayerEntity = function (data) {
 
     this.other.getParent().addChild(newPlayer);
 
-    if (data)
-        newPlayer.rigidbody.teleport(data.x, data.y, data.z);
-
+    if (data) {
+    	  var relativePosition = MathUtils.getRelativePosition(data.position, data.location, this.origin, Network.scale);
+        newPlayer.rigidbody.teleport(relativePosition[0], relativePosition[1], relativePosition[2]);
+    }
     return newPlayer;
 };
 
@@ -124,7 +130,10 @@ Network.prototype.update = function(dt) {
 Network.prototype.updatePosition = function () {
     if (this.initialized) {
         var pos = this.player.getPosition();
-        Network.socket.emit('positionUpdate', {id: Network.id, x: pos.x, y: pos.y, z: pos.z});
+        var absolutePosition = MathUtils.getAbsolutePosition(pos.data, Network.scale);
+        Network.socket.emit('positionUpdate', {id: Network.id, 
+        	location: absolutePosition.location, 
+        	position: absolutePosition.position});
     }
 };
 
@@ -223,11 +232,13 @@ Network.prototype.addEntity = function(data) {
     entity.id = data.id;
     entity.objectId = data.objectId;
     entity.name = data.name;
-    entity.setLocalPosition(data.position[0],data.position[1],data.position[2]);
+
+    var relativePosition = this.interpretPosition(data.location, data.position);
+    entity.setLocalPosition(relativePosition[0],relativePosition[1],relativePosition[2]);
     entity.setLocalScale(data.scale[0],data.scale[1],data.scale[2]);
     entity.setEulerAngles(data.rotation[0],data.rotation[1],data.rotation[2]);
     if (entity.rigidbody) {
-      entity.rigidbody.teleport(data.position[0],data.position[1],data.position[2]);
+      entity.rigidbody.teleport(relativePosition[0],relativePosition[1],relativePosition[2]);
     }
     this.app.root.addChild(entity);
     this.app.entities[entity.id] = entity;

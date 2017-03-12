@@ -46,7 +46,7 @@ Movement.prototype.findGridOffset = function (point, range, scale) {
     return offset;
 };
 
-// find offset in 1 dimension
+// find simple offset (greater, equal, less) from center point in 1 dimension
 function findOffset (point, center, range, halfScale) {
     if (point < center - halfScale) {
         return range - 1;
@@ -253,6 +253,11 @@ Movement.prototype.update = function(dt) {
     // Infinite tile start
     var gridOffset = this.findGridOffset(this.entity.getLocalPosition(), this.range, this.scale);
 //    console.log("grid offset: " + gridOffset.x + " " + gridOffset.z);
+
+    var sceneEntity = app.context.root.findByName("scene");
+    var networkEntity = sceneEntity.script.network;
+    // send location update
+    // get location info
 
     this.treadmillX(gridOffset.x);
     this.treadmillZ(gridOffset.z);

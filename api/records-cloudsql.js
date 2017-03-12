@@ -135,10 +135,7 @@ function insertEntityRecord (entityRecord, callback) {
 }
 
 
-function listEntityRecords (point, range, limit, token, callback) {
-  var x = point[0];
-  var y = point[1];
-  var z = point[2];
+function listEntityRecords (minLocX, maxlocX, minLocZ, maxLocZ, limit, token, callback) {
   token = token ? parseInt(token, 10) : 0;
   
   var entityRecords = [];
@@ -149,13 +146,13 @@ function listEntityRecords (point, range, limit, token, callback) {
       return callback(err);
     }
     connection.query('SELECT * FROM entities ' +
-      'WHERE posX < ? ' +
-      'AND posX > ? ' +
-      'AND posZ < ? ' +
-      'AND posZ > ? ' +
+      'WHERE locX >= ? ' +
+      'AND locX <= ? ' +
+      'AND locZ >= ? ' +
+      'AND locZ <= ? ' +
       'LIMIT ? ' +
       'OFFSET ?',
-      [x + range, x - range, z + range, z - range, limit, token ], 
+      [minLocX, maxLocX, minLocZ, maxLocZ, limit, token ], 
       function (err, results) {
         if (err) {
           return callback(err);
@@ -187,8 +184,8 @@ function listEntityRecords (point, range, limit, token, callback) {
   });
 }
 
-function updateEntityRecord(id, posX, posY, posZ, rotX, rotY, rotZ, sclX, sclY, sclZ, callback) {
-  var set = {posX: posX, posY: posY, posZ: posZ, rotX: rotX, rotY: rotY, rotZ: rotZ, sclX: sclX, sclY: sclY, sclZ: sclZ};
+function updateEntityRecord(id, locX, locZ, posX, posY, posZ, rotX, rotY, rotZ, sclX, sclY, sclZ, callback) {
+  var set = {locX: locX, locZ: locZ, posX: posX, posY: posY, posZ: posZ, rotX: rotX, rotY: rotY, rotZ: rotZ, sclX: sclX, sclY: sclY, sclZ: sclZ};
   pool.query('UPDATE entities SET ? WHERE id = ?', [set, id], function (err, res) {
     if (err) {
       return callback(err);
@@ -198,8 +195,8 @@ function updateEntityRecord(id, posX, posY, posZ, rotX, rotY, rotZ, sclX, sclY, 
   });
 }
 
-function updateEntityPosition(id, posX, posY, posZ, callback) {
-  var set = {posX: posX, posY: posY, posZ: posZ};
+function updateEntityPosition(id, locX, locZ, posX, posY, posZ, callback) {
+  var set = {locX: locX, locZ: locZ, posX: posX, posY: posY, posZ: posZ};
   pool.query('UPDATE entities SET ? WHERE id = ?', [set, id], function (err, res) {
     if (err) {
       return callback(err);

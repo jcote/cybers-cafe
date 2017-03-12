@@ -5,13 +5,17 @@ var draweropen = false;
 
 function drawer () {
   if (draweropen) { // close
-  	document.getElementById("interface-div").style.visibility = 'hidden';
-  	document.getElementById("drawer-icon-div").style.visibility = 'visible';
+  	setTimeout(function() {
+  	  $("#interface-div").css('visibility', 'hidden');
+    }, 400);
+  	$("#drawer-icon-div").css('visibility', 'visible');
+  	$("#interface-div").animate({ opacity: 0 }, 400);
   	draweropen = false;
   } else { // open
-  	document.getElementById("interface-div").style.visibility = 'visible';
-  	document.getElementById("drawer-icon-div").style.visibility = 'hidden';
-  	draweropen = true;
+  	$("#interface-div").css('visibility', 'visible');
+  	$("#drawer-icon-div").css('visibility', 'hidden');
+  	$("#interface-div").animate({ opacity: 1 }, 400);
+   	draweropen = true;
   }
 }
 
@@ -61,6 +65,7 @@ function entityPlacement (ev) {
   // bind event listener for selected entity
 	var sceneEntity = context.root.findByName("scene");
   var networkEntity = sceneEntity.script.network;
+  
   var alreadyHit = false;
   var onHit = function(hit) {
   	if (alreadyHit) {
@@ -91,9 +96,12 @@ function entityPlacement (ev) {
     oOutput.appendChild(document.createTextNode("Placing entity..."));
     // Report position to server
 	  var oData = new FormData();
-	  oData.append("posX", hit.point.x);
-	  oData.append("posY", hit.point.y);
-	  oData.append("posZ", hit.point.z);
+	  var absolutePosition = MathUtils.getAbsolutePosition(hit.point.data, movementEntity.scale);
+	  oData.append("locX", absolutePosition.location[0]);
+	  oData.append("locZ", absolutePosition.location[1]);
+	  oData.append("posX", absolutePosition.position[0]);
+	  oData.append("posY", absolutePosition.position[1]);
+	  oData.append("posZ", absolutePosition.position[2]);
 	  var oReq = new XMLHttpRequest();
 	  oReq.open("PUT", "api/entities/position/" + data.entity.id, true);
 	  oReq.onload = function(oEvent) {
@@ -210,7 +218,21 @@ $(function(){
 	  var oOutput = document.getElementById("editFormResultContainer"),
 	      oData = new FormData(form);
 
-      oOutput.innerHTML = "Updating...";
+      // convert position to absolute location & position
+			var app = pc.Application.getApplication("application-canvas");
+			var playerEntity = app.context.root.findByName("Player");
+		  var movementEntity = playerEntity.script.movement;
+
+      var relativePosition = [ oData.get("posX"), oData.get("posY"), oData.get("posZ") ];
+      var absolutePosition = MathUtils.getAbsolutePosition(relativePosition, movementEntity.scale);
+
+      oData.set("locX", absolutePosition.location[0]);
+      oData.set("locZ", absolutePosition.location[1]);
+      oData.set("posX", absolutePosition.position[0]);
+      oData.set("posY", absolutePosition.position[1]);
+      oData.set("posZ", absolutePosition.position[2]);
+
+    oOutput.innerHTML = "Updating...";
 
 	  var oReq = new XMLHttpRequest();
 	  oReq.open("PUT", "api/entity/" + oData.get("id"), true);

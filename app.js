@@ -35,6 +35,8 @@ app.use('/api/entities', require('./api/entities'));
 app.use('/api/image', require('./api/image'));
 app.use('/api/entity', require('./api/entity'));
 
+// location
+app.use('/api/location', require('./api/location'));
 
 // Home page with viewport + entities interface
 app.get('/', function (req, res) {

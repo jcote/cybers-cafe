@@ -68,6 +68,9 @@ router.put('/:entityId', multer.none(), function update (req, res, next) {
   if (!apiLib.isNumeric(req.params.entityId)) {
     return res.status(400).json({"message":"Must supply numeric entity id."});
   }
+  if (!(apiLib.isNumeric(req.body.locX) && apiLib.isNumeric(req.body.locZ))) {
+    return res.status(400).json({"message":"Must supply numeric location."});
+  }
   if (!(apiLib.isNumeric(req.body.posX) && apiLib.isNumeric(req.body.posY) && apiLib.isNumeric(req.body.posZ))) {
     return res.status(400).json({"message":"Must supply numeric position."});
   }
@@ -78,6 +81,7 @@ router.put('/:entityId', multer.none(), function update (req, res, next) {
     return res.status(400).json({"message":"Must supply numeric scale."});
   }
   sqlRecord.updateEntityRecord(req.params.entityId, 
+      req.body.posX, req.body.posZ,
       req.body.posX, req.body.posY, req.body.posZ, 
       req.body.rotX, req.body.rotY, req.body.rotZ,
       req.body.sclX, req.body.sclY, req.body.sclZ, function (err, result) {

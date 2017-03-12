@@ -1,7 +1,5 @@
 'use strict';
 
-var MathUtils = {};
-
 // https://en.wikipedia.org/wiki/Pairing_function
 // https://codepen.io/LiamKarlMitchell/pen/xnEca
 // N x N -> N
@@ -52,6 +50,31 @@ function zReverseCantorPair(n) {
 }
 
 
+// translates (location, position) into (position) using player's coordinates
+// (origin of coordinate system is the location where player started)
+function getRelativePosition(loc, pos, scale) {
+  var out = [];
+  out[0] = pos[0] + scale * (loc[0] - this.origin[0]);
+  out[1] = pos[1];
+  out[2] = pos[2] + scale * (loc[1] - this.origin[1]);
+  return out;
+}
+
+// takes a position in space anchored at origin
+// and returns position XYZ anchored at closest location XZ 
+function getAbsolutePosition (pos, scale) {
+	var out = {location:[], position:[]};
+	
+	out.location[0] = pos[0] / scale;
+	out.location[1] = pos[2] / scale;
+
+	out.position[0] = pos[0] % scale + pos[0];
+	out.position[1] = pos[1];
+	out.position[2] = pos[2] % scale + pos[2];
+
+	return out;
+}
+
 
 //------spiral-------
 // http://math.stackexchange.com/questions/1860538/is-there-a-cantor-pairing-function-for-spirals
@@ -74,5 +97,7 @@ module.exports = {
 	evenOddDecode: evenOddDecode,
 	zCantorPair: zCantorPair,
 	zReverseCantorPair: zReverseCantorPair,
+	getRelativePosition: getRelativePosition,
+	getAbsolutePosition: getAbsolutePosition,
 	spiralPair: spiralPair
 };
