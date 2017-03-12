@@ -37,9 +37,16 @@ html(lang="en")
       div(id="drawer-icon-div")
         span.glyphicon.glyphicon-menu-hamburger.drawer-icon(onclick="drawer()")
 
+      .input-group(id="address-div")
+        input.form-control(type="text" placeholder="Address")
+        span.input-group-btn
+          button.btn.btn-default(type="button") Go
+
       .progress(id="progress-div")
         .progress-bar(id="progress-inner-div" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100")
           span.sr-only(id="progress-span")
+
+      .well.well-sm(id="location-div") Origin
 
       div(id="interface-div")
         span.glyphicon.glyphicon-menu-hamburger.drawer-icon(onclick="drawer()")

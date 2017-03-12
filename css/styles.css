@@ -27,7 +27,7 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  background-color: grey;
+  background-color: #e4e4e4;
 }
 
 /* icon itself (2x) */
@@ -47,7 +47,7 @@ body {
   position: absolute;
   left:50%;
   margin-left:-100px;
-  bottom: 30px;
+  bottom: 70px;
   visibility: hidden;
 }
 
@@ -57,6 +57,30 @@ body {
 #progress-span {
 }
 
+/* address bar */
+#address-div {
+  width: 300px;
+  height: 20px;
+  position: absolute;
+  left:50%;
+  margin-left:-150px;
+  top: 20px;
+}
+
+/* location indicator bar */
+#location-div {
+  font-size: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+  width: 300px;
+  position: absolute;
+  left:50%;
+  margin-left:-150px;
+  bottom: 0;
+  text-align: center;
+  background-color: rgba(245, 245, 245, 0.4);
+  background-image: none;
+}
+
 /* the entire side panel */
 #interface-div {
   width: 350px;
@@ -64,6 +88,7 @@ body {
   height: 100%;
   margin:0 0 0 0;
   padding: 0 0 0 0;
+  border-right: 2px solid #e4e4e4;
   position: absolute;
   top: 0;
   left: 0;
@@ -71,6 +96,7 @@ body {
   visibility: hidden;
   resize: horizontal;
   overflow: hidden;
+  opacity: 0;
 }
 
 .interface-part {
