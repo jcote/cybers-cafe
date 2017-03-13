@@ -17,7 +17,7 @@ var express = require('express');
 var Multer  = require('multer');
 const apiLib = require('./lib');
 const sqlRecord = require('./records-cloudsql');
-const mathUtils = require('./scripts/mathutils');
+const mathUtils = require('../scripts/mathutils');
 
 const multer = Multer();
 var router = express.Router();
@@ -35,3 +35,5 @@ router.get('/address/:address', function (req, res, next) {
   //var locationPair = mathUtils.zReverseCantorPair(nAddress);
 
 });
+
+module.exports = router;

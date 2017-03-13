@@ -52,11 +52,11 @@ function zReverseCantorPair(n) {
 
 // translates (location, position) into (position) using player's coordinates
 // (origin of coordinate system is the location where player started)
-function getRelativePosition(loc, pos, scale) {
+function getRelativePosition(loc, pos, origin, scale) {
   var out = [];
-  out[0] = pos[0] + scale * (loc[0] - this.origin[0]);
+  out[0] = pos[0] + scale * (loc[0] - origin[0]);
   out[1] = pos[1];
-  out[2] = pos[2] + scale * (loc[1] - this.origin[1]);
+  out[2] = pos[2] + scale * (loc[1] - origin[1]);
   return out;
 }
 
@@ -65,12 +65,12 @@ function getRelativePosition(loc, pos, scale) {
 function getAbsolutePosition (pos, scale) {
 	var out = {location:[], position:[]};
 	
-	out.location[0] = pos[0] / scale;
-	out.location[1] = pos[2] / scale;
+	out.location[0] = Math.floor(pos[0] / scale);
+	out.location[1] = Math.floor(pos[2] / scale);
 
-	out.position[0] = pos[0] % scale + pos[0];
+	out.position[0] = pos[0] % scale;
 	out.position[1] = pos[1];
-	out.position[2] = pos[2] % scale + pos[2];
+	out.position[2] = pos[2] % scale;
 
 	return out;
 }

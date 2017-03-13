@@ -233,7 +233,7 @@ Network.prototype.addEntity = function(data) {
     entity.objectId = data.objectId;
     entity.name = data.name;
 
-    var relativePosition = this.interpretPosition(data.location, data.position);
+    var relativePosition = MathUtils.getRelativePosition(data.location, data.position, this.origin, Network.scale);
     entity.setLocalPosition(relativePosition[0],relativePosition[1],relativePosition[2]);
     entity.setLocalScale(data.scale[0],data.scale[1],data.scale[2]);
     entity.setEulerAngles(data.rotation[0],data.rotation[1],data.rotation[2]);

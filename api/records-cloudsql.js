@@ -135,7 +135,7 @@ function insertEntityRecord (entityRecord, callback) {
 }
 
 
-function listEntityRecords (minLocX, maxlocX, minLocZ, maxLocZ, limit, token, callback) {
+function listEntityRecords (minLocX, maxLocX, minLocZ, maxLocZ, limit, token, callback) {
   token = token ? parseInt(token, 10) : 0;
   
   var entityRecords = [];
@@ -150,6 +150,9 @@ function listEntityRecords (minLocX, maxlocX, minLocZ, maxLocZ, limit, token, ca
       'AND locX <= ? ' +
       'AND locZ >= ? ' +
       'AND locZ <= ? ' +
+      'AND posX IS NOT NULL ' +
+      'AND posY IS NOT NULL ' +
+      'AND posZ IS NOT NULL ' +
       'LIMIT ? ' +
       'OFFSET ?',
       [minLocX, maxLocX, minLocZ, maxLocZ, limit, token ], 

@@ -275,11 +275,14 @@ router.put('/position/:entityId', multer.none(), function updatePosition (req, r
   if (!apiLib.isNumeric(req.params.entityId)) {
     return res.status(400).json({"message":"Must supply numeric entity id."});
   }
+  if (!(apiLib.isNumeric(req.body.locX) && apiLib.isNumeric(req.body.locZ))) {
+    return res.status(400).json({"message":"Must supply numeric location."});
+  }
   if (!(apiLib.isNumeric(req.body.posX) && apiLib.isNumeric(req.body.posY) && apiLib.isNumeric(req.body.posZ))) {
     return res.status(400).json({"message":"Must supply numeric position."});
   }
 
-  sqlRecord.updateEntityPosition(req.params.entityId, req.body.posX, req.body.posY, req.body.posZ, function (err, result) {
+  sqlRecord.updateEntityPosition(req.params.entityId, req.body.locX, req.body.locZ, req.body.posX, req.body.posY, req.body.posZ, function (err, result) {
     if (err) {
       return next(err);
     }

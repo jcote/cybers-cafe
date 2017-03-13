@@ -80,7 +80,14 @@ function entityPlacement (ev) {
         }
 	    });
 	  }
-	  data.entity.position = [hit.point.x, hit.point.y, hit.point.z];
+
+    // Convert hit point to absolute positioning
+    var relativePosition = [hit.point.x, hit.point.y, hit.point.z];
+    var absolutePosition = MathUtils.getAbsolutePosition(relativePosition, movementEntity.scale);
+
+    data.entity.location = absolutePosition.location;
+    data.entity.position = absolutePosition.position;
+
     networkEntity.queue.enqueue(new QueueItem('entity', data.entity));
     if (!networkEntity.isQueueRunning) {
         networkEntity.popQueue();
