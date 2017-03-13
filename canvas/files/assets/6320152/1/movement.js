@@ -167,6 +167,9 @@ Movement.prototype.initialize = function() {
     this.scale = 50;
     this.createTileGrid(this.range, this.scale);
 
+    this.locationX = 0;
+    this.locationZ = 0;
+
     // FP start
     this.force = new pc.Vec3();     
 
@@ -254,10 +257,17 @@ Movement.prototype.update = function(dt) {
     var gridOffset = this.findGridOffset(this.entity.getLocalPosition(), this.range, this.scale);
 //    console.log("grid offset: " + gridOffset.x + " " + gridOffset.z);
 
-    var sceneEntity = app.context.root.findByName("scene");
-    var networkEntity = sceneEntity.script.network;
+    // update current location square and update the name location div
+    this.locationX += gridOffset.x - this.range;
+    this.locationZ += gridOffset.z - this.range;
+    var locationNumber = MathUtils.zCantorPair(this.locationX, this.locationZ);
+    var locationName = locationNumber.toString(36);
+    $('#location-div').html(locationName);
+
     // send location update
     // get location info
+    var sceneEntity = app.context.root.findByName("scene");
+    var networkEntity = sceneEntity.script.network;
 
     this.treadmillX(gridOffset.x);
     this.treadmillZ(gridOffset.z);
