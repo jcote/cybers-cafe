@@ -3,7 +3,6 @@ var Network = pc.createScript('network');
 // static variables
 Network.id = null;
 Network.socket = null;
-Network.range = 2; // how many 'position' XZ tiles out from player to transmit data 
 Network.scale = 50; // size of XZ tiles. MUST BE THE SAME AS IN movement.js
 
 function QueueItem(type, resource) {
@@ -21,7 +20,7 @@ Network.prototype.initialize = function() {
     this.progress = 0;
     this.progressExpected = 0;
 
-    this.origin = [0, 0];
+    this.origin = [0, 0]; // what XZ location to consider the tile at 0,0
 
     var socket = io.connect('http://service.cybers.cafe:59595/');
     Network.socket = socket;
@@ -131,9 +130,21 @@ Network.prototype.updatePosition = function () {
     if (this.initialized) {
         var pos = this.player.getPosition();
         var absolutePosition = MathUtils.getAbsolutePosition(pos.data, Network.scale);
-        Network.socket.emit('positionUpdate', {id: Network.id, 
+        Network.socket.emit('positionUpdate', {
+        	id: Network.id, 
         	location: absolutePosition.location, 
-        	position: absolutePosition.position});
+        	position: absolutePosition.position
+        });
+    }
+};
+
+Network.prototype.updateLocation = function () {
+    if (this.initialized) {
+        var pos = this.player.getPosition();
+        var absolutePosition = MathUtils.getAbsolutePosition(pos.data, Network.scale);
+        Network.socket.emit('locationUpdate', {
+        	location: absolutePosition.location
+        });
     }
 };
 

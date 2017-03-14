@@ -163,12 +163,15 @@ Movement.prototype.initialize = function() {
     
     // Infinite tile
     this.tile = this.app.root.findByName('Tile');
-    this.range = 5;
-    this.scale = 50;
+    this.range = 5; // how many location tiles out to draw from center tile
+    this.scale = 50; // how large a tile is from edge to edge
     this.createTileGrid(this.range, this.scale);
 
-    this.locationX = 0;
+    this.locationX = 0;  // current location
     this.locationZ = 0;
+
+    this.locationBreadcrumbVector = [0, 0]; // vector from starting location to current location
+    this.locationUpdateRange = 2;
 
     // FP start
     this.force = new pc.Vec3();     
@@ -258,16 +261,30 @@ Movement.prototype.update = function(dt) {
 //    console.log("grid offset: " + gridOffset.x + " " + gridOffset.z);
 
     // update current location square and update the name location div
+    //  gridOffset is guaranteed be outside of range for only one pass because 
+    //  the treadmill functions reset tileGrid, so next pass localposition will
+    //  be inside the center tile (equal to range)
     this.locationX += gridOffset.x - this.range;
     this.locationZ += gridOffset.z - this.range;
     var locationNumber = MathUtils.zCantorPair(this.locationX, this.locationZ);
     var locationName = locationNumber.toString(36);
     $('#location-div').html(locationName);
 
-    // send location update
-    // get location info
+    // send location update & get location info
     var sceneEntity = app.context.root.findByName("scene");
     var networkEntity = sceneEntity.script.network;
+
+    this.locationBreadcrumbVector[0] += gridOffset.x - this.range;
+    this.locationBreadcrumbVector[1] += gridOffset.z - this.range;
+    if (  Math.abs(this.locationBreadcrumbVector[0]) > this.locationUpdateRange || 
+          Math.abs(this.locationBreadcrumbVector[1]) > this.locationUpdateRange) {
+        console.log("Location Update");
+
+        // request for entities
+        networkEntity.updateLocation();
+
+        this.locationBreadcrumbVector = [0, 0];
+    }
 
     this.treadmillX(gridOffset.x);
     this.treadmillZ(gridOffset.z);
