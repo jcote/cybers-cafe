@@ -130,6 +130,8 @@ Network.prototype.updatePosition = function () {
     if (this.initialized) {
         var pos = this.player.getPosition();
         var absolutePosition = MathUtils.getAbsolutePosition(pos.data, Network.scale);
+        absolutePosition.location[0] += this.origin[0];
+        absolutePosition.location[1] += this.origin[1];
         Network.socket.emit('positionUpdate', {
         	id: Network.id, 
         	location: absolutePosition.location, 
@@ -142,6 +144,9 @@ Network.prototype.updateLocation = function () {
     if (this.initialized) {
         var pos = this.player.getPosition();
         var absolutePosition = MathUtils.getAbsolutePosition(pos.data, Network.scale);
+        absolutePosition.location[0] += this.origin[0];
+        absolutePosition.location[1] += this.origin[1];
+        console.log("Update location: " + absolutePosition.location);
         Network.socket.emit('locationUpdate', {
         	location: absolutePosition.location
         });
@@ -199,7 +204,11 @@ Network.prototype.addAsset = function(data) {
     asset.tags.add(data.tags);
     asset.revision = data.revision;
 
-    this.app.assets.add(asset);
+    try {
+      this.app.assets.add(asset);
+    } catch (err) {
+    	console.log("Asset error: " + err);
+    }
 //    console.log('Asset Added');
 //    console.log(data);
     
@@ -214,7 +223,11 @@ Network.prototype.addAsset = function(data) {
     } else {
         // Start async loading the asset
         asset.once('load', onAssetLoad);
-        this.app.assets.load(asset);
+        try {
+          this.app.assets.load(asset);
+        } catch (err) {
+        	console.log("Asset error: " + err);
+        }
     }
 };
 

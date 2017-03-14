@@ -19,6 +19,62 @@ function drawer () {
   }
 }
 
+// Warp To button
+$(function(){
+  var onClick = function(ev) { 
+		var app = pc.Application.getApplication("application-canvas");
+		var context = app.context;
+
+		// check name is valid
+    var warpLocationName = $('#warpToInput').val();
+		var alphanumericRe = /^[0-9a-zA-Z]+$/;
+ 		if (!warpLocationName.match(alphanumericRe)) { 
+      alert("Alphanumeric names only.");
+      return;
+    }
+
+    // compute location
+    var warpLocationNumber = parseInt(warpLocationName,36);
+    var warpLocationPair = MathUtils.zReverseCantorPair(warpLocationNumber);
+    console.log("Warp to: [" + warpLocationPair + "] (" + warpLocationNumber + ") '" + warpLocationName + "'");
+
+  	// remove entities
+  	// Object.keys(app.entities).forEach(function(entityId) {
+  	// 	app.entities[entityId].destroy();
+  	// 	delete app.entities[entityId];
+  	// })
+
+  	// reset movement locationBreadcrumbVector & update movement location
+		var playerEntity = context.root.findByName("Player");
+    var movementEntity = playerEntity.script.movement;
+    movementEntity.locationBreadcrumbVector = [0, 0];
+//    movementEntity.locationX = warpLocationPair[0];
+//    movementEntity.locationZ = warpLocationPair[1];
+
+  	// update Network origin and clear queue
+		var sceneEntity = context.root.findByName("scene");
+	  var networkEntity = sceneEntity.script.network;
+//	  networkEntity.origin = warpLocationPair;
+  //   networkEntity.isQueueRunning = false;	  
+	 //  networkEntity.queue = new Queue();
+		// networkEntity.progress = 0;
+	 //  networkEntity.progressExpected = 0;
+  //   $('#progress-inner-div').attr('aria-valuenow', 0).css('width','100%');
+  //   $('#progress-div').css('visibility', 'hidden');
+
+  	// network updateposition & updatelocation
+  	networkEntity.player.rigidbody.teleport(warpLocationPair[0] * Network.scale, 0.5, warpLocationPair[1] * Network.scale);
+    networkEntity.updatePosition();
+//		networkEntity.updateLocation();
+
+    // update location div
+//    $('#location-div').html(warpLocationName);
+  };
+
+  var button = document.getElementById("warpToButton");
+  button.addEventListener('click', onClick, false);
+});
+
 // Section Select
 var sections = ["createSection", "editSection"];
 
@@ -84,7 +140,8 @@ function entityPlacement (ev) {
     // Convert hit point to absolute positioning
     var relativePosition = [hit.point.x, hit.point.y, hit.point.z];
     var absolutePosition = MathUtils.getAbsolutePosition(relativePosition, movementEntity.scale);
-
+    absolutePosition.location[0] += networkEntity.origin[0];
+    absolutePosition.location[1] += networkEntity.origin[1];
     data.entity.location = absolutePosition.location;
     data.entity.position = absolutePosition.position;
 
@@ -104,6 +161,8 @@ function entityPlacement (ev) {
     // Report position to server
 	  var oData = new FormData();
 	  var absolutePosition = MathUtils.getAbsolutePosition(hit.point.data, movementEntity.scale);
+    absolutePosition.location[0] += networkEntity.origin[0];
+    absolutePosition.location[1] += networkEntity.origin[1];
 	  oData.append("locX", absolutePosition.location[0]);
 	  oData.append("locZ", absolutePosition.location[1]);
 	  oData.append("posX", absolutePosition.position[0]);
@@ -229,10 +288,13 @@ $(function(){
 			var app = pc.Application.getApplication("application-canvas");
 			var playerEntity = app.context.root.findByName("Player");
 		  var movementEntity = playerEntity.script.movement;
+			var sceneEntity = app.context.root.findByName("scene");
+		  var networkEntity = sceneEntity.script.network;
 
       var relativePosition = [ oData.get("posX"), oData.get("posY"), oData.get("posZ") ];
       var absolutePosition = MathUtils.getAbsolutePosition(relativePosition, movementEntity.scale);
-
+	    absolutePosition.location[0] += networkEntity.origin[0];
+	    absolutePosition.location[1] += networkEntity.origin[1];
       oData.set("locX", absolutePosition.location[0]);
       oData.set("locZ", absolutePosition.location[1]);
       oData.set("posX", absolutePosition.position[0]);
