@@ -269,6 +269,7 @@ $(function(){
 	      oOutput.appendChild(document.createTextNode(responseJson.message));
 	      if (responseJson.records) {
 	      	Object.keys(responseJson.records).forEach(function(entityId) {
+	      		if (entityId == "undefined") return;
 	      		// gather together the entity itself and its assets so we can render them
 	      		var objectId = responseJson.records[entityId].objectId;
 	      		var entity = responseJson.entities[objectId];
