@@ -53,18 +53,22 @@ Network.prototype.initialize = function() {
 
     socket.on ('addAsset', function (data) {
         console.log('Add Asset');
-        self.queue.enqueue(new QueueItem('asset', data.asset));
-        if (!self.isQueueRunning) {
-            self.popQueue();
-        }
+        if (!self.app.assets.get(data.asset.id)) {
+	        self.queue.enqueue(new QueueItem('asset', data.asset));
+	        if (!self.isQueueRunning) {
+	            self.popQueue();
+	        }
+	      }
     });
 
     socket.on ('addEntity', function (data) {
         console.log('Add Entity');
-        self.queue.enqueue(new QueueItem('entity', data.entity));
-        if (!self.isQueueRunning) {
-            self.popQueue();
-        }
+        if (!(data.entity.id in self.app.entities)) {
+	        self.queue.enqueue(new QueueItem('entity', data.entity));
+	        if (!self.isQueueRunning) {
+	            self.popQueue();
+	        }
+	      }
     });
 
     setInterval (function () {
