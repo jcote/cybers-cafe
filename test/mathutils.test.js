@@ -92,6 +92,171 @@ describe('MathUtils', function() {
     });
   });
 
+  describe('#getRelativePosition()', function() {
+    it('returns correct values', function() {
+      var loc = [0,0];
+      var pos = [0,0,0];
+      var origin = [0,0];
+    	var scale = 50;
+		  var r = mathutils.getRelativePosition(loc, pos, origin, scale);
+		  assert.deepEqual( r, [0,0,0] );
+
+      loc = [0,0];
+      pos = [0,0,0];
+      origin = [2,4];
+    	scale = 50;
+		  r = mathutils.getRelativePosition(loc, pos, origin, scale);
+		  assert.deepEqual( r, [100,0,200] );
+
+      loc = [0,0];
+      pos = [0,0,0];
+      origin = [-2,4];
+    	scale = 50;
+		  r = mathutils.getRelativePosition(loc, pos, origin, scale);
+		  assert.deepEqual( r, [-100,0,200] );
+
+      loc = [2,4];
+      pos = [0,0,0];
+      origin = [0,0];
+    	scale = 50;
+		  r = mathutils.getRelativePosition(loc, pos, origin, scale);
+		  assert.deepEqual( r, [100,0,200] );
+
+      loc = [-2,-4];
+      pos = [0,0,0];
+      origin = [0,0];
+    	scale = 50;
+		  r = mathutils.getRelativePosition(loc, pos, origin, scale);
+		  assert.deepEqual( r, [-100,0,-200] );
+
+      loc = [0,0];
+      pos = [12,0,12];
+      origin = [0,0];
+    	scale = 50;
+		  r = mathutils.getRelativePosition(loc, pos, origin, scale);
+		  assert.deepEqual( r, [12,0,12] );
+
+      loc = [0,0];
+      pos = [-12,0,-12];
+      origin = [0,0];
+    	scale = 50;
+		  r = mathutils.getRelativePosition(loc, pos, origin, scale);
+		  assert.deepEqual( r, [-12,0,-12] );
+
+      loc = [4,12];
+      pos = [12,0,0];
+      origin = [1,2];
+    	scale = 50;
+		  r = mathutils.getRelativePosition(loc, pos, origin, scale);
+		  assert.deepEqual( r, [262,0,700] );
+    });
+  });
+
+  describe('#getAbsolutePosition()', function() {
+    it('returns correct values', function() {
+      var pos = [0,0,0];
+      var origin = [0,0];
+    	var scale = 50;
+		  var r = mathutils.getAbsolutePosition(pos, origin, scale);
+		  assert.deepEqual( r.location, [0,0] );
+		  assert.deepEqual( r.position, [0,0,0] );
+
+      pos = [14,0,12];
+      origin = [0,0];
+    	scale = 50;
+		  r = mathutils.getAbsolutePosition(pos, origin, scale);
+		  assert.deepEqual( r.location, [0,0] );
+		  assert.deepEqual( r.position, [14,0,12] );
+
+      pos = [14,0,12];
+      origin = [1,-1];
+    	scale = 50;
+		  r = mathutils.getAbsolutePosition(pos, origin, scale);
+		  assert.deepEqual( r.location, [1,-1] );
+		  assert.deepEqual( r.position, [14,0,12] );
+
+      pos = [120,0,12];
+      origin = [0,0];
+    	scale = 50;
+		  r = mathutils.getAbsolutePosition(pos, origin, scale);
+		  assert.deepEqual( r.location, [2,0] );
+		  assert.deepEqual( r.position, [20,0,12] );
+
+      pos = [-14,0,-12];
+      origin = [0,0];
+    	scale = 50;
+		  r = mathutils.getAbsolutePosition(pos, origin, scale);
+		  assert.deepEqual( r.location, [0,0] );
+		  assert.deepEqual( r.position, [-14,0,-12] );
+
+      pos = [-240,0,-32];
+      origin = [0,0];
+    	scale = 50;
+		  r = mathutils.getAbsolutePosition(pos, origin, scale);
+		  assert.deepEqual( r.location, [-5,-1] );
+		  assert.deepEqual( r.position, [10,0,18] );
+
+      pos = [-210,0,-52];
+      origin = [0,0];
+    	scale = 50;
+		  r = mathutils.getAbsolutePosition(pos, origin, scale);
+		  assert.deepEqual( r.location, [-4,-1] );
+		  assert.deepEqual( r.position, [-10,0,-2] );
+
+      pos = [35,0,12];
+      origin = [0,0];
+    	scale = 50;
+		  r = mathutils.getAbsolutePosition(pos, origin, scale);
+		  assert.deepEqual( r.location, [1,0] );
+		  assert.deepEqual( r.position, [-15,0,12] );
+
+      pos = [35,0,12];
+      origin = [1,-1];
+    	scale = 50;
+		  r = mathutils.getAbsolutePosition(pos, origin, scale);
+		  assert.deepEqual( r.location, [2,-1] );
+		  assert.deepEqual( r.position, [-15,0,12] );
+    });
+
+    it('returns original values with Reverse', function() {
+			var tests = [  ];
+			for (var x = -100; x<100; x=x+5) {
+			  for (var y= -100; y<100; y=y+5) {
+			    tests.push([x,y]);
+			  }
+			}
+
+      var origin = [0,0];
+      var scale = 50;
+			for (var i=0;i<tests.length;i++) {
+			  var r = mathutils.getAbsolutePosition([tests[i][0], 0, tests[i][1]], origin, scale);
+			  var r2 = mathutils.getRelativePosition(r.location, r.position, origin, scale);
+			  assert.deepEqual( r2, [tests[i][0], 0, tests[i][1]] );
+			}
+    });
+
+    it('Reverse returns original values with Normal', function() {
+			var tests = [  ];
+			for (var x = -100; x<100; x=x+10) {
+			  for (var y= -100; y<100; y=y+10) {
+					for (var w = -24; w<20; w=w+5) {
+					  for (var z= -24; z<20; z=z+5) {
+			    		tests.push([x,y,w,z]);
+            }
+					}
+			  }
+			}
+
+			var origin = [0,0];
+      var scale = 50;
+			for (var i=0;i<tests.length;i++) {
+			  var r = mathutils.getRelativePosition([tests[i][0],tests[i][1]], [tests[i][2],0,tests[i][3]], origin, scale);
+			  var r2 = mathutils.getAbsolutePosition(r, origin, scale);
+			  assert.deepEqual( r2.location, [tests[i][0],tests[i][1]] );
+			  assert.deepEqual( r2.position, [tests[i][2],0,tests[i][3]] );
+			}
+    });
+  });
 
   describe('#SpiralPair()', function() {
     it('returns correct values', function() {

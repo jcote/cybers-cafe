@@ -21,19 +21,39 @@ MathUtils.getRelativePosition = function(loc, pos, origin, scale) {
 }
 
 // takes a position in space anchored at origin
-// and returns position XYZ anchored at closest location XZ 
-MathUtils.getAbsolutePosition = function(pos, scale) {
-	var out = {location:[], position:[]};
-	
-	out.location[0] = Math.floor(pos[0] / scale);
-	out.location[1] = Math.floor(pos[2] / scale);
+// and returns position XYZ anchored at closest location xz 
+MathUtils.getAbsolutePosition = function(pos, origin, scale) {
+  var out = {location:[], position:[]};
+  var halfScale = scale / 2;
 
-	out.position[0] = pos[0] % scale;
-	out.position[1] = pos[1];
-	out.position[2] = pos[2] % scale;
+  var locPartialX = Math.floor(Math.abs(pos[0]) / halfScale);
+  var locPartialZ = Math.floor(Math.abs(pos[2]) / halfScale);
 
-	return out;
+  var signPosX = locPartialX % 2 == 0 ? 1 : -1;
+  var signPosZ = locPartialZ % 2 == 0 ? 1 : -1;
+
+  var signLocX = pos[0] >= 0 ? 1 : -1;
+  var signLocZ = pos[2] >= 0 ? 1 : -1;
+
+  var floorOrCeilX = locPartialX % 2 ? Math.ceil : Math.floor;
+  var floorOrCeilZ = locPartialZ % 2 ? Math.ceil : Math.floor;
+
+  var locPartialX2 = signLocX * floorOrCeilX.call(null, locPartialX / 2);
+  var locPartialZ2 = signLocZ * floorOrCeilZ.call(null, locPartialZ / 2);
+
+  out.location[0] = locPartialX2 + origin[0];
+  out.location[1] = locPartialZ2 + origin[1];
+
+  var posPartialX = pos[0] - locPartialX2 * scale;
+  var posPartialZ = pos[2] - locPartialZ2 * scale;
+
+  out.position[0] = Math.abs(posPartialX) == 25 ? posPartialX : posPartialX % halfScale;
+  out.position[1] = pos[1];
+  out.position[2] = Math.abs(posPartialZ) == 25 ? posPartialZ : posPartialZ % halfScale;
+
+  return out;
 }
+
 
 // https://en.wikipedia.org/wiki/Pairing_function
 // https://codepen.io/LiamKarlMitchell/pen/xnEca
