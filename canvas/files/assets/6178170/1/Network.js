@@ -99,8 +99,8 @@ Network.prototype.addPlayer = function (data) {
 };
 
 Network.prototype.movePlayer = function (data) {
-    if (this.initialized && !this.players[data.id].deleted) {
-    	  var relativePosition = MathUtils.getRelativePosition(data.position, data.location, this.origin, Network.scale);
+    if (this.initialized && this.players[data.id] && !this.players[data.id].deleted) {
+    	  var relativePosition = MathUtils.getRelativePosition(data.location, data.position, this.origin, Network.scale);
         this.players[data.id].entity.rigidbody.teleport(relativePosition[0], relativePosition[1], relativePosition[2]);
     }
 };
@@ -119,7 +119,7 @@ Network.prototype.createPlayerEntity = function (data) {
     this.other.getParent().addChild(newPlayer);
 
     if (data) {
-    	  var relativePosition = MathUtils.getRelativePosition(data.position, data.location, this.origin, Network.scale);
+    	  var relativePosition = MathUtils.getRelativePosition(data.location, data.position, this.origin, Network.scale);
         newPlayer.rigidbody.teleport(relativePosition[0], relativePosition[1], relativePosition[2]);
     }
     return newPlayer;
@@ -133,9 +133,9 @@ Network.prototype.update = function(dt) {
 Network.prototype.updatePosition = function () {
     if (this.initialized) {
         var pos = this.player.getPosition();
-        var absolutePosition = MathUtils.getAbsolutePosition(pos.data, Network.scale);
-        absolutePosition.location[0] += this.origin[0];
-        absolutePosition.location[1] += this.origin[1];
+		    pos.data[0] -= Network.scale * this.origin[0];
+		    pos.data[2] -= Network.scale * this.origin[1];
+        var absolutePosition = MathUtils.getAbsolutePosition(pos.data, this.origin, Network.scale);
         Network.socket.emit('positionUpdate', {
         	id: Network.id, 
         	location: absolutePosition.location, 
@@ -147,9 +147,9 @@ Network.prototype.updatePosition = function () {
 Network.prototype.updateLocation = function () {
     if (this.initialized) {
         var pos = this.player.getPosition();
-        var absolutePosition = MathUtils.getAbsolutePosition(pos.data, Network.scale);
-        absolutePosition.location[0] += this.origin[0];
-        absolutePosition.location[1] += this.origin[1];
+		    pos.data[0] -= Network.scale * this.origin[0];
+		    pos.data[2] -= Network.scale * this.origin[1];
+        var absolutePosition = MathUtils.getAbsolutePosition(pos.data, this.origin, Network.scale);
         console.log("Update location: " + absolutePosition.location);
         Network.socket.emit('locationUpdate', {
         	location: absolutePosition.location

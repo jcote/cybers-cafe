@@ -194,9 +194,9 @@ function entityPlacement (ev) {
 
     // Convert hit point to absolute positioning
     var relativePosition = [hit.point.x, hit.point.y, hit.point.z];
-    var absolutePosition = MathUtils.getAbsolutePosition(relativePosition, movementEntity.scale);
-    absolutePosition.location[0] += networkEntity.origin[0];
-    absolutePosition.location[1] += networkEntity.origin[1];
+    relativePosition[0] -= Network.scale * networkEntity.origin[0];
+    relativePosition[2] -= Network.scale * networkEntity.origin[1];
+    var absolutePosition = MathUtils.getAbsolutePosition(relativePosition, networkEntity.origin, movementEntity.scale);
     data.entity.location = absolutePosition.location;
     data.entity.position = absolutePosition.position;
 
@@ -215,9 +215,6 @@ function entityPlacement (ev) {
     oOutput.appendChild(document.createTextNode("Placing entity..."));
     // Report position to server
 	  var oData = new FormData();
-	  var absolutePosition = MathUtils.getAbsolutePosition(hit.point.data, movementEntity.scale);
-    absolutePosition.location[0] += networkEntity.origin[0];
-    absolutePosition.location[1] += networkEntity.origin[1];
 	  oData.append("locX", absolutePosition.location[0]);
 	  oData.append("locZ", absolutePosition.location[1]);
 	  oData.append("posX", absolutePosition.position[0]);
@@ -348,9 +345,7 @@ $(function(){
 		  var networkEntity = sceneEntity.script.network;
 
       var relativePosition = [ oData.get("posX"), oData.get("posY"), oData.get("posZ") ];
-      var absolutePosition = MathUtils.getAbsolutePosition(relativePosition, movementEntity.scale);
-	    absolutePosition.location[0] += networkEntity.origin[0];
-	    absolutePosition.location[1] += networkEntity.origin[1];
+      var absolutePosition = MathUtils.getAbsolutePosition(relativePosition, networkEntity.origin, movementEntity.scale);
       oData.set("locX", absolutePosition.location[0]);
       oData.set("locZ", absolutePosition.location[1]);
       oData.set("posX", absolutePosition.position[0]);
