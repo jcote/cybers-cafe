@@ -194,8 +194,6 @@ function entityPlacement (ev) {
 
     // Convert hit point to absolute positioning
     var relativePosition = [hit.point.x, hit.point.y, hit.point.z];
-    relativePosition[0] -= Network.scale * networkEntity.origin[0];
-    relativePosition[2] -= Network.scale * networkEntity.origin[1];
     var absolutePosition = MathUtils.getAbsolutePosition(relativePosition, networkEntity.origin, movementEntity.scale);
     data.entity.location = absolutePosition.location;
     data.entity.position = absolutePosition.position;

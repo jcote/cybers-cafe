@@ -133,8 +133,6 @@ Network.prototype.update = function(dt) {
 Network.prototype.updatePosition = function () {
     if (this.initialized) {
         var pos = this.player.getPosition();
-		    pos.data[0] -= Network.scale * this.origin[0];
-		    pos.data[2] -= Network.scale * this.origin[1];
         var absolutePosition = MathUtils.getAbsolutePosition(pos.data, this.origin, Network.scale);
         Network.socket.emit('positionUpdate', {
         	id: Network.id, 
@@ -147,8 +145,6 @@ Network.prototype.updatePosition = function () {
 Network.prototype.updateLocation = function () {
     if (this.initialized) {
         var pos = this.player.getPosition();
-		    pos.data[0] -= Network.scale * this.origin[0];
-		    pos.data[2] -= Network.scale * this.origin[1];
         var absolutePosition = MathUtils.getAbsolutePosition(pos.data, this.origin, Network.scale);
         console.log("Update location: " + absolutePosition.location);
         Network.socket.emit('locationUpdate', {
