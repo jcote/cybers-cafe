@@ -153,6 +153,7 @@ function listEntityRecords (minLocX, maxLocX, minLocZ, maxLocZ, limit, token, ca
       'AND posX IS NOT NULL ' +
       'AND posY IS NOT NULL ' +
       'AND posZ IS NOT NULL ' +
+      'AND (deleted IS NULL OR deleted = FALSE) ' +
       'LIMIT ? ' +
       'OFFSET ?',
       [minLocX, maxLocX, minLocZ, maxLocZ, limit, token ], 
@@ -209,10 +210,21 @@ function updateEntityPosition(id, locX, locZ, posX, posY, posZ, callback) {
   });
 }
 
+function removeEntity(id, callback) {
+  pool.query('UPDATE entities SET deleted = true WHERE id = ?', [id], function (err, res) {
+    if (err) {
+      return callback(err);
+    }
+    console.log("Entity deleted in SQL for id: " + id);
+    return callback(null, res);
+  });
+}
+
 
 module.exports = {
   insertEntityRecord: insertEntityRecord,
   listEntityRecords: listEntityRecords,
   updateEntityRecord: updateEntityRecord,
-  updateEntityPosition: updateEntityPosition
+  updateEntityPosition: updateEntityPosition,
+  removeEntity: removeEntity
 };
