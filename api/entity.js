@@ -101,12 +101,12 @@ router.put('/:entityId', multer.none(), function update (req, res, next) {
  *
  * Delete a entity.
  */
-router.delete('/:id', function _delete (req, res, next) {
-  apiLib.getModel().delete("Entity", req.params.id, function (err) {
+router.delete('/:entityId', function _delete (req, res, next) {
+  sqlRecord.removeEntity(req.params.entityId, function(err, result) {
     if (err) {
       return next(err);
     }
-    res.status(200).send('OK');
+    return res.status(200).send('Entity deleted.');
   });
 });
 

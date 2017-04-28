@@ -613,3 +613,41 @@ $(function(){
   var button = document.getElementById("editEntityProofButton");
   button.addEventListener('click', onClick, false);
 });
+
+// Remove entity
+$(function(){
+  var onClick = function(ev) {
+    // get "playcanvas entity" objects
+    var app = pc.Application.getApplication("application-canvas");
+    var entityId = document.getElementById("editEntityId").value;
+    if (!$.isNumeric(entityId) || !(entityId in app.entities)) {
+      alert("Select an Entity first.");
+      return;
+    }
+    var entity = app.entities[entityId];
+
+    var oOutput = document.getElementById("editFormResultContainer");
+
+     oOutput.appendChild(document.createTextNode("Removing..."));
+
+    var oReq = new XMLHttpRequest();
+    oReq.open("DELETE", "api/entity/" + entityId, true);
+    oReq.onload = function(oEvent) {
+      if (oReq.status == 200) {
+        entity.destroy();
+        delete app.entities[entityId];
+
+        oOutput.appendChild(document.createTextNode(oReq.responseText));
+      } else {
+        oOutput.appendChild(document.createTextNode("Error occurred. " + oReq.responseText));
+      }
+    };
+
+    oReq.send();
+    ev.preventDefault();
+  };
+
+  var button = document.getElementById("removeEntityButton");
+  button.addEventListener('click', onClick, false);
+});
+
