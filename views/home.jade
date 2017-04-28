@@ -202,7 +202,8 @@ html(lang="en")
             .container.interface-part(id="editEntitySubmit")
               .row
                 .col-sm-4
-                  button.btn.btn-danger(type="button" id="removeEntityButton") Remove
+                  button.btn.btn-danger(type="button" data-toggle="modal" data-target="#removeModal") Remove
+
                 .col-sm-4
                   button.btn.btn-info(type="button" id="editEntityProofButton") Proof
                 .col-sm-4
@@ -239,3 +240,16 @@ html(lang="en")
                   p.lead On the far left click the last icon for Publish/Download and select Download
                 li
                   p.lead Click Web Download to download your zip  
+
+      .modal.fade(id="removeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+        .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type="button" data-dismiss="modal" aria-hidden="true") ×
+              h4.modal-title(id="myModalLabel") Confirm Delete
+            .modal-body
+              p You are about to delete record, this procedure is irreversible.
+              p Do you want to proceed?
+            .modal-footer
+              button.btn.btn-default(type="button" data-dismiss="modal") Cancel
+              button.btn.btn-danger.btn-ok(type="button" data-dismiss="modal" id="removeEntityButton") Delete
