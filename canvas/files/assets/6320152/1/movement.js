@@ -28,6 +28,10 @@ Movement.attributes.add('maxElevation', {
 
 Movement.prototype.tileGrid = [];
 
+Movement.prototype.isBodyFocused = function () {
+    return document.activeElement == document.getElementsByTagName("BODY")[0];
+}
+
 // Figure out which tile the point is in
 // Return array offsets as x and z
 Movement.prototype.findGridOffset = function (point, range, scale) {
@@ -203,7 +207,7 @@ Movement.prototype.update = function(dt) {
 
     // Use W-A-S-D keys to move player
     // Check for key presses
-    if (this.inputEnabled) {
+    if (this.inputEnabled && this.isBodyFocused()) {
       if (app.keyboard.isPressed(pc.KEY_A) || app.keyboard.isPressed(pc.KEY_LEFT)) {
         x -= right.x;
         z -= right.z;
@@ -226,7 +230,7 @@ Movement.prototype.update = function(dt) {
     }
 
     // use force last set by touch/mouse to force the character
-    if (force.x !== 0 || force.z !== 0) {
+    if ((force.x !== 0 || force.z !== 0) && this.isBodyFocused()) {
         this.entity.rigidbody.applyForce(force);
     }
     // use direction from keypresses to apply a force to the character
