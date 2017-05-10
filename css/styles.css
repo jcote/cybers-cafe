@@ -138,6 +138,13 @@ body {
   display: none;
 }
 
+#contactSection {
+  position: absolute;
+  display: block;
+  bottom: 0;
+  right:150px;
+}
+
 #modeLabel {
   position: absolute;
   right: 6px;

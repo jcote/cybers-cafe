@@ -373,8 +373,7 @@ $(function(){
   };
 
   var form = document.forms.namedItem("editEntity");
-  form.addEventListener('submit', onUpload, false);
-});
+  form.addEventListener('submit', onUpload, false); });
 
 var populateInputsForSelectedEntity = function (entity) {
     document.getElementById("editEntityTitle").value = entity.name;
@@ -651,3 +650,25 @@ $(function(){
   button.addEventListener('click', onClick, false);
 });
 
+// Send Feedback
+$(function() {
+  var onUpload = function(ev) {
+    var oData = new FormData(form);
+    var oReq = new XMLHttpRequest();
+    oReq.open("POST", "api/feedback", true);
+    oReq.onload = function(oEvent) {
+      if (oReq.status == 200) {
+        alert("Feedback sent - Thank you");
+        $('#contactModal').modal('hide');
+      } else {
+        alert("Error occurred. " + oReq.responseText);
+      }
+    };
+
+    oReq.send(oData);
+    ev.preventDefault();
+  };
+
+  var form = document.forms.namedItem("contact");
+  form.addEventListener('submit', onUpload, false);
+});

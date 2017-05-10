@@ -211,6 +211,11 @@ html(lang="en")
           br
           .container.interface-part(id="editFormResultContainer") Ready...
 
+        div(id="contactSection")
+          h1.text-center
+            a.btn.btn-primary.btn-sm(href="#contactModal" role="button" data-toggle="modal") Feedback
+
+
       .modal.fade.bd-example-modal-lg(id="zipModal" tabindex="-1" role="dialog" aria-labelledby="zipModal" aria-hidden="true")
         .modal-dialog.modal-lg
           .modal-content
@@ -253,3 +258,22 @@ html(lang="en")
             .modal-footer
               button.btn.btn-default(type="button" data-dismiss="modal") Cancel
               button.btn.btn-danger.btn-ok(type="button" data-dismiss="modal" id="removeEntityButton") Delete
+
+      .modal.fade(id="contactModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+        .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type="button" data-dismiss="modal" aria-hidden="true") ×
+              h3(id="myModalLabel") We'd Love to Hear From You
+            .modal-body
+              form.form-horizontal.col-sm-12(id="contactForm" name="contact")
+                p &nbsp;
+                .form-group
+                  label Message
+                  textarea.form-control(name="message" placeholder="Feature request, bug report, comment here.." required)
+                .form-group
+                  label E-Mail
+                  input.form-control(name="email" placeholder="you@domain.com" type="email" required)
+                .form-group
+                  button.btn.btn-success.pull-right(type="submit" id="contactSendButton") Send
+            .modal-footer

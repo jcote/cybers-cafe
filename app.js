@@ -38,6 +38,9 @@ app.use('/api/entity', require('./api/entity'));
 // location
 app.use('/api/location', require('./api/location'));
 
+// feedback
+app.use('/api/feedback', require('./api/feedback'));
+
 // Home page with viewport + entities interface
 app.get('/', function (req, res) {
   res.render("home.jade", {
