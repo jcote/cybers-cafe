@@ -22,11 +22,11 @@ const async = require('async');
 const sqlRecord = require('./records-cloudsql');
 const apiLib = require('./lib');
 
-const multer = Multer({dest:'uploads'
-/*  storage: Multer.MemoryStorage,
+const multer = Multer({//dest:'uploads'
+  storage: Multer.MemoryStorage,
   limits: {
-    fileSize: 5 * 1024 * 1024 // no larger than 5mb
-  }*/ 
+    fileSize: 10 * 1024 * 1024 // no larger than 10mb
+  } 
 });
 
 var router = express.Router();
@@ -74,39 +74,37 @@ function createImageAssetsAndEntity (req, res, next) {
         fileAsset.file.size = req.file.size;
         fileAsset.file.url = assetFullPath;
 
-        fs.readFile("uploads/" + req.file.filename, function(err, assetFileBuf) {
+        if (err) {
+          return next(err);
+        }
+        fileAsset.file.hash = md5(req.file.buffer);
+
+        // Populate the stock Material Asset
+        var materialAsset = assetStockJson[6451449];
+        materialAsset.id = assetMaterialId;
+        materialAsset.data.diffuseMap = assetFileId;
+        materialAsset.data.emissiveMap = assetFileId;
+
+        // save assets to req
+        req.assets[assetFileId] = fileAsset;
+        req.assets[assetMaterialId] = materialAsset;
+
+        fs.readFile("stock/entity/image.json", function(err, entityStockBuf) {
           if (err) {
             return next(err);
           }
-          fileAsset.file.hash = md5(assetFileBuf);
+          var entityStockJson = JSON.parse(entityStockBuf);
 
-          // Populate the stock Material Asset
-          var materialAsset = assetStockJson[6451449];
-          materialAsset.id = assetMaterialId;
-          materialAsset.data.diffuseMap = assetFileId;
-          materialAsset.data.emissiveMap = assetFileId;
+          // Populate the stock Entity
+          var entity = entityStockJson;
+          entity.components.model.materialAsset = assetMaterialId;
+          req.entitiesWithNoKey.push(entity);
 
-          // save assets to req
-          req.assets[assetFileId] = fileAsset;
-          req.assets[assetMaterialId] = materialAsset;
-
-          fs.readFile("stock/entity/image.json", function(err, entityStockBuf) {
-            if (err) {
-              return next(err);
-            }
-            var entityStockJson = JSON.parse(entityStockBuf);
-
-            // Populate the stock Entity
-            var entity = entityStockJson;
-            entity.components.model.materialAsset = assetMaterialId;
-            req.entitiesWithNoKey.push(entity);
-
-            //console.log(req.assets);
-            //console.log(req.assetFiles);
-            //console.log(req.entities);
-            console.log("finish create image assets + entity");
-            next();
-          });
+          //console.log(req.assets);
+          //console.log(req.assetFiles);
+          //console.log(req.entities);
+          console.log("finish create image assets + entity");
+          next();
         });
       });
     });

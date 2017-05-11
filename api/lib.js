@@ -62,15 +62,7 @@ function sendUploadToGCS (req, res, next) {
       callback();
     });
 
-    // read from memory
-    if ('data' in assetFile) {
-      stream.end(assetFile.data);
-    } else {
-      // or disk
-      fs.readFile(assetFile.path, function(err, assetFileBuf) {
-        stream.end(assetFileBuf);
-      });
-    }
+    stream.end(assetFile.buffer);
   }, function(err, results) {
     if (err) {
       return next(err);

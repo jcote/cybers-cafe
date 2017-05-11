@@ -21,11 +21,11 @@ const async = require('async');
 const sqlRecord = require('./records-cloudsql');
 const apiLib = require('./lib');
 
-const multer = Multer({dest:'uploads'
-/*  storage: Multer.MemoryStorage,
+const multer = Multer({//dest:'uploads'
+  storage: Multer.MemoryStorage,
   limits: {
-    fileSize: 5 * 1024 * 1024 // no larger than 5mb
-  }*/ 
+    fileSize: 10 * 1024 * 1024 // no larger than 10mb
+  } 
 });
 
 var entitiesRe = /^\d{6}\.json$/;
@@ -112,7 +112,7 @@ router.use(bodyParser.json());
 
 function unzipEntries (req, res, next) {
   console.log("begin unzip");
-  var zip = new AdmZip(req.file.path);
+  var zip = new AdmZip(req.file.buffer);
   var zipEntries = zip.getEntries();
   req.assetFiles = {};
   req.assets = {};
