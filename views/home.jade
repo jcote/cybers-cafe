@@ -68,31 +68,10 @@ html(lang="en")
             .container.interface-part
               ul.nav.navbar-nav
                 li
+                  a(id="modelLink", href="#", onclick="selectForm('createEntityModelForm')") 3D Model
+                li
                   a(id="imageLink", href="#", onclick="selectForm('createEntityImageForm')") Image
-                li
-                  a(id="htmlLink", href="#", onclick="selectForm('createEntityHtmlForm')") HTML
-                li
-                  a(id="modelLink", href="#", onclick="selectForm('createEntityModelForm')") 3d Model
-                li
-                  a(id="functionLink", href="#", onclick="selectForm('createEntityFunctionForm')") Function
 
-          form(id="createEntityImageForm" name="createEntityImage" method="post" enctype="multipart/form-data")
-            .container.interface-part
-              .row
-                .col-sm-4
-                  label(for="title") Title :
-                .col-sm-8
-                  input.form-ctl(type="text", name="title", id="title", value=entity.title)
-              .row
-                .col-sm-4
-                  label(for="imgFile") Image File :
-                .col-sm-8
-                  input.form-ctl(type="file", name="imgFile", id="imgFile", value=entity.imgFile)
-              .row
-                .col-sm-4
-                .col-sm-4
-                  button.btn.btn-success(type="submit") Upload
-                .col-sm-4
           form(id="createEntityModelForm" name="createEntityModel" method="post" enctype="multipart/form-data")
             .container.interface-part
               .row
@@ -110,6 +89,29 @@ html(lang="en")
                 .col-sm-4
                 .col-sm-8
                   a(href="#" data-toggle="modal" data-target="#zipModal") Convert a 3D model to Zip
+              br
+              .row
+                .col-sm-4
+                .col-sm-4
+                  button.btn.btn-success(type="submit") Upload
+                .col-sm-4
+          form(id="createEntityImageForm" name="createEntityImage" method="post" enctype="multipart/form-data")
+            .container.interface-part
+              .row
+                .col-sm-4
+                  label(for="title") Title :
+                .col-sm-8
+                  input.form-ctl(type="text", name="title", id="title", value=entity.title)
+              .row
+                .col-sm-4
+                  label(for="imgFile") Image File :
+                .col-sm-8
+                  input.form-ctl(type="file", name="imgFile", id="imgFile", value=entity.imgFile)
+              br
+              .row
+                .col-sm-4
+                .col-sm-8
+                  p.note (If image does not appear, view from other side)
               br
               .row
                 .col-sm-4

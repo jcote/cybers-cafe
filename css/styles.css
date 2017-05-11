@@ -110,11 +110,11 @@ body {
   display: block;
 }
 
-#createEntityImageForm {
+#createEntityModelForm {
   display: block;
 }
 
-#createEntityModelForm {
+#createEntityImageForm {
   display: none;
 }
 
@@ -149,6 +149,10 @@ body {
   position: absolute;
   right: 6px;
   top: 6px;
+}
+
+.note {
+  font-size: 8px;
 }
 
 .label-mode-movement,
