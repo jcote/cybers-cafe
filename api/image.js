@@ -198,48 +198,6 @@ router.post('/', multer.single('imgFile'), checkFormatImg, createImageAssetsAndE
 });
 
 /**
- * GET /api/entities/:id
- *
- * Retrieve a entity.
- */
-router.get('/:entity', function get (req, res, next) {
-  apiLib.getModel().read(req.params.entity, function (err, entity) {
-    if (err) {
-      return next(err);
-    }
-    res.json(entity);
-  });
-});
-
-/**
- * PUT /api/entities/:id
- *
- * Update a entity.
- */
-router.put('/:entity', function update (req, res, next) {
-  apiLib.getModel().update(req.params.entity, req.body, function (err, entity) {
-    if (err) {
-      return next(err);
-    }
-    res.json(entity);
-  });
-});
-
-/**
- * DELETE /api/entities/:id
- *
- * Delete a entity.
- */
-router.delete('/:entity', function _delete (req, res, next) {
-  apiLib.getModel().delete(req.params.entity, function (err) {
-    if (err) {
-      return next(err);
-    }
-    res.status(200).send('OK');
-  });
-});
-
-/**
  * Errors on "/api/entities/*" routes.
  */
 router.use(function handleRpcError (err, req, res, next) {

@@ -253,20 +253,6 @@ router.post('/', multer.single('zipFile'), checkFormatZip, unzipEntries, apiLib.
 });
 
 /**
- * GET /api/entities/:id
- *
- * Retrieve a entity.
- */
-router.get('/:entity', function get (req, res, next) {
-  apiLib.getModel().read(req.params.entity, function (err, entity) {
-    if (err) {
-      return next(err);
-    }
-    res.json(entity);
-  });
-});
-
-/**
  * PUT /api/entities/:id
  *
  * Update a entity.
@@ -291,20 +277,6 @@ router.put('/position/:entityId', multer.none(), function updatePosition (req, r
     }
     console.log("Entity position updated for id: " + req.params.entityId);
     return res.status(200).json({"message":"Entity updated."});
-  });
-});
-
-/**
- * DELETE /api/entities/:id
- *
- * Delete a entity.
- */
-router.delete('/:entity', function _delete (req, res, next) {
-  apiLib.getModel().delete(req.params.entity, function (err) {
-    if (err) {
-      return next(err);
-    }
-    res.status(200).send('OK');
   });
 });
 

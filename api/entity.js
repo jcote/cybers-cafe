@@ -46,20 +46,6 @@ router.post('/', function (req, res, next) {
 });
 
 /**
- * GET /api/entities/:id
- *
- * Retrieve a entity.
- */
-router.get('/:entityId', function get (req, res, next) {
-  apiLib.getModel().read(req.params.entity, req.params.entityId, function (err, entity) {
-    if (err) {
-      return next(err);
-    }
-    res.json(entity);
-  });
-});
-
-/**
  * PUT /api/entity/pos:id
  *
  * Update a entity's position from the req.params.entity pos to the req.body pos

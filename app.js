@@ -35,9 +35,6 @@ app.use('/api/entities', require('./api/entities'));
 app.use('/api/image', require('./api/image'));
 app.use('/api/entity', require('./api/entity'));
 
-// location
-app.use('/api/location', require('./api/location'));
-
 // feedback
 app.use('/api/feedback', require('./api/feedback'));
 
