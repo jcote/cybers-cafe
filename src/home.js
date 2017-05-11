@@ -337,6 +337,12 @@ $(function(){
 
       // convert position to absolute location & position
 			var app = pc.Application.getApplication("application-canvas");
+      var entityId = document.getElementById("editEntityId").value;
+      if (!$.isNumeric(entityId) || !(entityId in app.entities)) {
+        alert("Select an Entity first.");
+        ev.preventDefault();
+        return;
+      }
 			var playerEntity = app.context.root.findByName("Player");
 		  var movementEntity = playerEntity.script.movement;
 			var sceneEntity = app.context.root.findByName("scene");
