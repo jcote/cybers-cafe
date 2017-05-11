@@ -92,6 +92,9 @@ function sendEntitiesToDatastore (req, res, next) {
       console.log("skipping entity with no components: " + entity.name);
       return callback();
     }
+    if (req.body && req.body.title) {
+      entity.name = req.body.title;
+    }
     // write to datastore
     getModel().create('Entity', entity, function (err, entity) {
       // on callback
