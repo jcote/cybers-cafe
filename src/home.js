@@ -347,6 +347,8 @@ $(function(){
 		  var movementEntity = playerEntity.script.movement;
 			var sceneEntity = app.context.root.findByName("scene");
 		  var networkEntity = sceneEntity.script.network;
+      var raycastEntity = playerEntity.script.raycast;
+      var transformEntity = playerEntity.script.transform;
 
       var relativePosition = [ oData.get("posX"), oData.get("posY"), oData.get("posZ") ];
       var absolutePosition = MathUtils.getAbsolutePosition(relativePosition, networkEntity.origin, movementEntity.scale);
@@ -357,6 +359,13 @@ $(function(){
       oData.set("posZ", absolutePosition.position[2]);
 
     oOutput.innerHTML = "Updating...";
+
+    // Switch to movement mode
+    movementEntity.enableInput();
+    raycastEntity.disableInput();
+    transformEntity.disableInput();
+    document.getElementById("modeLabel").innerHTML = "Movement Mode";
+    document.getElementById("modeLabel").className = "label label-mode-movement";
 
 	  var oReq = new XMLHttpRequest();
 	  oReq.open("PUT", "api/entity/" + oData.get("id"), true);
