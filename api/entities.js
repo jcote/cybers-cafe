@@ -140,8 +140,10 @@ function unzipEntries (req, res, next) {
 //        mimetype: zipEntry.mimetype,
         data: zipEntry.getData() // ...or use getCompressedData to avoid decompression and to save space (but client needs to decompress)
       };
-      req.assetFiles[zipEntry.entryName] = assetFile;
-      console.log("found asset file: " + zipEntry.entryName);
+      if (assetFile.data.length) {
+        req.assetFiles[zipEntry.entryName] = assetFile;
+        console.log("found asset file: " + zipEntry.entryName);
+      }
     }
   });
   console.log("finish unzip");

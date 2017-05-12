@@ -163,6 +163,9 @@ function checkFormatImg (req, res, next) {
   if (!imgMimeTypes.includes(req.file.mimetype)) {
     return res.json({"message":"Not an image format (jpeg, gif, png, svg): " + req.file.mimetype});
   }
+  if (req.file.buffer.byteLength == 0) {
+    return res.json({"message":"Empty file given"});
+  }
   next();
 }
 
