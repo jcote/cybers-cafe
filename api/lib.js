@@ -62,7 +62,7 @@ function sendUploadToGCS (req, res, next) {
       callback();
     });
 
-    stream.end(assetFile.buffer);
+    stream.end(assetFile.data);
   }, function(err, results) {
     if (err) {
       return next(err);
