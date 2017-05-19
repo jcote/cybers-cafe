@@ -160,6 +160,7 @@ function rewriteAssetUrls (req, res, next) {
       continue;
     }
     
+    asset.file.url = asset.file.url.replace(/%20/, " ");
     if (! (asset.file.url in req.assetFiles)) {
       console.log("asset file not found: " + asset.file.url);
       continue;
