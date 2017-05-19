@@ -159,8 +159,8 @@ function rewriteAssetUrls (req, res, next) {
 //      console.log("no file info in asset");
       continue;
     }
-    
-    asset.file.url = asset.file.url.replace(/%20/, " ");
+
+    asset.file.url = decodeURIComponent(asset.file.url);
     if (! (asset.file.url in req.assetFiles)) {
       console.log("asset file not found: " + asset.file.url);
       continue;
