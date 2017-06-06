@@ -479,8 +479,8 @@ casper.then(function() {
                         if (job.status === 'complete') {
                             jobInProgress = false;
                             var urlToDownload = job.data.download_url;
-											    	console.log("downloading: "+urlToDownload);
-											    	casper.download(urlToDownload, fs.workingDirectory+'/download.zip');	        
+											    	console.log("<download_url>" + urlToDownload + "</download_url>");
+//											    	casper.download(urlToDownload, fs.workingDirectory+'/download.zip');	        
                         }
                         // handle error
                         else if (job.status === 'error') {
@@ -513,17 +513,14 @@ casper.then(function() {
 casper.then(function() {
 	this.waitForSelector('div.progress:nth-child(15) > span:nth-child(2) > div:nth-child(2)');
 });
-casper.then(function() {
-	this.wait(2000);
-});
+// casper.then(function() {
+// 	this.wait(2000);
+// });
 
 // casper.then(function() {
 // 	this.mouse.click('div.progress:nth-child(15) > span:nth-child(2) > div:nth-child(2)');
 // });
 
-casper.then(function() {
-	this.wait(20000);
-});
 casper.run(function() {
     this.echo('Logged in as: ' + username).exit();
 });
