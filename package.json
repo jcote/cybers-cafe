@@ -14,16 +14,8 @@
   "author": "Jordan Cote",
   "contributors": [
     {
-      "name": "Jon Wayne Parrott",
-      "email": "jonwayne@google.com"
-    },
-    {
-      "name": "Jonathan Simon",
-      "email": "jbsimon@google.com"
-    },
-    {
-      "name": "Jason Dobry",
-      "email": "jdobry@google.com"
+      "name": "Jordan Cote",
+      "email": "jordocote@gmail.com"
     }
   ],
   "license": "None",
@@ -43,6 +35,7 @@
     "adm-zip": "^0.4.7",
     "async": "^2.1.4",
     "body-parser": "^1.15.2",
+    "casperjs": "^1.1.4",
     "express": "^4.14.0",
     "jade": "^1.11.0",
     "kerberos": "^0.0.21",
@@ -52,7 +45,9 @@
     "multer": "^1.2.0",
     "mysql": "^2.12.0",
     "nconf": "^0.8.4",
-    "prompt": "^1.0.0"
+    "phantom": "^4.0.3",
+    "prompt": "^1.0.0",
+    "slimerjs": "^0.10.3"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
