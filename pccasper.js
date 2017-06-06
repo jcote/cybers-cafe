@@ -110,7 +110,13 @@ casper.then(function() {
 
 // editor button
 casper.then(function() {
-	this.mouse.click('.dashboard-project-bottom-buttons .btn-inner-icon[text="EDITOR"]');
+	//this.mouse.click('.dashboard-project-bottom-buttons .btn-inner-icon[text="EDITOR"]');
+
+    secondFrameUrl = this.evaluate(function() {
+    	var editorButton = $('.dashboard-project-bottom-buttons .btn-inner-icon[text="EDITOR"]')
+	    var scope = angular.element(editorButton).scope();
+	    return 'https://playcanvas.com' + scope.getPackUrl(scope.packs[0]);
+	  });
 });
 
 casper.then(function() {
@@ -126,11 +132,11 @@ casper.then(function() {
 //   this.switchToFrame(this.page.framesName);
 // });
 casper.then(function() {
-  secondFrameUrl = this.page.pages[0].frameUrl;
+  //secondFrameUrl = this.page.pages[0].frameUrl;
   console.log(secondFrameUrl);
 });
 casper.then(function() {
-  this.close();
+  //this.close();
 });
 casper.then(function() {
   this.open(secondFrameUrl);
