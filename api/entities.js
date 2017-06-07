@@ -20,6 +20,7 @@ var AdmZip = require('adm-zip');
 const async = require('async');
 const sqlRecord = require('./records-cloudsql');
 const apiLib = require('./lib');
+const phantomLib = require('./phantom');
 
 const multer = Multer({//dest:'uploads'
   storage: Multer.MemoryStorage,
@@ -209,20 +210,48 @@ function sendRecordToSql (req, entity, assets, callback) {
   });
 }
 
-function checkFormatZip (req, res, next) {
+function checkFormat (req, res, next) {
   if (req.file == undefined) {
     return res.json({"message":"No file given"});
   }
   if (req.file.mimetype != "application/x-zip-compressed") {
-    return res.json({"message":"Not zip format"});
+    // return res.json({"message":"Not zip format"});
   }
   next();
 }
+
+function phantomGetZip(req, res, next) {
+  if (req.file.mimetype == "application/x-zip-compressed") {
+    next();
+  }
+
+  fs.writeFile(req.file.originalname, req.file.buffer, function(err) {
+    if(err) {
+      return next(err);
+    }
+
+    // this will take a while..
+    phantomLib.phantomConversion(req.file.originalname, function(filename, data) {
+      if (data == null) {
+        return res.json({"message":"Failed to convert model format"});
+      }
+
+      // converted zip file
+      req.file.buffer = data;
+      req.file.size = (new TextEncoder('utf-8').encode(data)).length;
+      req.file.mimetype = "application/x-zip-compressed";
+      req.file.originalname = filename;
+      next();
+    });
+  }); 
+
+}
+
 /**
  * POST /api/entities
  *
  */
-router.post('/', multer.single('zipFile'), checkFormatZip, unzipEntries, apiLib.sendUploadToGCS, apiLib.rewriteAssetUrls, apiLib.sendAssetsToDatastore, apiLib.sendEntitiesToDatastore, sendRecordsToSql, function (req, res, next) {
+router.post('/', multer.single('zipFile'), checkFormat, phantomGetZip, unzipEntries, apiLib.sendUploadToGCS, apiLib.rewriteAssetUrls, apiLib.sendAssetsToDatastore, apiLib.sendEntitiesToDatastore, sendRecordsToSql, function (req, res, next) {
 //  console.log(req.entities); 
 //  console.log(req.assets); 
 //  console.log(req.assetFiles);
