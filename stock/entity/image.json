@@ -1,40 +1,44 @@
 {
-    "position": [
-        0,
-        0.5,
+  "position": [
+    0,
+    0.5,
+    0
+  ],
+  "scale": [
+    1,
+    1,
+    1
+  ],
+  "name": "Image",
+  "parent": "e8ae4254-6751-11e5-bd2a-8438356164ca",
+  "resource_id": "6b37ab7c-df45-11e6-8b5f-22000ac481df",
+  "components": {
+    "model": {
+      "lightMapSizeMultiplier": 1,
+      "castShadows": true,
+      "castShadowsLightmap": true,
+      "lightmapped": false,
+      "materialAsset": 6451449,
+      "receiveShadows": true,
+      "enabled": true,
+      "castShadowsLightMap": false,
+      "asset": null,
+      "lightmapSizeMultiplier": 1,
+      "type": "plane",
+      "lightMapped": false,
+      "isStatic": false,
+      "batchGroupId": null,
+      "layers": [
         0
-    ],
-    "scale": [
-        1,
-        1,
-        1
-    ],
-    "name": "Image",
-    "parent": null,
-    "resource_id": "6b37ab7c-df45-11e6-8b5f-22000ac481df",
-    "components": {
-        "model": {
-            "lightMapSizeMultiplier": 1,
-            "castShadows": true,
-            "castShadowsLightmap": true,
-            "lightmapped": false,
-            "materialAsset": 6451449,
-            "receiveShadows": true,
-            "enabled": true,
-            "castShadowsLightMap": false,
-            "asset": null,
-            "lightmapSizeMultiplier": 1,
-            "type": "plane",
-            "lightMapped": false,
-            "isStatic": false
-        }
-    },
-    "rotation": [
-        90,
-        0,
-        0
-    ],
-    "enabled": true,
-    "children": [],
-    "tags": []
+      ]
+    }
+  },
+  "rotation": [
+      90,
+      0,
+      0
+  ],
+  "enabled": true,
+  "children": [],
+  "tags": []
 }

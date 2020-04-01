@@ -57,7 +57,6 @@ function sendUploadToGCS (req, res, next) {
     stream.on('finish', () => {
       assetFile.cloudStorageObject = gcsname;
       assetFile.cloudStoragePublicUrl = getPublicUrl(gcsname);
-//      assetFile.filename = assetFilename;
       console.log("finish cloud upload: " + gcsname);
       callback();
     });
@@ -155,21 +154,19 @@ function rewriteAssetUrls (req, res, next) {
 
   for (var key in req.assets) {
     var asset = req.assets[key];
-    if (!asset.file || !asset.file.filename || !asset.file.url) {
+    if (!asset.file || !asset.file.url) {
 //      console.log("no file info in asset");
       continue;
     }
 
-    asset.file.url = decodeURIComponent(asset.file.url);
-    if (! (asset.file.url in req.assetFiles)) {
-      console.log("asset file not found: " + asset.file.url);
+    var assetFullPath = decodeURIComponent(asset.file.fullPath);
+    if (! (assetFullPath in req.assetFiles)) {
+      console.log("asset file not found: " + assetFullPath);
       continue;
     }
 
-    var assetFile = req.assetFiles[asset.file.url];
+    var assetFile = req.assetFiles[asset.file.fullPath];
     asset.file.url = assetFile.cloudStoragePublicUrl; // writing here writes req.assets[key]
-    asset.file.filename = assetFile.filename;
-    asset.name = assetFile.filename;
     console.log("asset url rewrite: " + asset.file.url);
   }
 

@@ -72,7 +72,7 @@ function createImageAssetsAndEntity (req, res, next) {
         fileAsset.name = req.file.originalname;
         fileAsset.file.filename = assetFullPath;
         fileAsset.file.size = req.file.size;
-        fileAsset.file.url = assetFullPath;
+        fileAsset.file.fullPath = assetFullPath;
 
         if (err) {
           return next(err);

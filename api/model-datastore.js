@@ -22,6 +22,7 @@ var ds = new Datastore({
 });
 // [END config]
 
+// (OBSOLETE)
 // Translates from Datastore's entity format to
 // the format expected by the application.
 //
@@ -39,8 +40,7 @@ var ds = new Datastore({
 //     property: value
 //   }
 function fromDatastore (obj) {
-  obj.data.id = obj.key.id;
-  return obj.data;
+  return obj;
 }
 
 // Translates from the application's format to the datastore's

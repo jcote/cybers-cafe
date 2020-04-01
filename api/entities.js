@@ -17,6 +17,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var Multer  = require('multer');
 var AdmZip = require('adm-zip');
+const fs = require('fs');
 const async = require('async');
 const sqlRecord = require('./records-cloudsql');
 const apiLib = require('./lib');
@@ -127,6 +128,12 @@ function unzipEntries (req, res, next) {
       var dataString = zipEntry.getData().toString('utf8');
       var data = JSON.parse(dataString);
       req.assets = data.assets;
+      Object.keys(req.assets).forEach(function(playcanvasId) {
+        var asset = req.assets[playcanvasId];
+        if (asset.file && asset.file.url) {
+          asset.file.fullPath = asset.file.url;
+        }
+      });
       console.log("found assets");
     } else if (entitiesRe.exec(zipEntry.entryName)) {
       var dataString = zipEntry.getData().toString('utf8');
@@ -149,6 +156,25 @@ function unzipEntries (req, res, next) {
   });
   console.log("finish unzip");
   next();
+}
+
+function getReservedIds(req, res, next) {
+  async.each(req.assets,function(asset, callback) {
+    apiLib.getModel().reserveIdCreate('Asset', function(err, reservedId) {
+      if (err) {
+        return callback(err);
+      }
+      req.assets[asset.id].id = reservedId;
+      return callback();
+    });
+  }, function(err, results) {
+  // after all the callbacks
+    if (err) {
+      return next(err);
+    }
+    console.log("end reserved ids");
+    next();
+  });
 }
 
 function sendRecordsToSql(req, res, next) {
@@ -251,7 +277,7 @@ function phantomGetZip(req, res, next) {
  * POST /api/entities
  *
  */
-router.post('/', multer.single('zipFile'), checkFormat, phantomGetZip, unzipEntries, apiLib.sendUploadToGCS, apiLib.rewriteAssetUrls, apiLib.sendAssetsToDatastore, apiLib.sendEntitiesToDatastore, sendRecordsToSql, function (req, res, next) {
+router.post('/', multer.single('zipFile'), checkFormat, unzipEntries, getReservedIds, apiLib.sendUploadToGCS, apiLib.rewriteAssetUrls, apiLib.sendAssetsToDatastore, apiLib.sendEntitiesToDatastore, sendRecordsToSql, function (req, res, next) {
 //  console.log(req.entities); 
 //  console.log(req.assets); 
 //  console.log(req.assetFiles);
