@@ -5,8 +5,8 @@ const async = require('async');
 const config = require('../config');
 
 const CLOUD_BUCKET = config.get('CLOUD_BUCKET');
-const Storage = require('@google-cloud/storage');
-const storage = Storage({
+const {Storage} = require('@google-cloud/storage');
+const storage = new Storage({
   projectId: config.get('GCLOUD_PROJECT')
 });
 const bucket = storage.bucket(CLOUD_BUCKET);

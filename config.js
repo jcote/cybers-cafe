@@ -46,7 +46,7 @@ nconf
     // This is the id of your project in the Google Cloud Developers Console.
     GCLOUD_PROJECT: 'cybers-cafe',
     
-    CLOUD_BUCKET: '',
+    CLOUD_BUCKET: 'cybers-cafe',
     
     // MongoDB connection string
     // https://docs.mongodb.org/manual/reference/connection-string/

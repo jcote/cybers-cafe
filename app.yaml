@@ -28,7 +28,7 @@ network:
 # [START env]
 env_variables:
   NODE_ENV: development
-  MYSQL_USER: appeng
+  MYSQL_USER: cyberscafe
   MYSQL_PASSWORD: sparkle8twilight
   MYSQL_DATABASE: cyberscafe
   # This path was printed to the console when you started the proxy, and is of

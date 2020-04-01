@@ -109,7 +109,7 @@ function spiralPair (x,y) {
 	return z;
 }
 
-module.exports = {
+var MathUtils = {
 	cantorPair: cantorPair,
 	reverseCantorPair: reverseCantorPair,
 	evenOddEncode: evenOddEncode,
@@ -120,3 +120,4 @@ module.exports = {
 	getAbsolutePosition: getAbsolutePosition,
 	spiralPair: spiralPair
 };
+

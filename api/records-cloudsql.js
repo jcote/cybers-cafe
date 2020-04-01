@@ -14,7 +14,8 @@ function handleDisconnect() {
     acquireTimeout: 30000, //30 secs
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
-    socketPath: process.env.MYSQL_SOCKET_PATH,
+    host: process.env.MYSQL_HOST,
+//    socketPath: process.env.MYSQL_SOCKET_PATH,
     database: process.env.MYSQL_DATABASE
   });                                             // Recreate the connection, since
                                                   // the old one cannot be reused.

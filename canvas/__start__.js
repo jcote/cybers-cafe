@@ -19,13 +19,15 @@
 
     var createInputDevices = function (canvas) {
         var devices = {
-            keyboard: new pc.Keyboard(window),
-            mouse: new pc.Mouse(canvas),
-            gamepads: new pc.GamePads(),
+            elementInput: new pc.ElementInput(canvas, {
+                useMouse: INPUT_SETTINGS.useMouse,
+                useTouch: INPUT_SETTINGS.useTouch
+            }),
+            keyboard: INPUT_SETTINGS.useKeyboard ? new pc.Keyboard(window) : null,
+            mouse: INPUT_SETTINGS.useMouse ? new pc.Mouse(canvas) : null,
+            gamepads: INPUT_SETTINGS.useGamepads ? new pc.GamePads() : null,
+            touch: INPUT_SETTINGS.useTouch && pc.platform.touch ? new pc.TouchDevice(canvas) : null
         };
-        if ('ontouchstart' in window) {
-            devices.touch = new pc.TouchDevice(canvas);
-        }
 
         return devices;
     };
@@ -38,12 +40,12 @@
 
         // css media query for aspect ratio changes
         var css  = "@media screen and (min-aspect-ratio: " + width + "/" + height + ") {";
-            css += "    #application-canvas.fill-mode-KEEP_ASPECT {";
-            css += "        width: auto;";
-            css += "        height: 100%;";
-            css += "        margin: 0 auto;";
-            css += "    }";
-            css += "}";
+        css += "    #application-canvas.fill-mode-KEEP_ASPECT {";
+        css += "        width: auto;";
+        css += "        height: 100%;";
+        css += "        margin: 0 auto;";
+        css += "    }";
+        css += "}";
 
         // append css to style
         if (document.head.querySelector) {
@@ -52,7 +54,7 @@
     };
 
     var reflow = function () {
-        var size = app.resizeCanvas(canvas.width, canvas.height);
+        app.resizeCanvas(canvas.width, canvas.height);
         canvas.style.width = '';
         canvas.style.height = '';
 
@@ -90,6 +92,7 @@
 
     try {
         app = new pc.Application(canvas, {
+            elementInput: devices.elementInput,
             keyboard: devices.keyboard,
             mouse: devices.mouse,
             gamepads: devices.gamepads,
@@ -97,7 +100,7 @@
             graphicsDeviceOptions: window.CONTEXT_OPTIONS,
             assetPrefix: window.ASSET_PREFIX || "",
             scriptPrefix: window.SCRIPT_PREFIX || "",
-            scriptsOrder: window.SCRIPTS || [ ]
+            scriptsOrder: window.SCRIPTS || []
         });
     } catch (e) {
         if (e instanceof pc.UnsupportedBrowserError) {
@@ -113,29 +116,43 @@
         return;
     }
 
-    app.configure(CONFIG_FILENAME, function (err) {
-        if (err) {
-            console.error(err);
-        }
-
-        configureCss(app._fillMode, app._width, app._height);
-        reflow();
-
-        window.addEventListener('resize', reflow, false);
-        window.addEventListener('orientationchange', reflow, false);
-
-        app.preload(function (err) {
+    var configure = function () {
+        app.configure(CONFIG_FILENAME, function (err) {
             if (err) {
                 console.error(err);
             }
 
-            app.loadScene(SCENE_PATH, function (err, scene) {
-                if (err) {
-                    console.error(err);
-                }
+            configureCss(app._fillMode, app._width, app._height);
 
-                app.start();
+            // do the first reflow after a timeout because of
+            // iOS showing a squished iframe sometimes
+            setTimeout(function () {
+                reflow();
+
+                window.addEventListener('resize', reflow, false);
+                window.addEventListener('orientationchange', reflow, false);
+
+                app.preload(function (err) {
+                    if (err) {
+                        console.error(err);
+                    }
+
+                    app.loadScene(SCENE_PATH, function (err, scene) {
+                        if (err) {
+                            console.error(err);
+                        }
+
+                        app.start();
+                    });
+                });
             });
         });
-    });
-}());
+    };
+
+    if (PRELOAD_MODULES.length > 0) {
+        loadModules(PRELOAD_MODULES, ASSET_PREFIX, configure);
+    } else {
+        configure();
+    }
+
+})();

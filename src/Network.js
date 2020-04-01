@@ -22,7 +22,7 @@ Network.prototype.initialize = function() {
 
     this.origin = [0, 0]; // what XZ location to consider the tile at 0,0
 
-    var socket = io.connect('http://service.cybers.cafe:59595/');
+    var socket = io.connect(CYBERS_CAFE_SERVICE_URL);
     Network.socket = socket;
 
     this.app.entities = {};

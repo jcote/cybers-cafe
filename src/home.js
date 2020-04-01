@@ -96,6 +96,7 @@ $(function(){
   	});
 
     // handle existing players
+    if (!networkEntity.players) networkEntity.players = [];
     Object.keys(networkEntity.players).forEach(function(playerId) {
     	if ('entity' in networkEntity.players[playerId]) {
 				var pos = networkEntity.players[playerId].entity.getLocalPosition();

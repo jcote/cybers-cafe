@@ -13,7 +13,7 @@ module.exports = function(grunt) {
       },
       mathutils: {
         src: 'src/mathutils.js',
-        dest: 'scripts/mathutils.js'
+        dest: 'canvas/files/assets/7113635/1/mathUtils.js'
       },
       movement: {
         src: 'src/movement.js',
@@ -27,7 +27,7 @@ module.exports = function(grunt) {
   });
 
   // Load the plugin that provides the "uglify" task.
-  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-uglify-es');
 
   // Default task(s).
   grunt.registerTask('default', ['uglify']);

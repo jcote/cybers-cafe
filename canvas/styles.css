@@ -11,6 +11,8 @@ body {
     font-family: Helvetica, arial, sans-serif;
     position: relative;
     width: 100%;
+
+    -webkit-tap-highlight-color: transparent;
 }
 
 #application-canvas {

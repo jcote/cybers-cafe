@@ -35,7 +35,7 @@ pc.script.createLoadingScreen(function (app) {
 
     var setProgress = function (value) {
         var bar = document.getElementById('progress-bar');
-        if(bar) {
+        if (bar) {
             value = Math.min(1, Math.max(0, value));
             bar.style.width = value * 100 + '%';
         }
@@ -91,9 +91,9 @@ pc.script.createLoadingScreen(function (app) {
         var style = document.createElement('style');
         style.type = 'text/css';
         if (style.styleSheet) {
-          style.styleSheet.cssText = css;
+            style.styleSheet.cssText = css;
         } else {
-          style.appendChild(document.createTextNode(css));
+            style.appendChild(document.createTextNode(css));
         }
 
         document.head.appendChild(style);

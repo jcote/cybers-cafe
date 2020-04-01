@@ -148,6 +148,9 @@ function sendRecordToSql (req, entity, assets, callback) {
   entityRecord.assetIds = Object.keys(assets);
 
   sqlRecord.insertEntityRecord(entityRecord, function (err, resultId) {
+    if (err) {
+      return callback(err);
+    }
     console.log("entity '" + entity.name + "' stored in SQL: " + resultId);
     req.records[resultId] = entityRecord;
     callback();    
