@@ -1,1 +1,1512 @@
-{"application_properties":{"antiAlias":true,"fillMode":"FILL_WINDOW","resolutionMode":"AUTO","height":720,"width":1280,"use3dPhysics":true,"preferWebGl2":true,"preserveDrawingBuffer":false,"scripts":[6178173,6178178,6178176,7113635,6178172,6426140,6178170,6320036,6867986,6320152,6811897,6867988],"transparentCanvas":true,"useDevicePixelRatio":false,"useLegacyScripts":false,"vr":false,"loadingScreenScript":null,"useLegacyAmmoPhysics":true,"batchGroups":[],"layers":{"0":{"name":"World","opaqueSortMode":2,"transparentSortMode":3},"1":{"name":"Depth","opaqueSortMode":2,"transparentSortMode":3},"2":{"name":"Skybox","opaqueSortMode":0,"transparentSortMode":3},"3":{"name":"Immediate","opaqueSortMode":0,"transparentSortMode":3},"4":{"name":"UI","opaqueSortMode":1,"transparentSortMode":1}},"layerOrder":[{"layer":0,"transparent":false,"enabled":true},{"layer":1,"transparent":false,"enabled":true},{"layer":2,"transparent":false,"enabled":true},{"layer":0,"transparent":true,"enabled":true},{"layer":3,"transparent":false,"enabled":true},{"layer":3,"transparent":true,"enabled":true},{"layer":4,"transparent":true,"enabled":true}],"useKeyboard":true,"useMouse":true,"useTouch":true,"useGamepads":false,"i18nAssets":[],"externalScripts":[],"libraries":["ammo.dcab07b.js"]},"scenes":[{"name":"Main Scene","url":"486802.json"}],"assets":{"6178167":{"data":{"ambient":[0.5843137502670288,0.5843137502670288,0.5843137502670288],"ambientTint":false,"aoMap":null,"aoMapChannel":"r","aoMapOffset":[0,0],"aoMapTiling":[25,25],"aoUvSet":0,"blendType":3,"bumpMapFactor":1,"conserveEnergy":true,"cubeMap":null,"cubeMapProjection":0,"cubeMapProjectionBox":{"center":[0,0,0],"halfExtents":[0.5,0.5,0.5]},"cull":1,"depthTest":true,"depthWrite":true,"diffuse":[0.5843137502670288,0.5843137502670288,0.5843137502670288],"diffuseMap":6178169,"diffuseMapChannel":"rgb","diffuseMapOffset":[0,0],"diffuseMapTiling":[25,25],"diffuseMapTint":false,"emissive":[0.5058823823928833,0.5058823823928833,0.5058823823928833],"emissiveIntensity":1,"emissiveMap":6178169,"emissiveMapChannel":"rgb","emissiveMapOffset":[0,0],"emissiveMapTiling":[25,25],"emissiveMapTint":false,"fresnelFactor":0,"fresnelModel":0,"glossMap":6178169,"glossMapChannel":"rgb","glossMapOffset":[0,0],"glossMapTiling":[25,25],"heightMap":null,"heightMapChannel":"r","heightMapFactor":1,"heightMapOffset":[0,0],"heightMapTiling":[25,25],"lightMap":null,"lightMapChannel":"rgb","lightMapOffset":[0,0],"lightMapTiling":[25,25],"metalness":1,"metalnessMap":null,"metalnessMapChannel":"r","metalnessMapOffset":[0,0],"metalnessMapTiling":[25,25],"metalnessMapTint":false,"normalMap":null,"normalMapOffset":[0,0],"normalMapTiling":[25,25],"occludeSpecular":true,"opacity":1,"opacityMap":null,"opacityMapChannel":"r","opacityMapOffset":[0,0],"opacityMapTiling":[25,25],"reflectivity":1,"refraction":0,"refractionIndex":0.6666666666666666,"shader":"blinn","shadowSampleType":1,"shininess":77.53,"specular":[0.7098039215686275,0.7098039215686275,0.7098039215686275],"specularAntialias":true,"specularMap":6178169,"specularMapChannel":"rgb","specularMapOffset":[0,0],"specularMapTiling":[25,25],"specularMapTint":true,"sphereMap":null,"useMetalness":false,"metalnessMapUv":0},"file":null,"meta":null,"name":"platform","preload":true,"region":"eu-west-1","revision":1,"tags":[],"type":"material","i18n":{},"id":"6178167"},"6178169":{"preload":true,"name":"platform","type":"texture","tags":[],"meta":{"format":"png","type":"Palette","width":512,"height":512,"alpha":false,"depth":8,"srgb":true,"interlaced":false,"compress":{"alpha":false,"dxt":false,"pvr":false,"pvrBpp":4,"etc1":false,"normals":false,"etc2":false,"basis":false,"quality":128}},"file":{"size":8260,"hash":"199cdac0b1726787b78a87c200e6ba02","filename":"Platform.png","url":"files/assets/6178169/1/Platform.png"},"data":{"minfilter":"linear_mip_linear","name":"platform","magfilter":"linear","addressu":"repeat","addressv":"repeat","anisotropy":8,"mipmaps":true},"revision":1,"region":"eu-west-1","i18n":{},"id":"6178169"},"6178170":{"data":{"scripts":{"network":{"attributesOrder":[],"attributes":{}}},"loading":false,"loadingType":0},"file":{"filename":"Network.js","size":7242,"hash":"fc268d9c368b679fe3d48c4794a24c65","url":"files/assets/6178170/1/Network.js"},"meta":null,"name":"Network.js","preload":true,"region":"eu-west-1","revision":1,"tags":[],"type":"script","i18n":{},"id":"6178170"},"6178171":{"preload":true,"name":"plain","type":"model","tags":[],"meta":{"meshes":1,"meshInstances":1,"nodes":2,"skins":0,"vertices":24,"triangles":12,"attributes":{"position":1,"normal":1,"texCoord0":1}},"file":{"size":1481,"hash":"d2723bdae23f16155f253567551f705d","filename":"Plane.json","url":"files/assets/6178171/1/Plane.json"},"data":{"mapping":[{"material":6178167}],"name":"plain"},"revision":1,"region":"eu-west-1","i18n":{},"id":"6178171"},"6178172":{"data":{"scripts":{"socket":{"attributesOrder":[],"attributes":{}}},"loading":false,"loadingType":0},"file":{"filename":"socket.js","size":196336,"hash":"82199c547c025f8415c6531dc8e8d312","url":"files/assets/6178172/1/socket.js"},"meta":null,"name":"socket.js","preload":true,"region":"eu-west-1","revision":1,"tags":[],"type":"script","i18n":{},"id":"6178172"},"6178173":{"tags":[],"name":"follow.js","revision":1,"preload":true,"meta":null,"data":{"scripts":{"follow":{"attributesOrder":["target","distance"],"attributes":{"target":{"type":"entity","title":"Target","description":"The Entity to follow"},"distance":{"type":"number","default":4,"title":"Distance","description":"How far from the Entity should the follower be"}}}},"loading":false,"loadingType":0},"type":"script","file":{"filename":"follow.js","size":977,"hash":"01404cfa0f415eea73c4aacf68f0eb9a","url":"files/assets/6178173/1/follow.js"},"region":"eu-west-1","i18n":{},"id":"6178173"},"6178176":{"tags":[],"name":"teleport.js","revision":1,"preload":true,"meta":null,"data":{"scripts":{"teleport":{"attributesOrder":["target"],"attributes":{"target":{"type":"entity","title":"Target Entity","description":"The target entity where we are going to teleport"}}}},"loading":false,"loadingType":0},"type":"script","file":{"filename":"teleport.js","size":832,"hash":"0eee0119c9f137040921866cd9eb9dad","url":"files/assets/6178176/1/teleport.js"},"region":"eu-west-1","i18n":{},"id":"6178176"},"6178177":{"preload":true,"name":"ball","type":"model","tags":[],"meta":null,"file":{"size":28451,"hash":"32a9178104e1d3582deb7816c171c594","filename":"Sphere.json","url":"files/assets/6178177/1/Sphere.json"},"data":{"mapping":[{"material":6178181}],"name":"ball"},"revision":1,"region":"eu-west-1","i18n":{},"id":"6178177"},"6178178":{"tags":[],"name":"teleportable.js","revision":1,"preload":true,"meta":null,"data":{"scripts":{"teleportable":{"attributesOrder":[],"attributes":{}}},"loading":false,"loadingType":0},"type":"script","file":{"filename":"teleportable.js","size":1483,"hash":"585085050b35caed49d1156b3bc2fd76","url":"files/assets/6178178/1/teleportable.js"},"region":"eu-west-1","i18n":{},"id":"6178178"},"6178179":{"preload":true,"name":"end","type":"model","tags":[],"meta":null,"file":{"filename":"Arrow.json","hash":"5f1f92891e24e95fc000c7bd4ea37c37","size":1687,"url":"files/assets/6178179/1/Arrow.json"},"data":{"mapping":[{"material":6178167}],"name":"end"},"revision":1,"region":"eu-west-1","i18n":{},"id":"6178179"},"6178181":{"data":{"ambient":[0,0,0],"ambientTint":false,"aoMap":null,"aoMapChannel":"r","aoMapOffset":[0,0],"aoMapTiling":[1,1],"aoUvSet":0,"blendType":3,"bumpMapFactor":1,"conserveEnergy":true,"cubeMap":null,"cubeMapProjection":0,"cubeMapProjectionBox":{"center":[0,0,0],"halfExtents":[0.5,0.5,0.5]},"cull":1,"depthTest":true,"depthWrite":true,"diffuse":[1,0.6352941393852234,0.4156862795352936],"diffuseMap":7113767,"diffuseMapChannel":"rgb","diffuseMapOffset":[0,0],"diffuseMapTiling":[1,1],"diffuseMapTint":false,"emissive":[0,0,0],"emissiveIntensity":1,"emissiveMap":null,"emissiveMapChannel":"rgb","emissiveMapOffset":[0,0],"emissiveMapTiling":[1,1],"emissiveMapTint":false,"fresnelFactor":0,"fresnelModel":0,"glossMap":7113767,"glossMapChannel":"rgb","glossMapOffset":[0,0],"glossMapTiling":[1,1],"heightMap":null,"heightMapChannel":"r","heightMapFactor":1,"heightMapOffset":[0,0],"heightMapTiling":[1,1],"lightMap":null,"lightMapChannel":"rgb","lightMapOffset":[0,0],"lightMapTiling":[1,1],"metalness":1,"metalnessMap":null,"metalnessMapChannel":"r","metalnessMapOffset":[0,0],"metalnessMapTiling":[1,1],"metalnessMapTint":false,"normalMap":null,"normalMapOffset":[0,0],"normalMapTiling":[1,1],"occludeSpecular":true,"opacity":1,"opacityMap":null,"opacityMapChannel":"r","opacityMapOffset":[0,0],"opacityMapTiling":[1,1],"reflectivity":1,"refraction":0,"refractionIndex":0.6666666666666666,"shader":"blinn","shadowSampleType":1,"shininess":31,"specular":[0.39215686274509803,0.39215686274509803,0.39215686274509803],"specularAntialias":true,"specularMap":7113767,"specularMapChannel":"rgb","specularMapOffset":[0,0],"specularMapTiling":[1,1],"specularMapTint":true,"sphereMap":null,"useMetalness":false},"file":null,"meta":null,"name":"ball","preload":true,"region":"eu-west-1","revision":1,"tags":[],"type":"material","i18n":{},"id":"6178181"},"6178182":{"data":{"ambient":[0,0,0],"ambientTint":false,"aoMap":null,"aoMapChannel":"r","aoMapOffset":[0,0],"aoMapTiling":[1,1],"aoUvSet":0,"blendType":1,"bumpMapFactor":1,"conserveEnergy":true,"cubeMap":null,"cubeMapProjection":0,"cubeMapProjectionBox":{"center":[0,0,0],"halfExtents":[0.5,0.5,0.5]},"cull":1,"depthTest":true,"depthWrite":true,"diffuse":[0,0,0],"diffuseMap":null,"diffuseMapChannel":"rgb","diffuseMapOffset":[0,0],"diffuseMapTiling":[1,1],"diffuseMapTint":false,"emissive":[0,0.3764705882352941,1],"emissiveIntensity":1,"emissiveMap":null,"emissiveMapChannel":"rgb","emissiveMapOffset":[0,0],"emissiveMapTiling":[1,1],"emissiveMapTint":false,"fresnelFactor":0,"fresnelModel":0,"glossMap":null,"glossMapChannel":"rgb","glossMapOffset":[0,0],"glossMapTiling":[1,1],"heightMap":null,"heightMapChannel":"r","heightMapFactor":1,"heightMapOffset":[0,0],"heightMapTiling":[1,1],"lightMap":null,"lightMapChannel":"rgb","lightMapOffset":[0,0],"lightMapTiling":[1,1],"metalness":1,"metalnessMap":null,"metalnessMapChannel":"r","metalnessMapOffset":[0,0],"metalnessMapTiling":[1,1],"metalnessMapTint":false,"name":"teleport-b","normalMap":null,"normalMapOffset":[0,0],"normalMapTiling":[1,1],"occludeSpecular":true,"opacity":1,"opacityMap":null,"opacityMapChannel":"r","opacityMapOffset":[0,0],"opacityMapTiling":[1,1],"reflectivity":1,"refraction":0,"refractionIndex":0.6666666666666666,"shader":"blinn","shadowSampleType":1,"shininess":32,"specular":[0.22745098039215686,0.22745098039215686,0.22745098039215686],"specularAntialias":true,"specularMap":null,"specularMapChannel":"rgb","specularMapOffset":[0,0],"specularMapTiling":[1,1],"specularMapTint":false,"sphereMap":null,"useMetalness":false},"file":null,"meta":null,"name":"teleport-b","preload":true,"region":"eu-west-1","revision":1,"tags":[],"type":"material","i18n":{},"id":"6178182"},"6178183":{"data":{"ambient":[0,0,0],"ambientTint":false,"aoMap":null,"aoMapChannel":"r","aoMapOffset":[0,0],"aoMapTiling":[1,1],"aoUvSet":0,"blendType":3,"bumpMapFactor":1,"conserveEnergy":true,"cubeMap":null,"cubeMapProjection":0,"cubeMapProjectionBox":{"center":[0,0,0],"halfExtents":[0.5,0.5,0.5]},"cull":1,"depthTest":true,"depthWrite":true,"diffuse":[0,0,0],"diffuseMap":null,"diffuseMapChannel":"rgb","diffuseMapOffset":[0,0],"diffuseMapTiling":[1,1],"diffuseMapTint":false,"emissive":[0.3764705882352941,1,0.3764705882352941],"emissiveIntensity":1,"emissiveMap":null,"emissiveMapChannel":"rgb","emissiveMapOffset":[0,0],"emissiveMapTiling":[1,1],"emissiveMapTint":false,"fresnelFactor":0,"fresnelModel":0,"glossMap":null,"glossMapChannel":"rgb","glossMapOffset":[0,0],"glossMapTiling":[1,1],"heightMap":null,"heightMapChannel":"r","heightMapFactor":1,"heightMapOffset":[0,0],"heightMapTiling":[1,1],"lightMap":null,"lightMapChannel":"rgb","lightMapOffset":[0,0],"lightMapTiling":[1,1],"metalness":1,"metalnessMap":null,"metalnessMapChannel":"r","metalnessMapOffset":[0,0],"metalnessMapTiling":[1,1],"metalnessMapTint":false,"name":"teleport-a","normalMap":null,"normalMapOffset":[0,0],"normalMapTiling":[1,1],"occludeSpecular":true,"opacity":1,"opacityMap":null,"opacityMapChannel":"r","opacityMapOffset":[0,0],"opacityMapTiling":[1,1],"reflectivity":1,"refraction":0,"refractionIndex":0.6666666666666666,"shader":"blinn","shadowSampleType":1,"shininess":32,"specular":[0.23,0.23,0.23],"specularAntialias":true,"specularMap":null,"specularMapChannel":"rgb","specularMapOffset":[0,0],"specularMapTiling":[1,1],"specularMapTint":false,"sphereMap":null,"useMetalness":false},"file":null,"meta":null,"name":"teleport-a","preload":true,"region":"eu-west-1","revision":1,"tags":[],"type":"material","i18n":{},"id":"6178183"},"6320036":{"tags":[],"name":"hammer.min.js","revision":1,"preload":true,"meta":null,"data":{"scripts":{"hammerMin":{"attributesOrder":[],"attributes":{}}},"loading":false,"loadingType":0},"type":"script","file":{"filename":"hammer.min.js","size":13727,"hash":"d94ab1852036608b237a7a9aa3934a53","url":"files/assets/6320036/1/hammer.min.js"},"region":"eu-west-1","i18n":{},"id":"6320036"},"6320152":{"tags":[],"name":"movement.js","revision":1,"preload":true,"meta":null,"data":{"scripts":{"movement":{"attributesOrder":["camera","power","lookSpeed","panSpeed","maxElevation"],"attributes":{"camera":{"type":"entity"},"power":{"type":"number","default":150},"lookSpeed":{"type":"number","default":0.5,"title":"Look Speed"},"maxElevation":{"type":"number","default":70},"panSpeed":{"type":"number","default":0.025,"title":"Pan Speed"}}}},"loading":false,"loadingType":0},"type":"script","file":{"filename":"movement.js","size":13262,"hash":"1732a9bbbe7fe5ea039177bcb822703f","url":"files/assets/6320152/1/movement.js"},"region":"eu-west-1","i18n":{},"id":"6320152"},"6426140":{"tags":[],"name":"queue.js","revision":1,"preload":true,"meta":null,"data":{"scripts":{"queue":{"attributesOrder":[],"attributes":{}}},"loading":false,"loadingType":0},"type":"script","file":{"filename":"queue.js","size":331,"hash":"ec31486fb460967199face8e5c7bcf02","url":"files/assets/6426140/1/queue.js"},"region":"eu-west-1","i18n":{},"id":"6426140"},"6468155":{"tags":[],"name":"Cubemap","revision":1,"preload":true,"meta":null,"data":{"name":"New Cubemap","textures":[6468578,6468578,6468578,6468578,6468578,6468578],"minFilter":5,"magFilter":1,"anisotropy":1},"type":"cubemap","file":null,"region":"eu-west-1","i18n":{},"id":"6468155"},"6468446":{"tags":[],"name":"starsky.png","revision":1,"preload":true,"meta":{"compress":{"alpha":false,"dxt":false,"pvr":false,"pvrBpp":4,"etc1":false,"normals":false,"etc2":false,"basis":false,"quality":128},"format":"png","type":"TrueColorAlpha","width":1024,"height":1024,"alpha":true,"depth":8,"srgb":true,"interlaced":false},"data":{"addressu":"repeat","addressv":"repeat","minfilter":"linear_mip_linear","magfilter":"linear","anisotropy":1,"rgbm":false,"mipmaps":true},"type":"texture","file":{"filename":"starsky.png","hash":"2e3914a4ca2fc2523b643b7ad9b0ef56","size":284923,"variants":{},"url":"files/assets/6468446/1/starsky.png"},"region":"eu-west-1","i18n":{},"id":"6468446"},"6468578":{"tags":[],"name":"bluesky.png","revision":1,"preload":true,"meta":{"compress":{"alpha":false,"dxt":false,"pvr":false,"pvrBpp":4,"etc1":false,"normals":false,"etc2":false,"basis":false,"quality":128},"format":"png","type":"Palette","width":1024,"height":1024,"alpha":false,"depth":8,"srgb":true,"interlaced":false},"data":{"addressu":"repeat","addressv":"repeat","minfilter":"linear_mip_linear","magfilter":"linear","anisotropy":1,"rgbm":false,"mipmaps":true},"type":"texture","file":{"filename":"bluesky.png","hash":"43271f1dba7d0774cbb1bbd7568740ec","size":453964,"variants":{},"url":"files/assets/6468578/1/bluesky.png"},"region":"eu-west-1","i18n":{},"id":"6468578"},"6811897":{"tags":[],"name":"raycast.js","revision":1,"preload":true,"meta":null,"data":{"scripts":{"raycast":{"attributesOrder":["camera"],"attributes":{"camera":{"type":"entity"}}}},"loading":false,"loadingType":0},"type":"script","file":{"filename":"raycast.js","size":3299,"hash":"6d0cac7d73457e50078dbecfb71a7268","url":"files/assets/6811897/1/raycast.js"},"region":"eu-west-1","i18n":{},"id":"6811897"},"6867986":{"tags":[],"name":"tween.js","revision":1,"preload":true,"meta":null,"data":{"scripts":{"tween":{"attributesOrder":[],"attributes":{}}},"loading":false,"loadingType":0},"type":"script","file":{"filename":"tween.js","size":19972,"hash":"8f99e0459889ec24e4e4e2da657f466f","url":"files/assets/6867986/1/tween.js"},"region":"eu-west-1","i18n":{},"id":"6867986"},"6867988":{"tags":[],"name":"transform.js","revision":1,"preload":true,"meta":null,"data":{"scripts":{"transform":{"attributesOrder":["cameraEntity","orbitSensitivity"],"attributes":{"cameraEntity":{"type":"entity","title":"Camera Entity"},"orbitSensitivity":{"type":"number","default":0.3,"title":"Orbit Sensitivity","description":"How fast the camera moves around the orbit. Higher is faster"}}}},"loading":false,"loadingType":0},"type":"script","file":{"filename":"transform.js","size":5274,"hash":"75cfd0bb9c207db7cf96c4bd9dc74ce6","url":"files/assets/6867988/1/transform.js"},"region":"eu-west-1","i18n":{},"id":"6867988"},"7113635":{"tags":[],"name":"mathUtils.js","revision":1,"preload":true,"meta":null,"data":{"scripts":{"mathUtils":{"attributesOrder":[],"attributes":{}}},"loading":false,"loadingType":0},"type":"script","file":{"filename":"mathUtils.js","size":1009,"hash":"bab0f6e2857d9f621178f21d48be25fb","url":"files/assets/7113635/1/mathUtils.js"},"region":"eu-west-1","i18n":{},"id":"7113635"},"7113767":{"tags":[],"name":"Sphere.png","revision":1,"preload":true,"meta":{"compress":{"alpha":false,"dxt":false,"pvr":false,"pvrBpp":4,"etc1":false,"normals":false,"etc2":false,"basis":false,"quality":128},"format":"png","type":"Palette","width":512,"height":256,"alpha":false,"depth":8,"srgb":true,"interlaced":false},"data":{"addressu":"repeat","addressv":"repeat","minfilter":"linear_mip_linear","magfilter":"linear","anisotropy":1,"rgbm":false,"mipmaps":true},"type":"texture","file":{"filename":"Sphere.png","hash":"8e3239edb757b284403485edc21654a4","size":821,"variants":{},"url":"files/assets/7113767/1/Sphere.png"},"region":"eu-west-1","i18n":{},"id":"7113767"}}}
+{
+  "application_properties": {
+    "antiAlias": true,
+    "fillMode": "FILL_WINDOW",
+    "resolutionMode": "AUTO",
+    "height": 720,
+    "width": 1280,
+    "use3dPhysics": true,
+    "preferWebGl2": true,
+    "preserveDrawingBuffer": false,
+    "scripts": [
+      6178173,
+      6178178,
+      6178176,
+      7113635,
+      6178172,
+      6426140,
+      6178170,
+      6320036,
+      6867986,
+      6320152,
+      6811897,
+      6867988
+    ],
+    "transparentCanvas": true,
+    "useDevicePixelRatio": false,
+    "useLegacyScripts": false,
+    "vr": false,
+    "loadingScreenScript": null,
+    "useLegacyAmmoPhysics": true,
+    "batchGroups": [],
+    "layers": {
+      "0": {
+        "name": "World",
+        "opaqueSortMode": 2,
+        "transparentSortMode": 3
+      },
+      "1": {
+        "name": "Depth",
+        "opaqueSortMode": 2,
+        "transparentSortMode": 3
+      },
+      "2": {
+        "name": "Skybox",
+        "opaqueSortMode": 0,
+        "transparentSortMode": 3
+      },
+      "3": {
+        "name": "Immediate",
+        "opaqueSortMode": 0,
+        "transparentSortMode": 3
+      },
+      "4": {
+        "name": "UI",
+        "opaqueSortMode": 1,
+        "transparentSortMode": 1
+      }
+    },
+    "layerOrder": [
+      {
+        "layer": 0,
+        "transparent": false,
+        "enabled": true
+      },
+      {
+        "layer": 1,
+        "transparent": false,
+        "enabled": true
+      },
+      {
+        "layer": 2,
+        "transparent": false,
+        "enabled": true
+      },
+      {
+        "layer": 0,
+        "transparent": true,
+        "enabled": true
+      },
+      {
+        "layer": 3,
+        "transparent": false,
+        "enabled": true
+      },
+      {
+        "layer": 3,
+        "transparent": true,
+        "enabled": true
+      },
+      {
+        "layer": 4,
+        "transparent": true,
+        "enabled": true
+      }
+    ],
+    "useKeyboard": true,
+    "useMouse": true,
+    "useTouch": true,
+    "useGamepads": false,
+    "i18nAssets": [],
+    "externalScripts": [],
+    "libraries": [
+      "ammo.dcab07b.js"
+    ]
+  },
+  "scenes": [
+    {
+      "name": "Main Scene",
+      "url": "486802.json"
+    }
+  ],
+  "assets": {
+    "6178167": {
+      "data": {
+        "ambient": [
+          0.5843137502670288,
+          0.5843137502670288,
+          0.5843137502670288
+        ],
+        "ambientTint": false,
+        "aoMap": null,
+        "aoMapChannel": "r",
+        "aoMapOffset": [
+          0,
+          0
+        ],
+        "aoMapTiling": [
+          25,
+          25
+        ],
+        "aoUvSet": 0,
+        "blendType": 3,
+        "bumpMapFactor": 1,
+        "conserveEnergy": true,
+        "cubeMap": null,
+        "cubeMapProjection": 0,
+        "cubeMapProjectionBox": {
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "halfExtents": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "cull": 1,
+        "depthTest": true,
+        "depthWrite": true,
+        "diffuse": [
+          0.5843137502670288,
+          0.5843137502670288,
+          0.5843137502670288
+        ],
+        "diffuseMap": 6178169,
+        "diffuseMapChannel": "rgb",
+        "diffuseMapOffset": [
+          0,
+          0
+        ],
+        "diffuseMapTiling": [
+          25,
+          25
+        ],
+        "diffuseMapTint": false,
+        "emissive": [
+          0.5058823823928833,
+          0.5058823823928833,
+          0.5058823823928833
+        ],
+        "emissiveIntensity": 1,
+        "emissiveMap": 6178169,
+        "emissiveMapChannel": "rgb",
+        "emissiveMapOffset": [
+          0,
+          0
+        ],
+        "emissiveMapTiling": [
+          25,
+          25
+        ],
+        "emissiveMapTint": false,
+        "fresnelFactor": 0,
+        "fresnelModel": 0,
+        "glossMap": 6178169,
+        "glossMapChannel": "rgb",
+        "glossMapOffset": [
+          0,
+          0
+        ],
+        "glossMapTiling": [
+          25,
+          25
+        ],
+        "heightMap": null,
+        "heightMapChannel": "r",
+        "heightMapFactor": 1,
+        "heightMapOffset": [
+          0,
+          0
+        ],
+        "heightMapTiling": [
+          25,
+          25
+        ],
+        "lightMap": null,
+        "lightMapChannel": "rgb",
+        "lightMapOffset": [
+          0,
+          0
+        ],
+        "lightMapTiling": [
+          25,
+          25
+        ],
+        "metalness": 1,
+        "metalnessMap": null,
+        "metalnessMapChannel": "r",
+        "metalnessMapOffset": [
+          0,
+          0
+        ],
+        "metalnessMapTiling": [
+          25,
+          25
+        ],
+        "metalnessMapTint": false,
+        "normalMap": null,
+        "normalMapOffset": [
+          0,
+          0
+        ],
+        "normalMapTiling": [
+          25,
+          25
+        ],
+        "occludeSpecular": true,
+        "opacity": 1,
+        "opacityMap": null,
+        "opacityMapChannel": "r",
+        "opacityMapOffset": [
+          0,
+          0
+        ],
+        "opacityMapTiling": [
+          25,
+          25
+        ],
+        "reflectivity": 1,
+        "refraction": 0,
+        "refractionIndex": 0.6666666666666666,
+        "shader": "blinn",
+        "shadowSampleType": 1,
+        "shininess": 77.53,
+        "specular": [
+          0.7098039215686275,
+          0.7098039215686275,
+          0.7098039215686275
+        ],
+        "specularAntialias": true,
+        "specularMap": 6178169,
+        "specularMapChannel": "rgb",
+        "specularMapOffset": [
+          0,
+          0
+        ],
+        "specularMapTiling": [
+          25,
+          25
+        ],
+        "specularMapTint": true,
+        "sphereMap": null,
+        "useMetalness": false,
+        "metalnessMapUv": 0
+      },
+      "file": null,
+      "meta": null,
+      "name": "platform",
+      "preload": true,
+      "region": "eu-west-1",
+      "revision": 1,
+      "tags": [],
+      "type": "material",
+      "i18n": {},
+      "id": "6178167"
+    },
+    "6178169": {
+      "preload": true,
+      "name": "platform",
+      "type": "texture",
+      "tags": [],
+      "meta": {
+        "format": "png",
+        "type": "Palette",
+        "width": 512,
+        "height": 512,
+        "alpha": false,
+        "depth": 8,
+        "srgb": true,
+        "interlaced": false,
+        "compress": {
+          "alpha": false,
+          "dxt": false,
+          "pvr": false,
+          "pvrBpp": 4,
+          "etc1": false,
+          "normals": false,
+          "etc2": false,
+          "basis": false,
+          "quality": 128
+        }
+      },
+      "file": {
+        "size": 8260,
+        "hash": "199cdac0b1726787b78a87c200e6ba02",
+        "filename": "Platform.png",
+        "url": "files/assets/6178169/1/Platform.png"
+      },
+      "data": {
+        "minfilter": "linear_mip_linear",
+        "name": "platform",
+        "magfilter": "linear",
+        "addressu": "repeat",
+        "addressv": "repeat",
+        "anisotropy": 8,
+        "mipmaps": true
+      },
+      "revision": 1,
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "6178169"
+    },
+    "6178170": {
+      "data": {
+        "scripts": {
+          "network": {
+            "attributesOrder": [],
+            "attributes": {}
+          }
+        },
+        "loading": false,
+        "loadingType": 0
+      },
+      "file": {
+        "filename": "Network.js",
+        "size": 7242,
+        "hash": "fc268d9c368b679fe3d48c4794a24c65",
+        "url": "files/assets/6178170/1/Network.js"
+      },
+      "meta": null,
+      "name": "Network.js",
+      "preload": true,
+      "region": "eu-west-1",
+      "revision": 1,
+      "tags": [],
+      "type": "script",
+      "i18n": {},
+      "id": "6178170"
+    },
+    "6178171": {
+      "preload": true,
+      "name": "plain",
+      "type": "model",
+      "tags": [],
+      "meta": {
+        "meshes": 1,
+        "meshInstances": 1,
+        "nodes": 2,
+        "skins": 0,
+        "vertices": 24,
+        "triangles": 12,
+        "attributes": {
+          "position": 1,
+          "normal": 1,
+          "texCoord0": 1
+        }
+      },
+      "file": {
+        "size": 1481,
+        "hash": "d2723bdae23f16155f253567551f705d",
+        "filename": "Plane.json",
+        "url": "files/assets/6178171/1/Plane.json"
+      },
+      "data": {
+        "mapping": [
+          {
+            "material": 6178167
+          }
+        ],
+        "name": "plain"
+      },
+      "revision": 1,
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "6178171"
+    },
+    "6178172": {
+      "data": {
+        "scripts": {
+          "socket": {
+            "attributesOrder": [],
+            "attributes": {}
+          }
+        },
+        "loading": false,
+        "loadingType": 0
+      },
+      "file": {
+        "filename": "socket.js",
+        "size": 196336,
+        "hash": "82199c547c025f8415c6531dc8e8d312",
+        "url": "files/assets/6178172/1/socket.js"
+      },
+      "meta": null,
+      "name": "socket.js",
+      "preload": true,
+      "region": "eu-west-1",
+      "revision": 1,
+      "tags": [],
+      "type": "script",
+      "i18n": {},
+      "id": "6178172"
+    },
+    "6178173": {
+      "tags": [],
+      "name": "follow.js",
+      "revision": 1,
+      "preload": true,
+      "meta": null,
+      "data": {
+        "scripts": {
+          "follow": {
+            "attributesOrder": [
+              "target",
+              "distance"
+            ],
+            "attributes": {
+              "target": {
+                "type": "entity",
+                "title": "Target",
+                "description": "The Entity to follow"
+              },
+              "distance": {
+                "type": "number",
+                "default": 4,
+                "title": "Distance",
+                "description": "How far from the Entity should the follower be"
+              }
+            }
+          }
+        },
+        "loading": false,
+        "loadingType": 0
+      },
+      "type": "script",
+      "file": {
+        "filename": "follow.js",
+        "size": 977,
+        "hash": "01404cfa0f415eea73c4aacf68f0eb9a",
+        "url": "files/assets/6178173/1/follow.js"
+      },
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "6178173"
+    },
+    "6178176": {
+      "tags": [],
+      "name": "teleport.js",
+      "revision": 1,
+      "preload": true,
+      "meta": null,
+      "data": {
+        "scripts": {
+          "teleport": {
+            "attributesOrder": [
+              "target"
+            ],
+            "attributes": {
+              "target": {
+                "type": "entity",
+                "title": "Target Entity",
+                "description": "The target entity where we are going to teleport"
+              }
+            }
+          }
+        },
+        "loading": false,
+        "loadingType": 0
+      },
+      "type": "script",
+      "file": {
+        "filename": "teleport.js",
+        "size": 832,
+        "hash": "0eee0119c9f137040921866cd9eb9dad",
+        "url": "files/assets/6178176/1/teleport.js"
+      },
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "6178176"
+    },
+    "6178177": {
+      "preload": true,
+      "name": "ball",
+      "type": "model",
+      "tags": [],
+      "meta": null,
+      "file": {
+        "size": 28451,
+        "hash": "32a9178104e1d3582deb7816c171c594",
+        "filename": "Sphere.json",
+        "url": "files/assets/6178177/1/Sphere.json"
+      },
+      "data": {
+        "mapping": [
+          {
+            "material": 6178181
+          }
+        ],
+        "name": "ball"
+      },
+      "revision": 1,
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "6178177"
+    },
+    "6178178": {
+      "tags": [],
+      "name": "teleportable.js",
+      "revision": 1,
+      "preload": true,
+      "meta": null,
+      "data": {
+        "scripts": {
+          "teleportable": {
+            "attributesOrder": [],
+            "attributes": {}
+          }
+        },
+        "loading": false,
+        "loadingType": 0
+      },
+      "type": "script",
+      "file": {
+        "filename": "teleportable.js",
+        "size": 1483,
+        "hash": "585085050b35caed49d1156b3bc2fd76",
+        "url": "files/assets/6178178/1/teleportable.js"
+      },
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "6178178"
+    },
+    "6178179": {
+      "preload": true,
+      "name": "end",
+      "type": "model",
+      "tags": [],
+      "meta": null,
+      "file": {
+        "filename": "Arrow.json",
+        "hash": "5f1f92891e24e95fc000c7bd4ea37c37",
+        "size": 1687,
+        "url": "files/assets/6178179/1/Arrow.json"
+      },
+      "data": {
+        "mapping": [
+          {
+            "material": 6178167
+          }
+        ],
+        "name": "end"
+      },
+      "revision": 1,
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "6178179"
+    },
+    "6178181": {
+      "data": {
+        "ambient": [
+          0,
+          0,
+          0
+        ],
+        "ambientTint": false,
+        "aoMap": null,
+        "aoMapChannel": "r",
+        "aoMapOffset": [
+          0,
+          0
+        ],
+        "aoMapTiling": [
+          1,
+          1
+        ],
+        "aoUvSet": 0,
+        "blendType": 3,
+        "bumpMapFactor": 1,
+        "conserveEnergy": true,
+        "cubeMap": null,
+        "cubeMapProjection": 0,
+        "cubeMapProjectionBox": {
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "halfExtents": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "cull": 1,
+        "depthTest": true,
+        "depthWrite": true,
+        "diffuse": [
+          1,
+          0.6352941393852234,
+          0.4156862795352936
+        ],
+        "diffuseMap": 7113767,
+        "diffuseMapChannel": "rgb",
+        "diffuseMapOffset": [
+          0,
+          0
+        ],
+        "diffuseMapTiling": [
+          1,
+          1
+        ],
+        "diffuseMapTint": false,
+        "emissive": [
+          0,
+          0,
+          0
+        ],
+        "emissiveIntensity": 1,
+        "emissiveMap": null,
+        "emissiveMapChannel": "rgb",
+        "emissiveMapOffset": [
+          0,
+          0
+        ],
+        "emissiveMapTiling": [
+          1,
+          1
+        ],
+        "emissiveMapTint": false,
+        "fresnelFactor": 0,
+        "fresnelModel": 0,
+        "glossMap": 7113767,
+        "glossMapChannel": "rgb",
+        "glossMapOffset": [
+          0,
+          0
+        ],
+        "glossMapTiling": [
+          1,
+          1
+        ],
+        "heightMap": null,
+        "heightMapChannel": "r",
+        "heightMapFactor": 1,
+        "heightMapOffset": [
+          0,
+          0
+        ],
+        "heightMapTiling": [
+          1,
+          1
+        ],
+        "lightMap": null,
+        "lightMapChannel": "rgb",
+        "lightMapOffset": [
+          0,
+          0
+        ],
+        "lightMapTiling": [
+          1,
+          1
+        ],
+        "metalness": 1,
+        "metalnessMap": null,
+        "metalnessMapChannel": "r",
+        "metalnessMapOffset": [
+          0,
+          0
+        ],
+        "metalnessMapTiling": [
+          1,
+          1
+        ],
+        "metalnessMapTint": false,
+        "normalMap": null,
+        "normalMapOffset": [
+          0,
+          0
+        ],
+        "normalMapTiling": [
+          1,
+          1
+        ],
+        "occludeSpecular": true,
+        "opacity": 1,
+        "opacityMap": null,
+        "opacityMapChannel": "r",
+        "opacityMapOffset": [
+          0,
+          0
+        ],
+        "opacityMapTiling": [
+          1,
+          1
+        ],
+        "reflectivity": 1,
+        "refraction": 0,
+        "refractionIndex": 0.6666666666666666,
+        "shader": "blinn",
+        "shadowSampleType": 1,
+        "shininess": 31,
+        "specular": [
+          0.39215686274509803,
+          0.39215686274509803,
+          0.39215686274509803
+        ],
+        "specularAntialias": true,
+        "specularMap": 7113767,
+        "specularMapChannel": "rgb",
+        "specularMapOffset": [
+          0,
+          0
+        ],
+        "specularMapTiling": [
+          1,
+          1
+        ],
+        "specularMapTint": true,
+        "sphereMap": null,
+        "useMetalness": false
+      },
+      "file": null,
+      "meta": null,
+      "name": "ball",
+      "preload": true,
+      "region": "eu-west-1",
+      "revision": 1,
+      "tags": [],
+      "type": "material",
+      "i18n": {},
+      "id": "6178181"
+    },
+    "6178182": {
+      "data": {
+        "ambient": [
+          0,
+          0,
+          0
+        ],
+        "ambientTint": false,
+        "aoMap": null,
+        "aoMapChannel": "r",
+        "aoMapOffset": [
+          0,
+          0
+        ],
+        "aoMapTiling": [
+          1,
+          1
+        ],
+        "aoUvSet": 0,
+        "blendType": 1,
+        "bumpMapFactor": 1,
+        "conserveEnergy": true,
+        "cubeMap": null,
+        "cubeMapProjection": 0,
+        "cubeMapProjectionBox": {
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "halfExtents": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "cull": 1,
+        "depthTest": true,
+        "depthWrite": true,
+        "diffuse": [
+          0,
+          0,
+          0
+        ],
+        "diffuseMap": null,
+        "diffuseMapChannel": "rgb",
+        "diffuseMapOffset": [
+          0,
+          0
+        ],
+        "diffuseMapTiling": [
+          1,
+          1
+        ],
+        "diffuseMapTint": false,
+        "emissive": [
+          0,
+          0.3764705882352941,
+          1
+        ],
+        "emissiveIntensity": 1,
+        "emissiveMap": null,
+        "emissiveMapChannel": "rgb",
+        "emissiveMapOffset": [
+          0,
+          0
+        ],
+        "emissiveMapTiling": [
+          1,
+          1
+        ],
+        "emissiveMapTint": false,
+        "fresnelFactor": 0,
+        "fresnelModel": 0,
+        "glossMap": null,
+        "glossMapChannel": "rgb",
+        "glossMapOffset": [
+          0,
+          0
+        ],
+        "glossMapTiling": [
+          1,
+          1
+        ],
+        "heightMap": null,
+        "heightMapChannel": "r",
+        "heightMapFactor": 1,
+        "heightMapOffset": [
+          0,
+          0
+        ],
+        "heightMapTiling": [
+          1,
+          1
+        ],
+        "lightMap": null,
+        "lightMapChannel": "rgb",
+        "lightMapOffset": [
+          0,
+          0
+        ],
+        "lightMapTiling": [
+          1,
+          1
+        ],
+        "metalness": 1,
+        "metalnessMap": null,
+        "metalnessMapChannel": "r",
+        "metalnessMapOffset": [
+          0,
+          0
+        ],
+        "metalnessMapTiling": [
+          1,
+          1
+        ],
+        "metalnessMapTint": false,
+        "name": "teleport-b",
+        "normalMap": null,
+        "normalMapOffset": [
+          0,
+          0
+        ],
+        "normalMapTiling": [
+          1,
+          1
+        ],
+        "occludeSpecular": true,
+        "opacity": 1,
+        "opacityMap": null,
+        "opacityMapChannel": "r",
+        "opacityMapOffset": [
+          0,
+          0
+        ],
+        "opacityMapTiling": [
+          1,
+          1
+        ],
+        "reflectivity": 1,
+        "refraction": 0,
+        "refractionIndex": 0.6666666666666666,
+        "shader": "blinn",
+        "shadowSampleType": 1,
+        "shininess": 32,
+        "specular": [
+          0.22745098039215686,
+          0.22745098039215686,
+          0.22745098039215686
+        ],
+        "specularAntialias": true,
+        "specularMap": null,
+        "specularMapChannel": "rgb",
+        "specularMapOffset": [
+          0,
+          0
+        ],
+        "specularMapTiling": [
+          1,
+          1
+        ],
+        "specularMapTint": false,
+        "sphereMap": null,
+        "useMetalness": false
+      },
+      "file": null,
+      "meta": null,
+      "name": "teleport-b",
+      "preload": true,
+      "region": "eu-west-1",
+      "revision": 1,
+      "tags": [],
+      "type": "material",
+      "i18n": {},
+      "id": "6178182"
+    },
+    "6178183": {
+      "data": {
+        "ambient": [
+          0,
+          0,
+          0
+        ],
+        "ambientTint": false,
+        "aoMap": null,
+        "aoMapChannel": "r",
+        "aoMapOffset": [
+          0,
+          0
+        ],
+        "aoMapTiling": [
+          1,
+          1
+        ],
+        "aoUvSet": 0,
+        "blendType": 3,
+        "bumpMapFactor": 1,
+        "conserveEnergy": true,
+        "cubeMap": null,
+        "cubeMapProjection": 0,
+        "cubeMapProjectionBox": {
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "halfExtents": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "cull": 1,
+        "depthTest": true,
+        "depthWrite": true,
+        "diffuse": [
+          0,
+          0,
+          0
+        ],
+        "diffuseMap": null,
+        "diffuseMapChannel": "rgb",
+        "diffuseMapOffset": [
+          0,
+          0
+        ],
+        "diffuseMapTiling": [
+          1,
+          1
+        ],
+        "diffuseMapTint": false,
+        "emissive": [
+          0.3764705882352941,
+          1,
+          0.3764705882352941
+        ],
+        "emissiveIntensity": 1,
+        "emissiveMap": null,
+        "emissiveMapChannel": "rgb",
+        "emissiveMapOffset": [
+          0,
+          0
+        ],
+        "emissiveMapTiling": [
+          1,
+          1
+        ],
+        "emissiveMapTint": false,
+        "fresnelFactor": 0,
+        "fresnelModel": 0,
+        "glossMap": null,
+        "glossMapChannel": "rgb",
+        "glossMapOffset": [
+          0,
+          0
+        ],
+        "glossMapTiling": [
+          1,
+          1
+        ],
+        "heightMap": null,
+        "heightMapChannel": "r",
+        "heightMapFactor": 1,
+        "heightMapOffset": [
+          0,
+          0
+        ],
+        "heightMapTiling": [
+          1,
+          1
+        ],
+        "lightMap": null,
+        "lightMapChannel": "rgb",
+        "lightMapOffset": [
+          0,
+          0
+        ],
+        "lightMapTiling": [
+          1,
+          1
+        ],
+        "metalness": 1,
+        "metalnessMap": null,
+        "metalnessMapChannel": "r",
+        "metalnessMapOffset": [
+          0,
+          0
+        ],
+        "metalnessMapTiling": [
+          1,
+          1
+        ],
+        "metalnessMapTint": false,
+        "name": "teleport-a",
+        "normalMap": null,
+        "normalMapOffset": [
+          0,
+          0
+        ],
+        "normalMapTiling": [
+          1,
+          1
+        ],
+        "occludeSpecular": true,
+        "opacity": 1,
+        "opacityMap": null,
+        "opacityMapChannel": "r",
+        "opacityMapOffset": [
+          0,
+          0
+        ],
+        "opacityMapTiling": [
+          1,
+          1
+        ],
+        "reflectivity": 1,
+        "refraction": 0,
+        "refractionIndex": 0.6666666666666666,
+        "shader": "blinn",
+        "shadowSampleType": 1,
+        "shininess": 32,
+        "specular": [
+          0.23,
+          0.23,
+          0.23
+        ],
+        "specularAntialias": true,
+        "specularMap": null,
+        "specularMapChannel": "rgb",
+        "specularMapOffset": [
+          0,
+          0
+        ],
+        "specularMapTiling": [
+          1,
+          1
+        ],
+        "specularMapTint": false,
+        "sphereMap": null,
+        "useMetalness": false
+      },
+      "file": null,
+      "meta": null,
+      "name": "teleport-a",
+      "preload": true,
+      "region": "eu-west-1",
+      "revision": 1,
+      "tags": [],
+      "type": "material",
+      "i18n": {},
+      "id": "6178183"
+    },
+    "6320036": {
+      "tags": [],
+      "name": "hammer.min.js",
+      "revision": 1,
+      "preload": true,
+      "meta": null,
+      "data": {
+        "scripts": {
+          "hammerMin": {
+            "attributesOrder": [],
+            "attributes": {}
+          }
+        },
+        "loading": false,
+        "loadingType": 0
+      },
+      "type": "script",
+      "file": {
+        "filename": "hammer.min.js",
+        "size": 13727,
+        "hash": "d94ab1852036608b237a7a9aa3934a53",
+        "url": "files/assets/6320036/1/hammer.min.js"
+      },
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "6320036"
+    },
+    "6320152": {
+      "tags": [],
+      "name": "movement.js",
+      "revision": 1,
+      "preload": true,
+      "meta": null,
+      "data": {
+        "scripts": {
+          "movement": {
+            "attributesOrder": [
+              "camera",
+              "power",
+              "lookSpeed",
+              "panSpeed",
+              "maxElevation"
+            ],
+            "attributes": {
+              "camera": {
+                "type": "entity"
+              },
+              "power": {
+                "type": "number",
+                "default": 150
+              },
+              "lookSpeed": {
+                "type": "number",
+                "default": 0.5,
+                "title": "Look Speed"
+              },
+              "maxElevation": {
+                "type": "number",
+                "default": 70
+              },
+              "panSpeed": {
+                "type": "number",
+                "default": 0.025,
+                "title": "Pan Speed"
+              }
+            }
+          }
+        },
+        "loading": false,
+        "loadingType": 0
+      },
+      "type": "script",
+      "file": {
+        "filename": "movement.js",
+        "size": 13262,
+        "hash": "1732a9bbbe7fe5ea039177bcb822703f",
+        "url": "files/assets/6320152/1/movement.js"
+      },
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "6320152"
+    },
+    "6426140": {
+      "tags": [],
+      "name": "queue.js",
+      "revision": 1,
+      "preload": true,
+      "meta": null,
+      "data": {
+        "scripts": {
+          "queue": {
+            "attributesOrder": [],
+            "attributes": {}
+          }
+        },
+        "loading": false,
+        "loadingType": 0
+      },
+      "type": "script",
+      "file": {
+        "filename": "queue.js",
+        "size": 331,
+        "hash": "ec31486fb460967199face8e5c7bcf02",
+        "url": "files/assets/6426140/1/queue.js"
+      },
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "6426140"
+    },
+    "6468155": {
+      "tags": [],
+      "name": "Cubemap",
+      "revision": 1,
+      "preload": true,
+      "meta": null,
+      "data": {
+        "name": "New Cubemap",
+        "textures": [
+          6468578,
+          6468578,
+          6468578,
+          6468578,
+          6468578,
+          6468578
+        ],
+        "minFilter": 5,
+        "magFilter": 1,
+        "anisotropy": 1
+      },
+      "type": "cubemap",
+      "file": null,
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "6468155"
+    },
+    "6468446": {
+      "tags": [],
+      "name": "starsky.png",
+      "revision": 1,
+      "preload": true,
+      "meta": {
+        "compress": {
+          "alpha": false,
+          "dxt": false,
+          "pvr": false,
+          "pvrBpp": 4,
+          "etc1": false,
+          "normals": false,
+          "etc2": false,
+          "basis": false,
+          "quality": 128
+        },
+        "format": "png",
+        "type": "TrueColorAlpha",
+        "width": 1024,
+        "height": 1024,
+        "alpha": true,
+        "depth": 8,
+        "srgb": true,
+        "interlaced": false
+      },
+      "data": {
+        "addressu": "repeat",
+        "addressv": "repeat",
+        "minfilter": "linear_mip_linear",
+        "magfilter": "linear",
+        "anisotropy": 1,
+        "rgbm": false,
+        "mipmaps": true
+      },
+      "type": "texture",
+      "file": {
+        "filename": "starsky.png",
+        "hash": "2e3914a4ca2fc2523b643b7ad9b0ef56",
+        "size": 284923,
+        "variants": {},
+        "url": "files/assets/6468446/1/starsky.png"
+      },
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "6468446"
+    },
+    "6468578": {
+      "tags": [],
+      "name": "bluesky.png",
+      "revision": 1,
+      "preload": true,
+      "meta": {
+        "compress": {
+          "alpha": false,
+          "dxt": false,
+          "pvr": false,
+          "pvrBpp": 4,
+          "etc1": false,
+          "normals": false,
+          "etc2": false,
+          "basis": false,
+          "quality": 128
+        },
+        "format": "png",
+        "type": "Palette",
+        "width": 1024,
+        "height": 1024,
+        "alpha": false,
+        "depth": 8,
+        "srgb": true,
+        "interlaced": false
+      },
+      "data": {
+        "addressu": "repeat",
+        "addressv": "repeat",
+        "minfilter": "linear_mip_linear",
+        "magfilter": "linear",
+        "anisotropy": 1,
+        "rgbm": false,
+        "mipmaps": true
+      },
+      "type": "texture",
+      "file": {
+        "filename": "bluesky.png",
+        "hash": "43271f1dba7d0774cbb1bbd7568740ec",
+        "size": 453964,
+        "variants": {},
+        "url": "files/assets/6468578/1/bluesky.png"
+      },
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "6468578"
+    },
+    "6811897": {
+      "tags": [],
+      "name": "raycast.js",
+      "revision": 1,
+      "preload": true,
+      "meta": null,
+      "data": {
+        "scripts": {
+          "raycast": {
+            "attributesOrder": [
+              "camera"
+            ],
+            "attributes": {
+              "camera": {
+                "type": "entity"
+              }
+            }
+          }
+        },
+        "loading": false,
+        "loadingType": 0
+      },
+      "type": "script",
+      "file": {
+        "filename": "raycast.js",
+        "size": 3299,
+        "hash": "6d0cac7d73457e50078dbecfb71a7268",
+        "url": "files/assets/6811897/1/raycast.js"
+      },
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "6811897"
+    },
+    "6867986": {
+      "tags": [],
+      "name": "tween.js",
+      "revision": 1,
+      "preload": true,
+      "meta": null,
+      "data": {
+        "scripts": {
+          "tween": {
+            "attributesOrder": [],
+            "attributes": {}
+          }
+        },
+        "loading": false,
+        "loadingType": 0
+      },
+      "type": "script",
+      "file": {
+        "filename": "tween.js",
+        "size": 19972,
+        "hash": "8f99e0459889ec24e4e4e2da657f466f",
+        "url": "files/assets/6867986/1/tween.js"
+      },
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "6867986"
+    },
+    "6867988": {
+      "tags": [],
+      "name": "transform.js",
+      "revision": 1,
+      "preload": true,
+      "meta": null,
+      "data": {
+        "scripts": {
+          "transform": {
+            "attributesOrder": [
+              "cameraEntity",
+              "orbitSensitivity"
+            ],
+            "attributes": {
+              "cameraEntity": {
+                "type": "entity",
+                "title": "Camera Entity"
+              },
+              "orbitSensitivity": {
+                "type": "number",
+                "default": 0.3,
+                "title": "Orbit Sensitivity",
+                "description": "How fast the camera moves around the orbit. Higher is faster"
+              }
+            }
+          }
+        },
+        "loading": false,
+        "loadingType": 0
+      },
+      "type": "script",
+      "file": {
+        "filename": "transform.js",
+        "size": 5274,
+        "hash": "75cfd0bb9c207db7cf96c4bd9dc74ce6",
+        "url": "files/assets/6867988/1/transform.js"
+      },
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "6867988"
+    },
+    "7113635": {
+      "tags": [],
+      "name": "mathUtils.js",
+      "revision": 1,
+      "preload": true,
+      "meta": null,
+      "data": {
+        "scripts": {
+          "mathUtils": {
+            "attributesOrder": [],
+            "attributes": {}
+          }
+        },
+        "loading": false,
+        "loadingType": 0
+      },
+      "type": "script",
+      "file": {
+        "filename": "mathUtils.js",
+        "size": 1009,
+        "hash": "bab0f6e2857d9f621178f21d48be25fb",
+        "url": "files/assets/7113635/1/mathUtils.js"
+      },
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "7113635"
+    },
+    "7113767": {
+      "tags": [],
+      "name": "Sphere.png",
+      "revision": 1,
+      "preload": true,
+      "meta": {
+        "compress": {
+          "alpha": false,
+          "dxt": false,
+          "pvr": false,
+          "pvrBpp": 4,
+          "etc1": false,
+          "normals": false,
+          "etc2": false,
+          "basis": false,
+          "quality": 128
+        },
+        "format": "png",
+        "type": "Palette",
+        "width": 512,
+        "height": 256,
+        "alpha": false,
+        "depth": 8,
+        "srgb": true,
+        "interlaced": false
+      },
+      "data": {
+        "addressu": "repeat",
+        "addressv": "repeat",
+        "minfilter": "linear_mip_linear",
+        "magfilter": "linear",
+        "anisotropy": 1,
+        "rgbm": false,
+        "mipmaps": true
+      },
+      "type": "texture",
+      "file": {
+        "filename": "Sphere.png",
+        "hash": "8e3239edb757b284403485edc21654a4",
+        "size": 821,
+        "variants": {},
+        "url": "files/assets/7113767/1/Sphere.png"
+      },
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "7113767"
+    }
+  }
+}

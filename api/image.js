@@ -54,8 +54,8 @@ function createImageAssetsAndEntity (req, res, next) {
         return next(err);
       }
 
-      var assetFileId = reservedId1;
-      var assetMaterialId = reservedId2;
+      var assetFileId = parseInt(reservedId1);
+      var assetMaterialId = parseInt(reservedId2);
 
       // Populate Asset Files and save to req
       var assetFullPath = "files/assets/" + assetFileId + "/1/" + req.file.originalname;
@@ -71,7 +71,7 @@ function createImageAssetsAndEntity (req, res, next) {
         var fileAsset = assetStockJson[6451433];
         fileAsset.id = assetFileId;
         fileAsset.name = req.file.originalname;
-        fileAsset.file.filename = assetFullPath;
+        fileAsset.file.filename = req.file.originalname;
         fileAsset.file.size = req.file.size;
         fileAsset.file.fullPath = assetFullPath;
 
