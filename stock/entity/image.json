@@ -11,7 +11,7 @@
   ],
   "name": "Image",
   "parent": "e8ae4254-6751-11e5-bd2a-8438356164ca",
-  "resource_id": "6b37ab7c-df45-11e6-8b5f-22000ac481df",
+  "resource_id": "",
   "components": {
     "model": {
       "lightMapSizeMultiplier": 1,

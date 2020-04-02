@@ -273,11 +273,42 @@ function phantomGetZip(req, res, next) {
 
 }
 
+// sets the parent of entities to SCENE unless the id is found in this upload
+function setParentOnEntities(req, res, next) {
+  async.each(req.entities, function(entity, callback) {
+    var foundId = false;
+    for (var entityPossibleParent in req.entities) {
+      if (entityPossibleParent.resource_id == entity.resource_id) continue; // don't allow self-parenting
+      if (entityPossibleParent.resource_id == entity.parent) {
+        return callback(); // skip writing parent as SCENE, it is a child of another entity
+      }
+    }
+
+    // write scene as parent (scene id stored in stock image json)
+    fs.readFile("stock/entity/image.json", function(err, entityStockBuf) {
+      if (err) {
+        return next(err);
+      }
+      var entityStockJson = JSON.parse(entityStockBuf);
+
+      entity.parent = entityStockJson.parent;
+      callback();
+    });
+  }, function(err, results) {
+    // after all the callbacks
+    if (err) {
+      return next(err);
+    }
+    console.log("end set parent");
+    next();
+  });
+}
+
 /**
  * POST /api/entities
  *
  */
-router.post('/', multer.single('zipFile'), checkFormat, unzipEntries, getReservedIds, apiLib.sendUploadToGCS, apiLib.rewriteAssetUrls, apiLib.sendAssetsToDatastore, apiLib.sendEntitiesToDatastore, sendRecordsToSql, function (req, res, next) {
+router.post('/', multer.single('zipFile'), checkFormat, unzipEntries, getReservedIds, apiLib.sendUploadToGCS, apiLib.rewriteAssetUrls, apiLib.sendAssetsToDatastore, setParentOnEntities, apiLib.sendEntitiesToDatastore, sendRecordsToSql, function (req, res, next) {
 //  console.log(req.entities); 
 //  console.log(req.assets); 
 //  console.log(req.assetFiles);

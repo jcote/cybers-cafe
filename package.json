@@ -47,7 +47,8 @@
     "nconf": "^0.8.4",
     "phantom": "^4.0.3",
     "prompt": "^1.0.0",
-    "slimerjs": "^0.10.3"
+    "slimerjs": "^0.10.3",
+    "uuid": "^7.0.3"
   },
   "devDependencies": {
     "grunt": "^1.1.0",

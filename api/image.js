@@ -18,6 +18,7 @@ var bodyParser = require('body-parser');
 var Multer  = require('multer');
 var fs = require('fs');
 var md5 = require('md5');
+const uuidv4 = require('uuid/v4');
 const async = require('async');
 const sqlRecord = require('./records-cloudsql');
 const apiLib = require('./lib');
@@ -98,6 +99,7 @@ function createImageAssetsAndEntity (req, res, next) {
           // Populate the stock Entity
           var entity = entityStockJson;
           entity.components.model.materialAsset = assetMaterialId;
+          entity.resource_id = uuidv4();
           req.entitiesWithNoKey.push(entity);
 
           //console.log(req.assets);
