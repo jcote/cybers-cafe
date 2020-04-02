@@ -22,17 +22,19 @@
   * systemctl daemon-reload
   * systemctl start cloud-sql-proxy.service
 
-* don't forget to `source env.sh` before running cybers-cafe and service
+* don't forget to `source env.sh` before running cybers-cafe and service IF starting manually
 
 * setup pm2 for cybers-cafe and cybers-cafe-service
   * npm install pm2@latest -g
   * pm2 startup systemd
-  * pm2 start cybers-cafe.pm2.js
-  * pm2 start cybers-cafe-service.pm2.js
+  * pm2 start cybers-cafe.config.js
+  * pm2 start cybers-cafe-service.config.js
   * pm2 save
   * sudo systemctl start pm2-[USER]
+
 * check that everything runs on startup
   * sudo reboot
+  * systemctl status nginx
   * systemctl status sql-proxy.service
   * pm2 status
 
