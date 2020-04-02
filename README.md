@@ -1,16 +1,24 @@
+# /CYBERS CAFE/
 
-* setup the cloud-sql-proxy service (see cybers-cafe-service project, *-service.txt files)
-  * to start manually:
-  * systemctl daemon-reexec
+* setup the cloud-sql-proxy service (see cybers-cafe-service project, service txt file)
+  * wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
+  * chmod +x cloud_sql_proxy
+  * scp Google service account credentials (https://console.cloud.google.com/iam-admin/serviceaccounts/create?previousPage=%2Fapis%2Fcredentials%3Fproject%3Dcybers-cafe&project=cybers-cafe)
+  * edit cloud-sql-proxy.sh to point to cloud-sql-proxy binary and Google credentials
+  * systemctl enable /etc/systemd/system/sql-proxy.service
+  * systemctl daemon-reexec OR
+  * systemctl daemon-reload
   * systemctl start cloud-sql-proxy.service
-  * systemctl start cybers-cafe-service.service
 * don't forget to `source env.sh` before running cybers-cafe and service
+* setup pm2 for cybers-cafe and cybers-cafe-service
+  * npm install pm2@latest -g
+  * pm2 startup systemd
+  * pm2 start cybers-cafe/app.js
+  * pm2 start cybers-cafe-service/app.js
+  * pm2 save
+  * sudo systemctl start pm2-[USER]
+* check that everything runs on startup
+  * sudo reboot
+  * systemctl status sql-proxy.service
+  * pm2 status
 
-
-# 2 - Structured data
-
-This folder contains the sample code for the [Structured data][step-2]
-tutorial. Please refer to the tutorial for instructions on configuring, running,
-and deploying this sample.
-
-[step-2]: https://cloud.google.com/nodejs/getting-started/using-structured-data
