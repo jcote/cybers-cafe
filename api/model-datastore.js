@@ -40,6 +40,7 @@ var ds = new Datastore({
 //     property: value
 //   }
 function fromDatastore (obj) {
+  obj.id = Number.parseInt(id);
   return obj;
 }
 
@@ -157,13 +158,13 @@ function reserveIdCreate (kind, cb) {
   ds.save(
     entity,
     function (err) {
-      cb(err, err ? null : entity.key.id);
+      cb(err, err ? null : Number.parseInt(entity.key.id));
     }
   );
 }
 
 function _delete (kind, id, cb) {
-  var key = ds.key([kind, parseInt(id, 10)]);
+  var key = ds.key([kind, Number.parseInt(id, 10)]);
   ds.delete(key, cb);
 }
 

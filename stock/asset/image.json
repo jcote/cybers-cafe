@@ -1,7 +1,7 @@
 {
   "6451433": {
     "tags": [],
-    "name": "star.jpg",
+    "name": "",
     "revision": 1,
     "preload": true,
     "meta": {
@@ -36,11 +36,11 @@
     },
     "type": "texture",
     "file": {
-      "filename": "star.jpg",
-      "hash": "4e7669504f38200e257e7f31b90b876b",
+      "filename": "",
+      "hash": "",
       "size": 18175,
       "variants": {},
-      "url": "files/assets/6451433/1/star.jpg"
+      "url": ""
     },
     "region": "eu-west-1",
     "i18n": {},

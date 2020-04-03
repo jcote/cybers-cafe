@@ -54,8 +54,8 @@ function createImageAssetsAndEntity (req, res, next) {
         return next(err);
       }
 
-      var assetFileId = parseInt(reservedId1);
-      var assetMaterialId = parseInt(reservedId2);
+      var assetFileId = reservedId1;
+      var assetMaterialId = reservedId2;
 
       // Populate Asset Files and save to req
       var assetFullPath = "files/assets/" + assetFileId + "/1/" + req.file.originalname;
@@ -113,8 +113,9 @@ function createImageAssetsAndEntity (req, res, next) {
   });
 }
 
+// same as in entities.js but uses different sendRecordToSql
 function sendRecordsToSql(req, res, next) {
-  async.each(req.entities, function(entity, callback) {
+  async.each(req.entitiesDS, function(entity, callback) {
     if (!('components' in entity) || Object.keys(entity.components).length == 0) {
       return callback();
     }
@@ -198,7 +199,7 @@ router.post('/', multer.single('imgFile'), checkFormatImg, createImageAssetsAndE
     return res.status(200).json({
       "message":"Created "  + Object.keys(req.entities).length + " entities, " + Object.keys(req.assets).length + " assets and " + Object.keys(req.assetFiles).length + " asset files...",
       "records": req.records,
-      "entities": req.entities,
+      "entities": req.entitiesDS,
       "assets": req.assets});
   }
 });

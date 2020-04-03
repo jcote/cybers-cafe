@@ -77,6 +77,7 @@ function sendUploadToGCS (req, res, next) {
 
 function sendEntitiesToDatastore (req, res, next) {
   console.log("begin entity processing");
+  req.entitiesDS = {};
   if (Object.keys(req.entities).length == 0 && (!req.entitiesWithNoKey || req.entitiesWithNoKey.length == 0)) {
     console.log("no entities");
     return next();
@@ -96,7 +97,7 @@ function sendEntitiesToDatastore (req, res, next) {
       if (err) {
         return callback(err);
       }
-      req.entities[entity.id] = entity;
+      req.entitiesDS[entity.id] = entity;
       console.log("entity '" + entity.name + "' stored in DS: " + entity.id);
       callback(null);
     });
@@ -114,6 +115,32 @@ function sendEntitiesToDatastore (req, res, next) {
       }
       next();
     });
+  });
+}
+
+function getReservedIds(req, res, next) {
+  req.assetIdMapOldToNew = {};
+  var replacementAssets = {}; // contains the newly keyed req.assets that will be written at end of this function
+  async.each(req.assets,function(asset, callback) {
+    getModel().reserveIdCreate('Asset', function(err, reservedId) {
+      if (err) {
+        return callback(err);
+      }
+      // store mapping of old id to new one
+      req.assetIdMapOldToNew[asset.id] = reservedId;
+      // apply gotten id
+      asset.id = reservedId;
+      replacementAssets[reservedId] = asset;
+      return callback();
+    });
+  }, function(err, results) {
+  // after all the callbacks
+    if (err) {
+      return next(err);
+    }
+    req.assets = replacementAssets; // update the assets object to use the new keys
+    console.log("end reserved ids");
+    next();
   });
 }
 
@@ -154,7 +181,7 @@ function rewriteAssetUrls (req, res, next) {
 
   for (var key in req.assets) {
     var asset = req.assets[key];
-    if (!asset.file || !asset.file.url) {
+    if (!asset.file || !req.assetFiles[asset.file.fullPath]) { // no file property or no cloud url known
 //      console.log("no file info in asset");
       continue;
     }
@@ -180,5 +207,6 @@ module.exports = {
   sendUploadToGCS: sendUploadToGCS,
   sendEntitiesToDatastore: sendEntitiesToDatastore,
   sendAssetsToDatastore: sendAssetsToDatastore,
-  rewriteAssetUrls: rewriteAssetUrls
+  rewriteAssetUrls: rewriteAssetUrls,
+  getReservedIds: getReservedIds
 };

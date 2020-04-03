@@ -16,7 +16,8 @@
   * wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
   * chmod +x cloud_sql_proxy
   * scp Google service account credentials (https://console.cloud.google.com/iam-admin/serviceaccounts/create?previousPage=%2Fapis%2Fcredentials%3Fproject%3Dcybers-cafe&project=cybers-cafe)
-  * edit cloud-sql-proxy.sh to point to cloud-sql-proxy binary and Google credentials
+  * edit cloud-sql-proxy.sh to point to cloud-sql-proxy binary
+  * edit cloud-sql-proxy.sh and *.config.js files to point to Google credentials
   * systemctl enable /etc/systemd/system/sql-proxy.service
   * systemctl daemon-reexec OR
   * systemctl daemon-reload

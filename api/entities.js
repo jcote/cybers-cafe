@@ -58,25 +58,34 @@ function getDependentAssetIdsFromAsset(asset) {
   return assetIds;
 }
 
-function getDependentAssetIdsFromEntity(entity) {
+function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew, assets) {
     var assetIds = [];
     if ('components' in entity && entity.components != null) {
       if ('model' in entity.components && entity.components.model != null) {
         if ('asset' in entity.components.model) {
           if (typeof entity.components.model.asset === 'number') {
-            assetIds.push(entity.components.model.asset);
+            var newId = assetIdMapOldToNew[entity.components.model.asset];
+            entity.components.model.asset = newId;
+            assetIds.push(newId);
+            assetIds.push(getDependentAssetIdsFromAsset(assets[entity.components.model.asset]));
           }
         }
         if ('materialAsset' in entity.components.model) {
           if (typeof entity.components.model.materialAsset === 'number') {
-            assetIds.push(entity.components.model.materialAsset);
+            var newId = assetIdMapOldToNew[entity.components.model.materialAsset];
+            entity.components.model.materialAsset = newId;
+            assetIds.push(newId);
+            assetIds.push(getDependentAssetIdsFromAsset(assets[entity.components.model.materialAsset]));
           }
         }
       }
       if ('collision' in entity.components && entity.components.collision != null) {
         if ('asset' in entity.components.collision) {
           if (typeof entity.components.collision.asset === 'number') {
-            assetIds.push(entity.components.collision.asset);
+            var newId = assetIdMapOldToNew[entity.components.collision.asset];
+            entity.components.collision.asset = newId;
+            assetIds.push(newId);
+            assetIds.push(getDependentAssetIdsFromAsset(assets[entity.components.collision.asset]));
           }
         }
       }
@@ -85,7 +94,10 @@ function getDependentAssetIdsFromEntity(entity) {
           if (Array.isArray(entity.components.animation.assets)) {
             if (entity.components.animation.assets.length > 0) {
               if (typeof entity.components.animation.assets[0] === 'number') {
-                assetIds = assetIds.concat(entity.components.animation.assets);
+                var newId = assetIdMapOldToNew[entity.components.animation.assets];
+                entity.components.animation.assets = newId;
+                assetIds.push(newId);
+                assetIds.push(getDependentAssetIdsFromAsset(assets[entity.components.animation.assets[0]]));
               }
             }
           }
@@ -158,28 +170,10 @@ function unzipEntries (req, res, next) {
   next();
 }
 
-function getReservedIds(req, res, next) {
-  async.each(req.assets,function(asset, callback) {
-    apiLib.getModel().reserveIdCreate('Asset', function(err, reservedId) {
-      if (err) {
-        return callback(err);
-      }
-      req.assets[asset.id].id = reservedId;
-      return callback();
-    });
-  }, function(err, results) {
-  // after all the callbacks
-    if (err) {
-      return next(err);
-    }
-    console.log("end reserved ids");
-    next();
-  });
-}
-
+// same as in image.js but uses different sendRecordToSql
 function sendRecordsToSql(req, res, next) {
   console.log("begin sql stores");
-  async.each(req.entities, function(entity, callback) {
+  async.each(req.entitiesDS, function(entity, callback) {
     if (!('components' in entity) || Object.keys(entity.components).length == 0) {
       return callback();
     }
@@ -192,6 +186,19 @@ function sendRecordsToSql(req, res, next) {
     console.log("end sql stores");
     next();
   });
+}
+
+function extractAndRewriteDependentAssetIds(req, res, next) {
+  req.dependentAssetIds = {};
+
+  Object.keys(req.entities).forEach(function(entityGuid) {
+    var entity = req.entities[entityGuid];
+    // extract entity's dependent asset ids
+    var assetIds = getDependentAssetIdsFromEntityAndRewriteIds(entity, req.assetIdMapOldToNew, req.assets);
+    req.dependentAssetIds[entity.resource_id] = assetIds;
+  });
+  console.log("end extract and rewrite asset ids");
+  next();
 }
 
 function sendRecordToSql (req, entity, assets, callback) {
@@ -214,13 +221,13 @@ function sendRecordToSql (req, entity, assets, callback) {
   entityRecord.sclY = entity.scale[1];
   entityRecord.sclZ = entity.scale[2];
 
-  // extract entity's dependent asset ids
-  var assetIds = getDependentAssetIdsFromEntity(entity);
+  var assetIds = req.dependentAssetIds[entity.resource_id];
 
   // extract entity's assets' dependent asset ids
   for (var key in assets) {
     var asset = assets[key];
-    if (assetIds.includes(parseInt(key))) {
+    var newId = req.assetIdMapOldToNew[parseInt(key)];
+    if (assetIds.includes(newId)) {
       var depAssetsIds = getDependentAssetIdsFromAsset(asset);
       assetIds = arrayUnique(assetIds.concat(depAssetsIds));
     }
@@ -273,6 +280,19 @@ function phantomGetZip(req, res, next) {
 
 }
 
+function rewriteAssetMapIds(req, res, next) {
+  for (var assetId in req.assets) {
+    var asset = req.assets[assetId];
+    if ('data' in asset) {
+      if ('emissiveMap' in asset.data)
+        asset.data.emissiveMap = req.assetIdMapOldToNew[asset.data.emissiveMap];
+      if ('diffuseMap' in asset.data)
+      asset.data.diffuseMap = req.assetIdMapOldToNew[asset.data.diffuseMap];      
+    }
+  }
+  next();
+}
+
 // sets the parent of entities to SCENE unless the id is found in this upload
 function setParentOnEntities(req, res, next) {
   async.each(req.entities, function(entity, callback) {
@@ -308,7 +328,7 @@ function setParentOnEntities(req, res, next) {
  * POST /api/entities
  *
  */
-router.post('/', multer.single('zipFile'), checkFormat, unzipEntries, getReservedIds, apiLib.sendUploadToGCS, apiLib.rewriteAssetUrls, apiLib.sendAssetsToDatastore, setParentOnEntities, apiLib.sendEntitiesToDatastore, sendRecordsToSql, function (req, res, next) {
+router.post('/', multer.single('zipFile'), checkFormat, unzipEntries, apiLib.getReservedIds, apiLib.sendUploadToGCS, apiLib.rewriteAssetUrls, rewriteAssetMapIds, apiLib.sendAssetsToDatastore, setParentOnEntities, extractAndRewriteDependentAssetIds, apiLib.sendEntitiesToDatastore, sendRecordsToSql, function (req, res, next) {
 //  console.log(req.entities); 
 //  console.log(req.assets); 
 //  console.log(req.assetFiles);
@@ -335,7 +355,7 @@ router.post('/', multer.single('zipFile'), checkFormat, unzipEntries, getReserve
     return res.status(200).json({
       "message":"Found "  + Object.keys(req.entities).length + " entities, " + Object.keys(req.assets).length + " assets and " + Object.keys(req.assetFiles).length + " asset files...",
       "records": req.records,
-      "entities": entitiesByObjectId,
+      "entities": req.entitiesDS,
       "assets": req.assets});
   }
 });
