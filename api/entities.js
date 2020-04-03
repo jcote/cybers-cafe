@@ -67,7 +67,7 @@ function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew,
             var newId = assetIdMapOldToNew[entity.components.model.asset];
             entity.components.model.asset = newId;
             assetIds.push(newId);
-            assetIds.push(getDependentAssetIdsFromAsset(assets[entity.components.model.asset]));
+            assetIds.concat(getDependentAssetIdsFromAsset(assets[entity.components.model.asset]));
           }
         }
         if ('materialAsset' in entity.components.model) {
@@ -75,7 +75,7 @@ function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew,
             var newId = assetIdMapOldToNew[entity.components.model.materialAsset];
             entity.components.model.materialAsset = newId;
             assetIds.push(newId);
-            assetIds.push(getDependentAssetIdsFromAsset(assets[entity.components.model.materialAsset]));
+            assetIds.concat(getDependentAssetIdsFromAsset(assets[entity.components.model.materialAsset]));
           }
         }
       }
@@ -85,7 +85,7 @@ function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew,
             var newId = assetIdMapOldToNew[entity.components.collision.asset];
             entity.components.collision.asset = newId;
             assetIds.push(newId);
-            assetIds.push(getDependentAssetIdsFromAsset(assets[entity.components.collision.asset]));
+            assetIds.concat(getDependentAssetIdsFromAsset(assets[entity.components.collision.asset]));
           }
         }
       }
@@ -97,7 +97,7 @@ function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew,
                 var newId = assetIdMapOldToNew[entity.components.animation.assets];
                 entity.components.animation.assets = newId;
                 assetIds.push(newId);
-                assetIds.push(getDependentAssetIdsFromAsset(assets[entity.components.animation.assets[0]]));
+                assetIds.concat(getDependentAssetIdsFromAsset(assets[entity.components.animation.assets[0]]));
               }
             }
           }
@@ -236,6 +236,9 @@ function sendRecordToSql (req, entity, assets, callback) {
   entityRecord.assetIds = assetIds;
 
   sqlRecord.insertEntityRecord(entityRecord, function (err, resultId) {
+    if (err) {
+      return callback(err);
+    }
     console.log("entity '" + entity.name + "' stored in SQL: " + resultId);
     var record = {"objectId": entityRecord.objectId, "assetIds": entityRecord.assetIds};
     req.records[resultId] = record;
