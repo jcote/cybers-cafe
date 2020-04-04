@@ -22,8 +22,8 @@ body {
 /* the menu icon container
    visible when interface is closed */
 #drawer-icon-div {
-  width: 24px;
-  height: 24px;
+  width: 72px;
+  height: 72px;
   position: absolute;
   top: 0;
   left: 0;
@@ -32,9 +32,9 @@ body {
 
 /* icon itself (2x) */
 .drawer-icon {
-    font-size: 24px;
-    width:24px;
-    height:24px;
+    font-size: 72px;
+    width:72px;
+    height:72px;
     position:absolute;
     bottom:0;
     left:0;
