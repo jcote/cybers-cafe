@@ -43,7 +43,7 @@
         1,
         1
       ],
-      "name": "light-red",
+      "name": "light-player",
       "parent": "e8ae4acf-6751-11e5-8a1b-8438356164ca",
       "resource_id": "e8ae5045-6751-11e5-b4ba-8438356164ca",
       "enabled": true,
@@ -52,8 +52,8 @@
           "normalOffsetBias": 0,
           "color": [
             1,
-            0.28627450980392155,
-            0
+            1,
+            1
           ],
           "falloffMode": 0,
           "shadowResolution": 1024,
@@ -179,14 +179,58 @@
         1,
         1
       ],
-      "name": "lights",
+      "name": "light-main",
       "parent": "e8ae4254-6751-11e5-bd2a-8438356164ca",
       "resource_id": "e8ae4e82-6751-11e5-8a5f-8438356164ca",
       "enabled": true,
-      "components": {},
+      "components": {
+        "light": {
+          "enabled": true,
+          "type": "point",
+          "bake": false,
+          "affectDynamic": true,
+          "affectLightmapped": false,
+          "color": [
+            1,
+            1,
+            1
+          ],
+          "intensity": 2.18,
+          "castShadows": true,
+          "shadowType": 0,
+          "vsmBlurMode": 1,
+          "vsmBlurSize": 11,
+          "vsmBias": 0.01,
+          "shadowDistance": 16,
+          "shadowResolution": 1024,
+          "shadowBias": 0.2,
+          "normalOffsetBias": 0.05,
+          "range": 10,
+          "falloffMode": 0,
+          "innerConeAngle": 40,
+          "outerConeAngle": 45,
+          "cookieAsset": null,
+          "cookieIntensity": 1,
+          "cookieFalloff": true,
+          "cookieChannel": "rgb",
+          "cookieAngle": 0,
+          "cookieScale": [
+            1,
+            1
+          ],
+          "cookieOffset": [
+            0,
+            0
+          ],
+          "isStatic": true,
+          "layers": [
+            0
+          ]
+        }
+      },
       "position": [
         0,
-        0,
+        3,
         0
       ],
       "rotation": [
@@ -502,82 +546,8 @@
         -4.497983389694987E-15
       ],
       "children": [
-        "e8ae5045-6751-11e5-b4ba-8438356164ca",
-        "e8ae43ee-6751-11e5-940f-8438356164ca",
-        "e8ae5745-6751-11e5-9857-8438356164ca"
+        "e8ae5045-6751-11e5-b4ba-8438356164ca"
       ],
-      "template": null,
-      "tags": []
-    },
-    "e8ae43ee-6751-11e5-940f-8438356164ca": {
-      "scale": [
-        1,
-        1,
-        1
-      ],
-      "name": "light-orange",
-      "parent": "e8ae4acf-6751-11e5-8a1b-8438356164ca",
-      "resource_id": "e8ae43ee-6751-11e5-940f-8438356164ca",
-      "labels": [],
-      "enabled": true,
-      "components": {
-        "light": {
-          "normalOffsetBias": 0.01,
-          "color": [
-            0.8941176470588236,
-            1,
-            0.6392156862745098
-          ],
-          "type": "spot",
-          "shadowResolution": 1024,
-          "outerConeAngle": 60,
-          "enabled": true,
-          "range": 14,
-          "castShadows": true,
-          "intensity": 0.98,
-          "innerConeAngle": 15,
-          "shadowBias": 0.05,
-          "shadowDistance": 32,
-          "falloffMode": 1,
-          "bake": false,
-          "affectDynamic": true,
-          "affectLightmapped": false,
-          "shadowUpdateMode": 2,
-          "shadowType": 0,
-          "vsmBlurMode": 0,
-          "vsmBlurSize": 5,
-          "vsmBias": 0.0025,
-          "cookieAsset": null,
-          "isStatic": false,
-          "bakeDir": true,
-          "cookieIntensity": 1,
-          "cookieFalloff": true,
-          "cookieChannel": "rgb",
-          "cookieAngle": 0,
-          "cookieScale": [
-            1,
-            1
-          ],
-          "cookieOffset": [
-            0,
-            0
-          ],
-          "layers": [
-            0
-          ]
-        }
-      },
-      "position": [
-        1.1801468133926392,
-        5.688137054443359,
-        1.4867581129074097
-      ],
-      "rotation": [
-        30,
-        45,
-        0
-      ],
-      "children": [],
       "template": null,
       "tags": []
     },
@@ -647,78 +617,6 @@
         0
       ],
       "children": [],
-      "tags": []
-    },
-    "e8ae5745-6751-11e5-9857-8438356164ca": {
-      "scale": [
-        1,
-        1,
-        1
-      ],
-      "name": "light-blue",
-      "parent": "e8ae4acf-6751-11e5-8a1b-8438356164ca",
-      "resource_id": "e8ae5745-6751-11e5-9857-8438356164ca",
-      "labels": [],
-      "enabled": true,
-      "components": {
-        "light": {
-          "normalOffsetBias": 0.01,
-          "color": [
-            0.47058823529411764,
-            0.5647058823529412,
-            1
-          ],
-          "type": "spot",
-          "shadowResolution": 1024,
-          "outerConeAngle": 50,
-          "enabled": true,
-          "range": 18,
-          "castShadows": true,
-          "intensity": 1,
-          "innerConeAngle": 5,
-          "shadowBias": 0.005,
-          "shadowDistance": 32,
-          "falloffMode": 0,
-          "bake": false,
-          "affectDynamic": true,
-          "affectLightmapped": false,
-          "shadowUpdateMode": 2,
-          "shadowType": 0,
-          "vsmBlurMode": 0,
-          "vsmBlurSize": 5,
-          "vsmBias": 0.0025,
-          "cookieAsset": null,
-          "isStatic": false,
-          "bakeDir": true,
-          "cookieIntensity": 1,
-          "cookieFalloff": true,
-          "cookieChannel": "rgb",
-          "cookieAngle": 0,
-          "cookieScale": [
-            1,
-            1
-          ],
-          "cookieOffset": [
-            0,
-            0
-          ],
-          "layers": [
-            0
-          ]
-        }
-      },
-      "position": [
-        2.238307476043701,
-        6.35945463180542,
-        -8.104137420654297
-      ],
-      "rotation": [
-        -141.81529235839844,
-        18.651432037353516,
-        -177.36634826660156
-      ],
-      "children": [],
-      "template": null,
       "tags": []
     },
     "acde2d68-6c3b-4c4c-a451-2c63b3e96e8b": {
