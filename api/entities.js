@@ -33,24 +33,33 @@ const multer = Multer({//dest:'uploads'
 var entitiesRe = /^\d{6}\.json$/;
 var assetFilesRe = /^files\/assets\/\d{7}\/\d{1}\/.+$/;
 
-function getDependentAssetIdsFromAsset(asset) {
+function getDependentAssetIdsFromAsset(asset, assetIdMapOldToNew, assets) {
   var assetIds = [];
   if (asset != undefined && 'data' in asset && asset.data != null) {
     for (var key in asset.data) {
       if (key.endsWith('Map')) {
-        if (typeof asset.data[key] === 'number' && asset.data[key] > 0 && !assetIds.includes(asset.data[key])) {
-          assetIds.push(asset.data[key]);
+        if (typeof asset.data[key] === 'number'
+            && asset.data[key] > 0 
+            && assetIdMapOldToNew[asset.data[key]]
+            && !assetIds.includes(assetIdMapOldToNew[asset.data[key]])) {
+          var newId = assetIdMapOldToNew[asset.data[key]];
+          asset.data[key] = newId;
+          assetIds.push(newId);
+          assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets));
         }
       }
     }
     if ('mapping' in asset.data && asset.data.mapping != null) {
       for (var i=0; i < asset.data.mapping.length; i++) {
         var entry = asset.data.mapping[i];
-        if ('material' in entry && entry.material != null) {
-          var assetId = parseInt(entry.material);
-          if (!isNaN(assetId)) {
-            assetIds.push(assetId);
-          }
+        if ('material' in entry 
+            && entry.material != null
+            && assetIdMapOldToNew[entry.material]
+            && !assetIds.includes(assetIdMapOldToNew[entry.material])) {
+          var newId = assetIdMapOldToNew[entry.material];
+          entry.material = newId;
+          assetIds.push(newId);
+          assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets));
         }
       }
     }
@@ -69,7 +78,7 @@ function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew,
             var newId = assetIdMapOldToNew[entity.components.model.asset];
             entity.components.model.asset = newId;
             assetIds.push(newId);
-            assetIds.concat(getDependentAssetIdsFromAsset(assets[newId]));
+            assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets));
           }
         }
         if ('materialAsset' in entity.components.model) {
@@ -79,7 +88,7 @@ function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew,
             var newId = assetIdMapOldToNew[entity.components.model.materialAsset];
             entity.components.model.materialAsset = newId;
             assetIds.push(newId);
-            assetIds.concat(getDependentAssetIdsFromAsset(assets[newId]));
+            assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets));
           }
         }
       }
@@ -91,7 +100,7 @@ function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew,
             var newId = assetIdMapOldToNew[entity.components.collision.asset];
             entity.components.collision.asset = newId;
             assetIds.push(newId);
-            assetIds.concat(getDependentAssetIdsFromAsset(assets[newId]));
+            assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets));
           }
         }
       }
@@ -106,7 +115,7 @@ function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew,
                 var newId = assetIdMapOldToNew[entity.components.animation.assets[0]];
                 entity.components.animation.assets[0] = newId;
                 assetIds.push(newId);
-                assetIds.concat(getDependentAssetIdsFromAsset(assets[newId]));
+                assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets));
               }
             }
           }
