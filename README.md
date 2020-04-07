@@ -1,6 +1,7 @@
 # /CYBERS CAFE/
 * git clone both repositories to /var/www/cybers-cafe
-
+* edit canvas/const.js 
+  * CYBERS_CAFE_SERVICE_URL = 'https://service.cybers.cafe/'
 * create ssl keys with certbot
   * https://certbot.eff.org/lets-encrypt/ubuntubionic-nginx (select WILDCARD)
   * https://certbot-dns-digitalocean.readthedocs.io/

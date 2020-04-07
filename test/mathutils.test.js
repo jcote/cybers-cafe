@@ -1,7 +1,7 @@
 'use strict';
 
 var assert = require('assert');
-var mathutils = require('../scripts/mathutils');
+var mathutils = require('../src/mathutils');
 
 describe('MathUtils', function() {
   describe('#CantorPair()', function() {

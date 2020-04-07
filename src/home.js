@@ -193,9 +193,20 @@ function entityPlacement (ev) {
 	    });
 	  }
 
+
     // Convert hit point to absolute positioning
     var relativePosition = [hit.point.x, hit.point.y, hit.point.z];
     var absolutePosition = MathUtils.getAbsolutePosition(relativePosition, networkEntity.origin, movementEntity.scale);
+
+    if (networkEntity.origin[0] != 0 || networkEntity.origin[1] != 0) {
+        var originByCurrentLocation = [
+            movementEntity.locationX - networkEntity.origin[0], 
+            movementEntity.locationZ - networkEntity.origin[1]];
+        var absPosition = MathUtils.getAbsolutePosition(relativePosition, originByCurrentLocation, Network.scale);
+        absolutePosition.position = absPosition.position;
+
+    }
+
     data.entity.location = absolutePosition.location;
     data.entity.position = absolutePosition.position;
 

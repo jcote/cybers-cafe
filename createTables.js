@@ -27,8 +27,8 @@ var SQL_STRING_ENTITY = 'CREATE TABLE entities (\n' +
   '  objectId BIGINT UNSIGNED NOT NULL,\n' +
   '  timestamp DATETIME NULL,\n' +
   '  deleted BOOLEAN NULL DEFAULT FALSE,\n' +
-  '  locX FLOAT NULL,\n' +
-  '  locZ FLOAT NULL,\n' +
+  '  locX DOUBLE NULL,\n' +
+  '  locZ DOUBLE NULL,\n' +
   '  posX FLOAT NULL,\n' +
   '  posY FLOAT NULL,\n' +
   '  posZ FLOAT NULL,\n' +

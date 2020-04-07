@@ -233,6 +233,10 @@ Network.prototype.addAsset = function(data) {
 
 Network.prototype.addEntity = function(data) {
     var entity = new pc.Entity();
+    var app = pc.Application.getApplication("application-canvas");
+    var context = app.context;
+    var playerEntity = context.root.findByName("Player");
+    var movementEntity = playerEntity.script.movement;
 
     // from playcanvas entity.js: clone()
 /*    if (data.children instanceof Array) {
@@ -257,8 +261,21 @@ Network.prototype.addEntity = function(data) {
     entity.objectId = data.objectId;
     entity.name = data.name;
 
-    var relativePosition = MathUtils.getRelativePosition(data.location, data.position, this.origin, Network.scale);
-    entity.setLocalPosition(relativePosition[0],relativePosition[1],relativePosition[2]);
+    if (this.origin[0] != 0 || this.origin[1] != 0) {
+        var originByCurrentLocation = [
+            movementEntity.locationX - this.origin[0], 
+            movementEntity.locationZ - this.origin[1]];
+        var locationByOrigin = [
+            data.location[0] - this.origin[0],
+            data.location[1] - this.origin[1]];
+        var relativePosition = MathUtils.getRelativePosition(locationByOrigin, data.position, originByCurrentLocation, Network.scale);
+        entity.setLocalPosition(relativePosition[0],relativePosition[1],relativePosition[2]);    
+
+    } else {
+        var relativePosition = MathUtils.getRelativePosition(data.location, data.position, this.origin, Network.scale);
+        entity.setLocalPosition(relativePosition[0],relativePosition[1],relativePosition[2]);
+    }
+
     entity.setLocalScale(data.scale[0],data.scale[1],data.scale[2]);
     entity.setEulerAngles(data.rotation[0],data.rotation[1],data.rotation[2]);
     if (entity.rigidbody) {

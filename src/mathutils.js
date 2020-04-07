@@ -121,3 +121,14 @@ var MathUtils = {
 	spiralPair: spiralPair
 };
 
+module.exports = {
+  cantorPair: cantorPair,
+  reverseCantorPair: reverseCantorPair,
+  evenOddEncode: evenOddEncode,
+  evenOddDecode: evenOddDecode,
+  zCantorPair: zCantorPair,
+  zReverseCantorPair: zReverseCantorPair,
+  getRelativePosition: getRelativePosition,
+  getAbsolutePosition: getAbsolutePosition,
+  spiralPair: spiralPair
+}

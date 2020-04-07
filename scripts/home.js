@@ -1,3 +1,711 @@
-/*! cybers-cafe 2020-04-04 */
+'use strict';
 
-"use strict";var draweropen=!1;function drawer(){draweropen?(setTimeout(function(){$("#interface-div").css("visibility","hidden")},400),$("#drawer-icon-div").css("visibility","visible"),$("#interface-div").animate({opacity:0},400),draweropen=!1):($("#interface-div").css("visibility","visible"),$("#drawer-icon-div").css("visibility","hidden"),$("#interface-div").animate({opacity:1},400),draweropen=!0)}$(function(){document.getElementById("warpToButton").addEventListener("click",function(e){var t=$("#warpToInput").val();if(t.match(/^[0-9a-zA-Z]+$/)){var n=pc.Application.getApplication("application-canvas"),i=n.context,o=i.root.findByName("Player").script.movement,a=i.root.findByName("scene").script.network,c=parseInt(t,36),l=MathUtils.zReverseCantorPair(c);console.log("##### Warp to: ["+l+"] ("+c+") '"+t+"'"),console.log("Current loc: "+o.locationX+", "+o.locationZ),console.log("Current breadcrumb: "+o.locationBreadcrumbVector[0]+", "+o.locationBreadcrumbVector[1]),console.log("Current origin: "+a.origin);var d=[l[0]-a.origin[0],l[1]-a.origin[1]];o.locationX=l[0],o.locationZ=l[1],o.createTileGrid(o.range,o.scale),o.locationBreadcrumbVector[0]+=d[0],o.locationBreadcrumbVector[1]+=d[1],a.origin[0]=l[0],a.origin[1]=l[1],Object.keys(n.entities).forEach(function(e){var t=n.entities[e].getLocalPosition(),i={};i.x=t.x-d[0]*Network.scale,i.y=t.y,i.z=t.z-d[1]*Network.scale,Math.abs(l[0]-i.x)<50||Math.abs(l[1]-i.z)<50?"rigidbody"in n.entities[e]?n.entities[e].rigidbody.teleport(i.x,i.y,i.z):n.entities[e].translate(-d[0]*Network.scale,0,-d[1]*Network.scale):(n.entities[e].destroy(),delete n.entities[e])}),a.players||(a.players=[]),Object.keys(a.players).forEach(function(e){if("entity"in a.players[e]){var t=a.players[e].entity.getLocalPosition(),n={};n.x=t.x-d[0]*Network.scale,n.y=t.y,n.z=t.z-d[1]*Network.scale,Math.abs(l[0]-n.x)<50||Math.abs(l[1]-n.z)<50?a.players[e].entity.rigidbody.teleport(n.x,n.y,n.z):a.players[e].entity.destroy()}}),a.player.rigidbody.teleport(0,.5,0),a.updatePosition()}else alert("Alphanumeric names only.")},!1)});var sections=["createSection","editSection"];function selectSection(e){for(var t=0;t<sections.length;t++)document.getElementById(sections[t]).style.display="none";document.getElementById(e).style.display="block"}var createForms=["createEntityImageForm","createEntityModelForm"],editForms=["editEntityMoveForm","editEntityRotateForm","editEntityScaleForm"];function selectForm(e){for(var t=e.startsWith("create")?createForms:editForms,n=0;n<t.length;n++)document.getElementById(t[n]).style.display="none";document.getElementById(e).style.display="block"}function entityPlacement(e){var t=e.target,n=t.entry,i=pc.Application.getApplication("application-canvas").context,o=i.root.findByName("Player"),a=o.script.movement,c=o.script.raycast,l=o.script.transform;a.disableInput(),c.enableInput(),l.disableInput(),c.modeRaycast(),document.getElementById("modeLabel").innerHTML="Placement Mode",document.getElementById("modeLabel").className="label label-mode-placement";var d=i.root.findByName("scene").script.network,r=!1;c.on("hit",function(e){if(!r){r=!0,"assets"in n&&Object.keys(n.assets).forEach(function(e){d.queue.enqueue(new QueueItem("asset",n.assets[e])),d.isQueueRunning||d.popQueue()});var i=[e.point.x,e.point.y,e.point.z],o=MathUtils.getAbsolutePosition(i,d.origin,a.scale);n.entity.location=o.location,n.entity.position=o.position,d.queue.enqueue(new QueueItem("entity",n.entity)),d.isQueueRunning||d.popQueue(),a.enableInput(),c.disableInput(),document.getElementById("modeLabel").innerHTML="Movement Mode",document.getElementById("modeLabel").className="label label-mode-movement",t.className+=" disabled";var l=document.getElementById("createFormResultContainer");l.appendChild(document.createTextNode("Placing entity..."));var s=new FormData;s.append("locX",o.location[0]),s.append("locZ",o.location[1]),s.append("posX",o.position[0]),s.append("posY",o.position[1]),s.append("posZ",o.position[2]);var m=new XMLHttpRequest;m.open("PUT","api/entities/position/"+n.entity.id,!0),m.onload=function(e){if(200==m.status){var t=JSON.parse(m.responseText);l.appendChild(document.createTextNode(t.message))}else l.appendChild(document.createTextNode("Error occurred. ")),t&&l.appendChild(document.createTextNode(t.message))},m.send(s)}})}function createPlacementButton(e,t){var n=document.createElement("button");n.type="button",n.className="list-group-item",n.appendChild(document.createTextNode(e.name+" : "+e.id)),n.addEventListener("click",entityPlacement),n.entry={entity:e,assets:t},document.getElementById("entityChooseList").appendChild(n)}$(function(){var e=document.forms.namedItem("createEntityModel");e.addEventListener("submit",function(t){var n=document.getElementById("createFormResultContainer"),i=new FormData(e);n.innerHTML="Uploading...";var o=new XMLHttpRequest;o.open("POST","api/entities",!0),o.onload=function(e){if(200==o.status){var t=JSON.parse(o.responseText);n.appendChild(document.createTextNode(t.message)),t.records&&Object.keys(t.records).forEach(function(e){if("undefined"!=e){var i=t.records[e].objectId,o=t.entities[i];o.id=e,o.objectId=i,createPlacementButton(o,t.records[e].assetIds.reduce(function(e,n){return e[n]=t.assets[n],e},{})),n.appendChild(document.createTextNode("Ready to place entity..."))}})}else n.appendChild(document.createTextNode("Error occurred. "+t.message))},o.send(i),t.preventDefault()},!1)}),$(function(){var e=document.forms.namedItem("createEntityImage");e.addEventListener("submit",function(t){var n=document.getElementById("createFormResultContainer"),i=new FormData(e);n.innerHTML="Uploading...";var o=new XMLHttpRequest;o.open("POST","api/image",!0),o.onload=function(e){if(200==o.status){var t=JSON.parse(o.responseText);n.appendChild(document.createTextNode(t.message));var i=Object.keys(t.records)[0],a=t.records[i].objectId,c=t.entities[a],l=t.assets;c.id=i,c.objectId=t.records[i].objectId,createPlacementButton(c,l),n.appendChild(document.createTextNode("Ready to place entity..."))}else n.appendChild(document.createTextNode("Error occurred. "+t.message))},o.send(i),t.preventDefault()},!1)}),$(function(){var e=document.forms.namedItem("editEntity");e.addEventListener("submit",function(t){var n=document.getElementById("editFormResultContainer"),i=new FormData(e),o=pc.Application.getApplication("application-canvas"),a=document.getElementById("editEntityId").value;if(!($.isNumeric(a)&&a in o.entities))return alert("Select an Entity first."),void t.preventDefault();var c=o.context.root.findByName("Player"),l=c.script.movement,d=o.context.root.findByName("scene").script.network,r=c.script.raycast,s=c.script.transform,m=[i.get("posX"),i.get("posY"),i.get("posZ")],u=MathUtils.getAbsolutePosition(m,d.origin,l.scale);i.set("locX",u.location[0]),i.set("locZ",u.location[1]),i.set("posX",u.position[0]),i.set("posY",u.position[1]),i.set("posZ",u.position[2]),n.innerHTML="Updating...",l.enableInput(),r.disableInput(),s.disableInput(),document.getElementById("modeLabel").innerHTML="Movement Mode",document.getElementById("modeLabel").className="label label-mode-movement";var p=new XMLHttpRequest;p.open("PUT","api/entity/"+i.get("id"),!0),p.onload=function(e){var t=JSON.parse(p.responseText);200==p.status?n.innerHTML=t.message:n.innerHTML=void 0!=t?"Error occurred ("+p.status+"): <br />"+t.message:"Error occurred ("+p.status+"): <br />"+p.responseText},p.send(i),t.preventDefault()},!1)});var populateInputsForSelectedEntity=function(e){if(document.getElementById("editEntityTitle").value=e.name,"localPosition"in e&&(document.getElementById("editEntityPosX").value=e.localPosition.x,document.getElementById("editEntityPosY").value=e.localPosition.y,document.getElementById("editEntityPosZ").value=e.localPosition.z),"localRotation"in e){var t=e.getLocalEulerAngles();document.getElementById("editEntityRotX").value=t.x,document.getElementById("editEntityRotY").value=t.y,document.getElementById("editEntityRotZ").value=t.z}"localScale"in e&&(document.getElementById("editEntitySclX").value=e.localScale.x,document.getElementById("editEntitySclY").value=e.localScale.y,document.getElementById("editEntitySclZ").value=e.localScale.z)};$(function(){document.getElementById("editEntitySelectButton").addEventListener("click",function(e){var t=pc.Application.getApplication("application-canvas").context.root.findByName("Player"),n=t.script.movement,i=t.script.raycast,o=t.script.transform;n.disableInput(),i.enableInput(),o.disableInput(),i.modeFramebuffer(),document.getElementById("modeLabel").innerHTML="Select Mode",document.getElementById("modeLabel").className="label label-mode-select";i.on("hit",function(e){document.getElementById("editEntityId").value=e.id,populateInputsForSelectedEntity(e),n.enableInput(),i.disableInput(),document.getElementById("modeLabel").innerHTML="Movement Mode",document.getElementById("modeLabel").className="label label-mode-movement"})},!1)}),$(function(){document.getElementById("moveLink").addEventListener("click",function(e){var t=pc.Application.getApplication("application-canvas"),n=document.getElementById("editEntityId").value;if($.isNumeric(n)&&n in t.entities){var i=t.entities[n],o=t.context.root.findByName("Player"),a=o.script.movement,c=o.script.raycast,l=o.script.transform;a.disableInput(),c.disableInput(),l.modeMove(),l.setEntity(i),l.enableInput(),document.getElementById("modeLabel").innerHTML="Translate Mode",document.getElementById("modeLabel").className="label label-mode-translate",l.on("move",function(e){"localPosition"in i&&(document.getElementById("editEntityPosX").value=i.localPosition.x,document.getElementById("editEntityPosY").value=i.localPosition.y,document.getElementById("editEntityPosZ").value=i.localPosition.z)})}else alert("Select an Entity first.")},!1)}),$(function(){document.getElementById("rotateLink").addEventListener("click",function(e){var t=pc.Application.getApplication("application-canvas"),n=document.getElementById("editEntityId").value;if($.isNumeric(n)&&n in t.entities){var i=t.entities[n],o=t.context.root.findByName("Player"),a=o.script.movement,c=o.script.raycast,l=o.script.transform;a.disableInput(),c.disableInput(),l.modeRotate(),l.setEntity(i),l.enableInput(),document.getElementById("modeLabel").innerHTML="Rotate Mode",document.getElementById("modeLabel").className="label label-mode-rotate",l.on("rotate",function(e){if("localRotation"in i){var t=i.getLocalEulerAngles();document.getElementById("editEntityRotX").value=t.x,document.getElementById("editEntityRotY").value=t.y,document.getElementById("editEntityRotZ").value=t.z}})}else alert("Select an Entity first.")},!1)}),$(function(){document.getElementById("scaleLink").addEventListener("click",function(e){var t=pc.Application.getApplication("application-canvas"),n=document.getElementById("editEntityId").value;if($.isNumeric(n)&&n in t.entities){var i=t.entities[n],o=t.context.root.findByName("Player"),a=o.script.movement,c=o.script.raycast,l=o.script.transform;a.disableInput(),c.disableInput(),l.modeScale(),l.setEntity(i),l.enableInput(),document.getElementById("modeLabel").innerHTML="Scale Mode",document.getElementById("modeLabel").className="label label-mode-scale",l.on("scale",function(e){"localScale"in i&&(document.getElementById("editEntitySclX").value=i.localScale.x,document.getElementById("editEntitySclY").value=i.localScale.y,document.getElementById("editEntitySclZ").value=i.localScale.z)})}else alert("Select an Entity first.")},!1)}),$(function(){var e=document.getElementById("editEntityId");e.addEventListener("blur",function(t){var n=pc.Application.getApplication("application-canvas");e.value in n.entities&&populateInputsForSelectedEntity(n.entities[e.value])},!1)}),$(function(){document.getElementById("editEntityProofButton").addEventListener("click",function(e){var t=pc.Application.getApplication("application-canvas"),n=document.getElementById("editEntityId").value;if($.isNumeric(n)&&n in t.entities){var i=t.entities[n],o=t.context.root.findByName("Player"),a=o.script.movement,c=o.script.raycast,l=o.script.transform;a.enableInput(),c.disableInput(),l.disableInput(),document.getElementById("modeLabel").innerHTML="Movement Mode",document.getElementById("modeLabel").className="label label-mode-movement";var d=document.getElementById("editEntityPosX").value,r=document.getElementById("editEntityPosY").value,s=document.getElementById("editEntityPosZ").value,m=document.getElementById("editEntityRotX").value,u=document.getElementById("editEntityRotY").value,p=document.getElementById("editEntityRotZ").value,y=document.getElementById("editEntitySclX").value,E=document.getElementById("editEntitySclY").value,v=document.getElementById("editEntitySclZ").value;$.isNumeric(d)&&$.isNumeric(r)&&$.isNumeric(s)&&$.isNumeric(m)&&$.isNumeric(u)&&$.isNumeric(p)&&$.isNumeric(y)&&$.isNumeric(E)&&$.isNumeric(v)?(i.setLocalPosition(new pc.Vec3(d,r,s)),i.setLocalEulerAngles(new pc.Vec3(m,u,p)),i.setLocalScale(new pc.Vec3(y,E,v))):alert("Values must be numeric.")}else alert("Select an Entity first.")},!1)}),$(function(){document.getElementById("removeEntityButton").addEventListener("click",function(e){var t=pc.Application.getApplication("application-canvas"),n=document.getElementById("editEntityId").value;if($.isNumeric(n)&&n in t.entities){var i=t.entities[n],o=document.getElementById("editFormResultContainer");o.appendChild(document.createTextNode("Removing..."));var a=new XMLHttpRequest;a.open("DELETE","api/entity/"+n,!0),a.onload=function(e){200==a.status?(i.destroy(),delete t.entities[n],o.appendChild(document.createTextNode(a.responseText))):o.appendChild(document.createTextNode("Error occurred. "+a.responseText))},a.send(),e.preventDefault()}else alert("Select an Entity first.")},!1)}),$(function(){var e=document.forms.namedItem("contact");e.addEventListener("submit",function(t){var n=new FormData(e),i=new XMLHttpRequest;i.open("POST","api/feedback",!0),i.onload=function(e){200==i.status?(alert("Feedback sent - Thank you"),$("#contactModal").modal("hide")):alert("Error occurred. "+i.responseText)},i.send(n),t.preventDefault()},!1)}),$(function(){var e=document.getElementById("application-canvas");e.addEventListener("click",function(t){e.focus()},!1)});
+// Menu Drawer logic
+var draweropen = false;
+
+function drawer () {
+  if (draweropen) { // close
+  	setTimeout(function() {
+  	  $("#interface-div").css('visibility', 'hidden');
+    }, 400);
+  	$("#drawer-icon-div").css('visibility', 'visible');
+  	$("#interface-div").animate({ opacity: 0 }, 400);
+  	draweropen = false;
+  } else { // open
+  	$("#interface-div").css('visibility', 'visible');
+  	$("#drawer-icon-div").css('visibility', 'hidden');
+  	$("#interface-div").animate({ opacity: 1 }, 400);
+   	draweropen = true;
+  }
+}
+
+// Warp To button
+$(function(){
+  var onClick = function(ev) { 
+		// check name is valid
+    var warpLocationName = $('#warpToInput').val();
+		var alphanumericRe = /^[0-9a-zA-Z]+$/;
+ 		if (!warpLocationName.match(alphanumericRe)) { 
+      alert("Alphanumeric names only.");
+      return;
+    }
+
+    // setup - get modules
+		var app = pc.Application.getApplication("application-canvas");
+		var context = app.context;
+		var playerEntity = context.root.findByName("Player");
+    var movementEntity = playerEntity.script.movement;
+		var sceneEntity = context.root.findByName("scene");
+	  var networkEntity = sceneEntity.script.network;    
+
+    // compute location
+    var warpLocationNumber = parseInt(warpLocationName,36);
+    var warpLocationPair = MathUtils.zReverseCantorPair(warpLocationNumber);
+
+    console.log("##### Warp to: [" + warpLocationPair + "] (" + warpLocationNumber + ") '" + warpLocationName + "'");
+    console.log("Current loc: "+ movementEntity.locationX + ", " +movementEntity.locationZ);
+    console.log("Current breadcrumb: "+ movementEntity.locationBreadcrumbVector[0] + ", " +movementEntity.locationBreadcrumbVector[1]);
+    console.log("Current origin: "+networkEntity.origin);
+
+    // compute delta from current origin to warp location, to be used for moving the objects
+    var  warpLocationDelta = [ warpLocationPair[0] - networkEntity.origin[0], 
+                               warpLocationPair[1] - networkEntity.origin[1] ];
+
+    // update the 'current location'
+    movementEntity.locationX = warpLocationPair[0];
+    movementEntity.locationZ = warpLocationPair[1];
+
+    // must recreate tiles around origin, or shuffle will occur and mess with locationX/Z
+    movementEntity.createTileGrid(movementEntity.range, movementEntity.scale);
+
+    // update the breadcrumb vector so that locationupdate may be triggered if warped far enough
+    movementEntity.locationBreadcrumbVector[0] += warpLocationDelta[0];
+    movementEntity.locationBreadcrumbVector[1] += warpLocationDelta[1];
+
+  	// update Network origin
+	  networkEntity.origin[0] = warpLocationPair[0];
+	  networkEntity.origin[1] = warpLocationPair[1];
+
+	  // clear the network queue (disabled)
+   //  networkEntity.isQueueRunning = false;	  
+	  // networkEntity.queue = new Queue();
+		// networkEntity.progress = 0;
+	 //  networkEntity.progressExpected = 0;
+  //   $('#progress-inner-div').attr('aria-valuenow', 0).css('width','100%');
+  //   $('#progress-div').css('visibility', 'hidden');
+
+    // handle existing entities
+  	Object.keys(app.entities).forEach(function(entityId) {
+			var pos = app.entities[entityId].getLocalPosition();
+			var newpos = {};
+			newpos.x = pos.x - warpLocationDelta[0] * Network.scale;
+			newpos.y = pos.y;
+			newpos.z = pos.z - warpLocationDelta[1] * Network.scale;
+			if (Math.abs(warpLocationPair[0] - newpos.x) < 50 || Math.abs(warpLocationPair[1] - newpos.z) < 50) {
+  			// move close entity relative to warp
+	  		if ('rigidbody' in app.entities[entityId]) {		  			
+  				app.entities[entityId].rigidbody.teleport(newpos.x, newpos.y, newpos.z);
+	  		} else {
+	  			app.entities[entityId].translate(- warpLocationDelta[0] * Network.scale, 0, - warpLocationDelta[1] * Network.scale);
+	  		}
+			} else {
+				// remove far entity
+	  		app.entities[entityId].destroy();
+	  		delete app.entities[entityId];
+			}
+  	});
+
+    // handle existing players
+    if (!networkEntity.players) networkEntity.players = [];
+    Object.keys(networkEntity.players).forEach(function(playerId) {
+    	if ('entity' in networkEntity.players[playerId]) {
+				var pos = networkEntity.players[playerId].entity.getLocalPosition();
+				var newpos = {};
+				newpos.x = pos.x - warpLocationDelta[0] * Network.scale;
+				newpos.y = pos.y;
+				newpos.z = pos.z - warpLocationDelta[1] * Network.scale;
+				if (Math.abs(warpLocationPair[0] - newpos.x) < 50 || Math.abs(warpLocationPair[1] - newpos.z) < 50) {
+	  			// move close player relative to warp
+	  			networkEntity.players[playerId].entity.rigidbody.teleport(newpos.x, newpos.y, newpos.z);
+				} else {
+					// remove far player
+		  		networkEntity.players[playerId].entity.destroy();
+	//		  		delete networkEntity.players[i];
+		  		// TODO: re-add players that come back into closeness
+				}
+			}
+    });
+
+  	// move to new origin and report position
+  	networkEntity.player.rigidbody.teleport(0, 0.5, 0);
+    networkEntity.updatePosition();
+
+    // the following happen automatically
+//		networkEntity.updateLocation();
+
+    // update location div
+    //$('#location-div').html(warpLocationName);
+  };
+
+  var button = document.getElementById("warpToButton");
+  button.addEventListener('click', onClick, false);
+});
+
+// Section Select
+var sections = ["createSection", "editSection"];
+
+function selectSection(section) {
+  for (var i = 0; i < sections.length; i++) {
+  	document.getElementById(sections[i]).style.display = 'none';
+  }
+  document.getElementById(section).style.display = 'block';  
+}
+
+// Form Select
+var createForms = ["createEntityImageForm", "createEntityModelForm"];
+var editForms = ["editEntityMoveForm", "editEntityRotateForm", "editEntityScaleForm"];
+
+function selectForm (form) {
+  var forms = form.startsWith("create") ? createForms : editForms;
+  for (var i = 0; i < forms.length; i++) {
+  	document.getElementById(forms[i]).style.display = 'none';
+  }
+  document.getElementById(form).style.display = 'block';
+}
+
+// ---CREATE---
+
+// Place entity and render onscreen from a create response
+function entityPlacement (ev) {
+	var button = ev.target;
+	var data = button.entry;
+ 	// get "playcanvas entity" objects
+	var app = pc.Application.getApplication("application-canvas");
+	var context = app.context;
+	var playerEntity = context.root.findByName("Player");
+  var movementEntity = playerEntity.script.movement;
+  var raycastEntity = playerEntity.script.raycast;
+  var transformEntity = playerEntity.script.transform;
+  // Switch to entity placement mode
+	movementEntity.disableInput();
+	raycastEntity.enableInput();
+	transformEntity.disableInput();
+	raycastEntity.modeRaycast();
+  document.getElementById("modeLabel").innerHTML = "Placement Mode";
+  document.getElementById("modeLabel").className = "label label-mode-placement";
+
+  // bind event listener for selected entity
+	var sceneEntity = context.root.findByName("scene");
+  var networkEntity = sceneEntity.script.network;
+  
+  var alreadyHit = false;
+  var onHit = function(hit) {
+  	if (alreadyHit) {
+  		return;
+  	}
+  	alreadyHit = true;
+  	if ('assets' in data) {
+  		Object.keys(data.assets).forEach(function (assetId) {
+        networkEntity.queue.enqueue(new QueueItem('asset', data.assets[assetId]));
+        if (!networkEntity.isQueueRunning) {
+            networkEntity.popQueue();
+        }
+	    });
+	  }
+
+
+    // Convert hit point to absolute positioning
+    var relativePosition = [hit.point.x, hit.point.y, hit.point.z];
+    var absolutePosition = MathUtils.getAbsolutePosition(relativePosition, networkEntity.origin, movementEntity.scale);
+
+    if (networkEntity.origin[0] != 0 || networkEntity.origin[1] != 0) {
+        var originByCurrentLocation = [
+            movementEntity.locationX - networkEntity.origin[0], 
+            movementEntity.locationZ - networkEntity.origin[1]];
+        var absPosition = MathUtils.getAbsolutePosition(relativePosition, originByCurrentLocation, Network.scale);
+        absolutePosition.position = absPosition.position;
+
+    }
+
+    data.entity.location = absolutePosition.location;
+    data.entity.position = absolutePosition.position;
+
+    networkEntity.queue.enqueue(new QueueItem('entity', data.entity));
+    if (!networkEntity.isQueueRunning) {
+        networkEntity.popQueue();
+    }
+	  // Switch to movement mode
+    movementEntity.enableInput();
+    raycastEntity.disableInput();
+    document.getElementById("modeLabel").innerHTML = "Movement Mode";
+    document.getElementById("modeLabel").className = "label label-mode-movement";
+    // effect in UI
+    button.className += " disabled";
+    var oOutput = document.getElementById("createFormResultContainer")
+    oOutput.appendChild(document.createTextNode("Placing entity..."));
+    // Report position to server
+	  var oData = new FormData();
+	  oData.append("locX", absolutePosition.location[0]);
+	  oData.append("locZ", absolutePosition.location[1]);
+	  oData.append("posX", absolutePosition.position[0]);
+	  oData.append("posY", absolutePosition.position[1]);
+	  oData.append("posZ", absolutePosition.position[2]);
+	  var oReq = new XMLHttpRequest();
+	  oReq.open("PUT", "api/entities/position/" + data.entity.id, true);
+	  oReq.onload = function(oEvent) {
+	    if (oReq.status == 200) {
+	      var responseJson = JSON.parse(oReq.responseText);
+	      oOutput.appendChild(document.createTextNode(responseJson.message));
+	    } else {
+	      oOutput.appendChild(document.createTextNode("Error occurred. "));
+	      if (responseJson) {
+	        oOutput.appendChild(document.createTextNode(responseJson.message));
+	      }
+	    }
+	  };
+	  oReq.send(oData);
+  };
+  raycastEntity.on('hit', onHit);
+};
+
+function createPlacementButton(entity, assets) {
+	// create a button in the list that will drop entity
+	var entityButton = document.createElement("button");
+	entityButton.type = "button";
+	entityButton.className = "list-group-item";
+	entityButton.appendChild(document.createTextNode(entity.name + " : " + entity.id));
+	entityButton.addEventListener('click', entityPlacement);
+  entityButton.entry = {"entity": entity, "assets": assets};
+	var entityChooseList = document.getElementById("entityChooseList");
+	entityChooseList.appendChild(entityButton);
+}
+
+// Create 3D Model
+$(function(){
+  var onUpload = function(ev) {
+	  var oOutput = document.getElementById("createFormResultContainer"),
+	      oData = new FormData(form);
+
+      oOutput.innerHTML = "Uploading...";
+
+	  var oReq = new XMLHttpRequest();
+	  oReq.open("POST", "api/entities", true);
+	  oReq.onload = function(oEvent) {
+	    if (oReq.status == 200) {
+	      var responseJson = JSON.parse(oReq.responseText);
+	      oOutput.appendChild(document.createTextNode(responseJson.message));
+	      if (responseJson.records) {
+	      	Object.keys(responseJson.records).forEach(function(entityId) {
+	      		if (entityId == "undefined") return;
+	      		// gather together the entity itself and its assets so we can render them
+	      		var objectId = responseJson.records[entityId].objectId;
+	      		var entity = responseJson.entities[objectId];
+	      		entity.id = entityId;
+	      		entity.objectId = objectId;
+	      		// select dependent assets from aggregate
+	      		var assets = responseJson.records[entityId].assetIds.reduce(
+	      			function(o, k) {
+	      				o[k] = responseJson.assets[k];
+	      				return o;
+	      			}, {});
+            createPlacementButton(entity, assets);
+	      		oOutput.appendChild(document.createTextNode("Ready to place entity..."));
+	      	});
+	      }
+	    } else {
+	      oOutput.appendChild(document.createTextNode("Error occurred. " + responseJson.message));
+	    }
+	  };
+
+	  oReq.send(oData);
+	  ev.preventDefault();
+  };
+
+  var form = document.forms.namedItem("createEntityModel");
+  form.addEventListener('submit', onUpload, false);
+});
+
+// Create Image
+$(function(){
+  var onUpload = function(ev) {
+	  var oOutput = document.getElementById("createFormResultContainer"),
+	      oData = new FormData(form);
+
+      oOutput.innerHTML = "Uploading...";
+
+	  var oReq = new XMLHttpRequest();
+	  oReq.open("POST", "api/image", true);
+	  oReq.onload = function(oEvent) {
+	    if (oReq.status == 200) {
+	      var responseJson = JSON.parse(oReq.responseText);
+	      oOutput.appendChild(document.createTextNode(responseJson.message));
+    	  var entityId = Object.keys(responseJson.records)[0]; // only one entity right now...
+    	  var objectId = responseJson.records[entityId].objectId;
+	      var entity = responseJson.entities[objectId];
+	      var assets = responseJson.assets;
+	      entity.id = entityId;
+    		entity.objectId =  responseJson.records[entityId].objectId;
+        createPlacementButton(entity, assets);
+    		oOutput.appendChild(document.createTextNode("Ready to place entity..."));
+	    } else {
+	      oOutput.appendChild(document.createTextNode("Error occurred. " + responseJson.message));
+	    }
+	  };
+
+	  oReq.send(oData);
+	  ev.preventDefault();
+  };
+
+  var form = document.forms.namedItem("createEntityImage");
+  form.addEventListener('submit', onUpload, false);
+});
+
+//---EDIT---
+// Edit Form mov/rot/scale logic
+$(function(){
+  var onUpload = function(ev) {
+	  var oOutput = document.getElementById("editFormResultContainer"),
+	      oData = new FormData(form);
+
+      // convert position to absolute location & position
+			var app = pc.Application.getApplication("application-canvas");
+      var entityId = document.getElementById("editEntityId").value;
+      if (!$.isNumeric(entityId) || !(entityId in app.entities)) {
+        alert("Select an Entity first.");
+        ev.preventDefault();
+        return;
+      }
+			var playerEntity = app.context.root.findByName("Player");
+		  var movementEntity = playerEntity.script.movement;
+			var sceneEntity = app.context.root.findByName("scene");
+		  var networkEntity = sceneEntity.script.network;
+      var raycastEntity = playerEntity.script.raycast;
+      var transformEntity = playerEntity.script.transform;
+
+      var relativePosition = [ oData.get("posX"), oData.get("posY"), oData.get("posZ") ];
+      var absolutePosition = MathUtils.getAbsolutePosition(relativePosition, networkEntity.origin, movementEntity.scale);
+      oData.set("locX", absolutePosition.location[0]);
+      oData.set("locZ", absolutePosition.location[1]);
+      oData.set("posX", absolutePosition.position[0]);
+      oData.set("posY", absolutePosition.position[1]);
+      oData.set("posZ", absolutePosition.position[2]);
+
+    oOutput.innerHTML = "Updating...";
+
+    // Switch to movement mode
+    movementEntity.enableInput();
+    raycastEntity.disableInput();
+    transformEntity.disableInput();
+    document.getElementById("modeLabel").innerHTML = "Movement Mode";
+    document.getElementById("modeLabel").className = "label label-mode-movement";
+
+	  var oReq = new XMLHttpRequest();
+	  oReq.open("PUT", "api/entity/" + oData.get("id"), true);
+	  
+	  oReq.onload = function(oEvent) {
+	    var responseJson = JSON.parse(oReq.responseText);
+	    if (oReq.status == 200) {
+	      oOutput.innerHTML = responseJson.message;
+	    } else {
+	    	if (responseJson != undefined) {
+  	      oOutput.innerHTML = "Error occurred (" + oReq.status + "): <br \/>" + responseJson.message;	    		
+	    	} else {
+          oOutput.innerHTML = "Error occurred (" + oReq.status + "): <br \/>" + oReq.responseText;
+	    	}
+	    }
+	  };
+
+	  oReq.send(oData);
+	  ev.preventDefault();
+  };
+
+  var form = document.forms.namedItem("editEntity");
+  form.addEventListener('submit', onUpload, false); });
+
+var populateInputsForSelectedEntity = function (entity) {
+    document.getElementById("editEntityTitle").value = entity.name;
+    if ("localPosition" in entity) {
+      document.getElementById("editEntityPosX").value = entity.localPosition.x;
+      document.getElementById("editEntityPosY").value = entity.localPosition.y;
+      document.getElementById("editEntityPosZ").value = entity.localPosition.z;
+    }
+    if ("localRotation" in entity) {
+      	var eulerAngles = entity.getLocalEulerAngles();
+	      document.getElementById("editEntityRotX").value = eulerAngles.x;
+	      document.getElementById("editEntityRotY").value = eulerAngles.y;
+	      document.getElementById("editEntityRotZ").value = eulerAngles.z;
+    }
+    if ("localScale" in entity) {
+    	document.getElementById("editEntitySclX").value = entity.localScale.x;
+    	document.getElementById("editEntitySclY").value = entity.localScale.y;
+      document.getElementById("editEntitySclZ").value = entity.localScale.z;
+    }
+}
+
+// Edit select Entity
+$(function(){
+  var onClick = function(ev) { 
+  	// get "playcanvas entity" objects
+	var app = pc.Application.getApplication("application-canvas");
+	var context = app.context;
+	var playerEntity = context.root.findByName("Player");
+    var movementEntity = playerEntity.script.movement;
+    var raycastEntity = playerEntity.script.raycast;
+    var transformEntity = playerEntity.script.transform;
+  	// Switch to entity selection mode
+	movementEntity.disableInput();
+	raycastEntity.enableInput();
+	transformEntity.disableInput();
+	raycastEntity.modeFramebuffer();
+    document.getElementById("modeLabel").innerHTML = "Select Mode";
+    document.getElementById("modeLabel").className = "label label-mode-select";
+
+    // bind event listener for selected entity
+    var onEntityHit = function(hitEntity) {
+      document.getElementById("editEntityId").value = hitEntity.id;
+      populateInputsForSelectedEntity(hitEntity);
+	    movementEntity.enableInput();
+	    raycastEntity.disableInput();
+      document.getElementById("modeLabel").innerHTML = "Movement Mode";
+      document.getElementById("modeLabel").className = "label label-mode-movement";
+    };
+    raycastEntity.on('hit', onEntityHit);
+  };
+
+  var button = document.getElementById("editEntitySelectButton");
+  button.addEventListener('click', onClick, false);
+});
+
+// Move entity in Edit mode
+$(function(){
+  var onClick = function(ev) { 
+		// get entity to move
+		var app = pc.Application.getApplication("application-canvas");
+    var entityId = document.getElementById("editEntityId").value;
+    if (!$.isNumeric(entityId) || !(entityId in app.entities)) {
+      alert("Select an Entity first.");
+      return;
+    }
+    var entity = app.entities[entityId];
+  	// get "playcanvas entity" objects
+		var context = app.context;
+		var playerEntity = context.root.findByName("Player");
+    var movementEntity = playerEntity.script.movement;
+    var raycastEntity = playerEntity.script.raycast;
+    var transformEntity = playerEntity.script.transform;
+  	// Switch to entity move mode
+		movementEntity.disableInput();
+		raycastEntity.disableInput();
+		transformEntity.modeMove();
+		transformEntity.setEntity(entity);
+		transformEntity.enableInput();
+    document.getElementById("modeLabel").innerHTML = "Translate Mode";
+    document.getElementById("modeLabel").className = "label label-mode-translate";
+
+    // bind event listener for entity movement
+    var onEntityMove = function(entityId) {
+      if ("localPosition" in entity) {
+	      document.getElementById("editEntityPosX").value = entity.localPosition.x;
+	      document.getElementById("editEntityPosY").value = entity.localPosition.y;
+	      document.getElementById("editEntityPosZ").value = entity.localPosition.z;
+	    }
+    };
+    transformEntity.on('move', onEntityMove);
+  };
+
+  var link = document.getElementById("moveLink");
+  link.addEventListener('click', onClick, false);
+});
+
+// Rotate entity in Edit mode
+$(function(){
+  var onClick = function(ev) { 
+		// get entity to move
+		var app = pc.Application.getApplication("application-canvas");
+    var entityId = document.getElementById("editEntityId").value;
+    if (!$.isNumeric(entityId) || !(entityId in app.entities)) {
+      alert("Select an Entity first.");
+      return;
+    }
+    var entity = app.entities[entityId];
+  	// get "playcanvas entity" objects
+		var context = app.context;
+		var playerEntity = context.root.findByName("Player");
+    var movementEntity = playerEntity.script.movement;
+    var raycastEntity = playerEntity.script.raycast;
+    var transformEntity = playerEntity.script.transform;
+  	// Switch to entity move mode
+		movementEntity.disableInput();
+		raycastEntity.disableInput();
+		transformEntity.modeRotate();
+		transformEntity.setEntity(entity);
+		transformEntity.enableInput();
+    document.getElementById("modeLabel").innerHTML = "Rotate Mode";
+    document.getElementById("modeLabel").className = "label label-mode-rotate";
+
+    // bind event listener for entity rotation
+    var onEntityRotate = function(entityId) {
+      if ("localRotation" in entity) {
+      	var eulerAngles = entity.getLocalEulerAngles();
+	      document.getElementById("editEntityRotX").value = eulerAngles.x;
+	      document.getElementById("editEntityRotY").value = eulerAngles.y;
+	      document.getElementById("editEntityRotZ").value = eulerAngles.z;
+      }
+    };
+    transformEntity.on('rotate', onEntityRotate);
+  };
+
+  var link = document.getElementById("rotateLink");
+  link.addEventListener('click', onClick, false);
+});
+
+// Scale entity in Edit mode
+$(function(){
+  var onClick = function(ev) { 
+		// get entity to move
+		var app = pc.Application.getApplication("application-canvas");
+    var entityId = document.getElementById("editEntityId").value;
+    if (!$.isNumeric(entityId) || !(entityId in app.entities)) {
+      alert("Select an Entity first.");
+      return;
+    }
+    var entity = app.entities[entityId];
+  	// get "playcanvas entity" objects
+		var context = app.context;
+		var playerEntity = context.root.findByName("Player");
+    var movementEntity = playerEntity.script.movement;
+    var raycastEntity = playerEntity.script.raycast;
+    var transformEntity = playerEntity.script.transform;
+  	// Switch to entity move mode
+		movementEntity.disableInput();
+		raycastEntity.disableInput();
+		transformEntity.modeScale();
+		transformEntity.setEntity(entity);
+		transformEntity.enableInput();
+    document.getElementById("modeLabel").innerHTML = "Scale Mode";
+    document.getElementById("modeLabel").className = "label label-mode-scale";
+
+    // bind event listener for entity rotation
+    var onEntityScale = function(entityId) {
+      if ("localScale" in entity) {
+      	document.getElementById("editEntitySclX").value = entity.localScale.x;
+      	document.getElementById("editEntitySclY").value = entity.localScale.y;
+        document.getElementById("editEntitySclZ").value = entity.localScale.z;
+      }
+    };
+    transformEntity.on('scale', onEntityScale);
+  };
+
+  var link = document.getElementById("scaleLink");
+  link.addEventListener('click', onClick, false);
+});
+
+// onBlur ID
+$(function() {
+	var onBlur = function(ev) {
+		var app = pc.Application.getApplication("application-canvas");
+		if (input.value in app.entities) {
+			populateInputsForSelectedEntity(app.entities[input.value]);
+		}
+	};
+	var input = document.getElementById("editEntityId");
+	input.addEventListener('blur', onBlur, false);
+});
+
+// Edit Entity Proof button
+$(function(){
+  var onClick = function(ev) { 
+  	// get "playcanvas entity" objects
+		var app = pc.Application.getApplication("application-canvas");
+    var entityId = document.getElementById("editEntityId").value;
+    if (!$.isNumeric(entityId) || !(entityId in app.entities)) {
+      alert("Select an Entity first.");
+      return;
+    }
+    var entity = app.entities[entityId];
+		var context = app.context;
+		var playerEntity = context.root.findByName("Player");
+    var movementEntity = playerEntity.script.movement;
+    var raycastEntity = playerEntity.script.raycast;
+    var transformEntity = playerEntity.script.transform;
+  	// Switch to movement mode
+		movementEntity.enableInput();
+		raycastEntity.disableInput();
+		transformEntity.disableInput();
+	  document.getElementById("modeLabel").innerHTML = "Movement Mode";
+	  document.getElementById("modeLabel").className = "label label-mode-movement";
+    // gather all the data
+    var posX = document.getElementById("editEntityPosX").value;
+	  var posY = document.getElementById("editEntityPosY").value;
+	  var posZ = document.getElementById("editEntityPosZ").value;
+    var rotX = document.getElementById("editEntityRotX").value;
+    var rotY = document.getElementById("editEntityRotY").value;
+    var rotZ = document.getElementById("editEntityRotZ").value;
+  	var sclX = document.getElementById("editEntitySclX").value;
+  	var sclY = document.getElementById("editEntitySclY").value;
+    var sclZ = document.getElementById("editEntitySclZ").value;
+    if (!($.isNumeric(posX) && $.isNumeric(posY) && $.isNumeric(posZ) && 
+    	    $.isNumeric(rotX) && $.isNumeric(rotY) && $.isNumeric(rotZ) && 
+    	    $.isNumeric(sclX) && $.isNumeric(sclY) && $.isNumeric(sclZ) )) {
+      alert("Values must be numeric.");
+      return;
+    }
+    // update the entity
+    entity.setLocalPosition(new pc.Vec3(posX, posY, posZ));
+    entity.setLocalEulerAngles(new pc.Vec3(rotX, rotY, rotZ));
+    entity.setLocalScale(new pc.Vec3(sclX, sclY, sclZ));
+  };
+
+  var button = document.getElementById("editEntityProofButton");
+  button.addEventListener('click', onClick, false);
+});
+
+// Remove entity
+$(function(){
+  var onClick = function(ev) {
+    // get "playcanvas entity" objects
+    var app = pc.Application.getApplication("application-canvas");
+    var entityId = document.getElementById("editEntityId").value;
+    if (!$.isNumeric(entityId) || !(entityId in app.entities)) {
+      alert("Select an Entity first.");
+      return;
+    }
+    var entity = app.entities[entityId];
+
+    var oOutput = document.getElementById("editFormResultContainer");
+
+     oOutput.appendChild(document.createTextNode("Removing..."));
+
+    var oReq = new XMLHttpRequest();
+    oReq.open("DELETE", "api/entity/" + entityId, true);
+    oReq.onload = function(oEvent) {
+      if (oReq.status == 200) {
+        entity.destroy();
+        delete app.entities[entityId];
+
+        oOutput.appendChild(document.createTextNode(oReq.responseText));
+      } else {
+        oOutput.appendChild(document.createTextNode("Error occurred. " + oReq.responseText));
+      }
+    };
+
+    oReq.send();
+    ev.preventDefault();
+  };
+
+  var button = document.getElementById("removeEntityButton");
+  button.addEventListener('click', onClick, false);
+});
+
+// Send Feedback
+$(function() {
+  var onUpload = function(ev) {
+    var oData = new FormData(form);
+    var oReq = new XMLHttpRequest();
+    oReq.open("POST", "api/feedback", true);
+    oReq.onload = function(oEvent) {
+      if (oReq.status == 200) {
+        alert("Feedback sent - Thank you");
+        $('#contactModal').modal('hide');
+      } else {
+        alert("Error occurred. " + oReq.responseText);
+      }
+    };
+
+    oReq.send(oData);
+    ev.preventDefault();
+  };
+
+  var form = document.forms.namedItem("contact");
+  form.addEventListener('submit', onUpload, false);
+});
+
+// Focus canvas
+$(function() {
+  var onClick = function(ev) {
+    canvas.focus();
+  };
+
+  var canvas = document.getElementById("application-canvas");
+  canvas.addEventListener('click', onClick, false);
+});
