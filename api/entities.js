@@ -35,7 +35,7 @@ var assetFilesRe = /^files\/assets\/\d{7}\/\d{1}\/.+$/;
 
 function getDependentAssetIdsFromAsset(asset) {
   var assetIds = [];
-  if ('data' in asset && asset.data != null) {
+  if (asset != undefined && 'data' in asset && asset.data != null) {
     for (var key in asset.data) {
       if (key.endsWith('Map')) {
         if (typeof asset.data[key] === 'number' && asset.data[key] > 0 && !assetIds.includes(asset.data[key])) {
@@ -63,29 +63,35 @@ function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew,
     if ('components' in entity && entity.components != null) {
       if ('model' in entity.components && entity.components.model != null) {
         if ('asset' in entity.components.model) {
-          if (typeof entity.components.model.asset === 'number') {
+          if (typeof entity.components.model.asset === 'number'
+              && entity.components.model.asset != null
+              && assetIdMapOldToNew[entity.components.model.asset]) {
             var newId = assetIdMapOldToNew[entity.components.model.asset];
             entity.components.model.asset = newId;
             assetIds.push(newId);
-            assetIds.concat(getDependentAssetIdsFromAsset(assets[entity.components.model.asset]));
+            assetIds.concat(getDependentAssetIdsFromAsset(assets[newId]));
           }
         }
         if ('materialAsset' in entity.components.model) {
-          if (typeof entity.components.model.materialAsset === 'number') {
+          if (typeof entity.components.model.materialAsset === 'number'
+            && entity.components.model.materialAsset != null
+            && assetIdMapOldToNew[entity.components.model.materialAsset]) {
             var newId = assetIdMapOldToNew[entity.components.model.materialAsset];
             entity.components.model.materialAsset = newId;
             assetIds.push(newId);
-            assetIds.concat(getDependentAssetIdsFromAsset(assets[entity.components.model.materialAsset]));
+            assetIds.concat(getDependentAssetIdsFromAsset(assets[newId]));
           }
         }
       }
       if ('collision' in entity.components && entity.components.collision != null) {
         if ('asset' in entity.components.collision) {
-          if (typeof entity.components.collision.asset === 'number') {
+          if (typeof entity.components.collision.asset === 'number'
+              && entity.components.collision.asset != null
+              && assetIdMapOldToNew[entity.components.collision.asset]) {
             var newId = assetIdMapOldToNew[entity.components.collision.asset];
             entity.components.collision.asset = newId;
             assetIds.push(newId);
-            assetIds.concat(getDependentAssetIdsFromAsset(assets[entity.components.collision.asset]));
+            assetIds.concat(getDependentAssetIdsFromAsset(assets[newId]));
           }
         }
       }
@@ -93,11 +99,14 @@ function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew,
         if ('assets' in entity.components.animation) {
           if (Array.isArray(entity.components.animation.assets)) {
             if (entity.components.animation.assets.length > 0) {
-              if (typeof entity.components.animation.assets[0] === 'number') {
-                var newId = assetIdMapOldToNew[entity.components.animation.assets];
-                entity.components.animation.assets = newId;
+              if (typeof entity.components.animation.assets[0] === 'number'
+                && entity.components.animation.assets[0] != null
+                && assetIdMapOldToNew[entity.components.animation.assets[0]]) {
+                // TODO: GET all animations, not just first one
+                var newId = assetIdMapOldToNew[entity.components.animation.assets[0]];
+                entity.components.animation.assets[0] = newId;
                 assetIds.push(newId);
-                assetIds.concat(getDependentAssetIdsFromAsset(assets[entity.components.animation.assets[0]]));
+                assetIds.concat(getDependentAssetIdsFromAsset(assets[newId]));
               }
             }
           }
