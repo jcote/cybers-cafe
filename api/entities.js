@@ -33,41 +33,64 @@ const multer = Multer({//dest:'uploads'
 var entitiesRe = /^\d{6}\.json$/;
 var assetFilesRe = /^files\/assets\/\d{7}\/\d{1}\/.+$/;
 
-function getDependentAssetIdsFromAsset(asset, assetIdMapOldToNew, assets) {
+function getDependentAssetIdsFromAsset(asset, assetIdMapOldToNew, assets, dependentAssetIds) {
   var assetIds = [];
+      if ('data' in asset) {
+      if ('emissiveMap' in asset.data 
+          && asset.data.emissiveMap > 0
+          && assetIdMapOldToNew[asset.data.emissiveMap]) {
+        var newId = assetIdMapOldToNew[asset.data.emissiveMap];
+        asset.data.emissiveMap = newId;
+        assetIds.push(newId);
+        assetIds = assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets, dependentAssetIds));
+      }
+      if ('diffuseMap' in asset.data
+          && asset.data.diffuseMap > 0
+          && assetIdMapOldToNew[asset.data.diffuseMap]){
+        var newId = assetIdMapOldToNew[asset.data.diffuseMap];
+        asset.data.diffuseMap = newId;
+        assetIds.push(newId);
+        assetIds = assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets, dependentAssetIds));
+      }
+      //TODO: Other kinds of Maps    
+    }
   if (asset != undefined && 'data' in asset && asset.data != null) {
-    for (var key in asset.data) {
+    for (var key in asset.data) { 
       if (key.endsWith('Map')) {
         if (typeof asset.data[key] === 'number'
             && asset.data[key] > 0 
-            && assetIdMapOldToNew[asset.data[key]]
-            && !assetIds.includes(assetIdMapOldToNew[asset.data[key]])) {
+            && assetIdMapOldToNew[asset.data[key]]) {
           var newId = assetIdMapOldToNew[asset.data[key]];
           asset.data[key] = newId;
           assetIds.push(newId);
-          assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets));
+          assetIds = assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets, dependentAssetIds));
         }
       }
     }
     if ('mapping' in asset.data && asset.data.mapping != null) {
       for (var i=0; i < asset.data.mapping.length; i++) {
         var entry = asset.data.mapping[i];
-        if ('material' in entry 
+        if ('material' in entry
             && entry.material != null
-            && assetIdMapOldToNew[entry.material]
-            && !assetIds.includes(assetIdMapOldToNew[entry.material])) {
+            && assetIdMapOldToNew[entry.material]) {
           var newId = assetIdMapOldToNew[entry.material];
           entry.material = newId;
           assetIds.push(newId);
-          assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets));
+          assetIds = assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets, dependentAssetIds));
         }
       }
     }
   }
+
+  if (asset.id in dependentAssetIds)
+    dependentAssetIds[asset.id] = arrayUnique(dependentAssetIds[asset.id].concat(assetIds));
+  else
+    dependentAssetIds[asset.id] = arrayUnique(assetIds);
+
   return assetIds;
 }
 
-function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew, assets) {
+function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew, assets, dependentAssetIds) {
     var assetIds = [];
     if ('components' in entity && entity.components != null) {
       if ('model' in entity.components && entity.components.model != null) {
@@ -78,7 +101,7 @@ function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew,
             var newId = assetIdMapOldToNew[entity.components.model.asset];
             entity.components.model.asset = newId;
             assetIds.push(newId);
-            assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets));
+            assetIds = assetIds.concat(dependentAssetIds[newId]);
           }
         }
         if ('materialAsset' in entity.components.model) {
@@ -88,7 +111,7 @@ function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew,
             var newId = assetIdMapOldToNew[entity.components.model.materialAsset];
             entity.components.model.materialAsset = newId;
             assetIds.push(newId);
-            assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets));
+            assetIds = assetIds.concat(dependentAssetIds[newId]);
           }
         }
       }
@@ -100,7 +123,7 @@ function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew,
             var newId = assetIdMapOldToNew[entity.components.collision.asset];
             entity.components.collision.asset = newId;
             assetIds.push(newId);
-            assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets));
+            assetIds = assetIds.concat(dependentAssetIds[newId]);
           }
         }
       }
@@ -115,14 +138,14 @@ function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew,
                 var newId = assetIdMapOldToNew[entity.components.animation.assets[0]];
                 entity.components.animation.assets[0] = newId;
                 assetIds.push(newId);
-                assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets));
+                assetIds = assetIds.concat(dependentAssetIds[newId]);
               }
             }
           }
         }
       }
     }
-    return assetIds;
+    return arrayUnique(assetIds);
 }
 
 function arrayUnique(array) {
@@ -164,7 +187,7 @@ function unzipEntries (req, res, next) {
           asset.file.fullPath = asset.file.url;
         }
       });
-      console.log("found assets");
+      console.log("found " + Object.keys(req.assets).length + " assets");
     } else if (entitiesRe.exec(zipEntry.entryName)) {
       var dataString = zipEntry.getData().toString('utf8');
       var data = JSON.parse(dataString);
@@ -209,12 +232,20 @@ function sendRecordsToSql(req, res, next) {
 function extractAndRewriteDependentAssetIds(req, res, next) {
   req.dependentAssetIds = {};
 
+  Object.keys(req.assets).forEach(function(assetId) {
+    var asset = req.assets[assetId];
+    // extract assets's dependent asset ids
+    var assetIds = getDependentAssetIdsFromAsset(asset, req.assetIdMapOldToNew, req.assets, req.dependentAssetIds);
+    req.dependentAssetIds[assetId] = assetIds;
+  });
+
   Object.keys(req.entities).forEach(function(entityGuid) {
     var entity = req.entities[entityGuid];
     // extract entity's dependent asset ids
-    var assetIds = getDependentAssetIdsFromEntityAndRewriteIds(entity, req.assetIdMapOldToNew, req.assets);
+    var assetIds = getDependentAssetIdsFromEntityAndRewriteIds(entity, req.assetIdMapOldToNew, req.assets, req.dependentAssetIds);
     req.dependentAssetIds[entity.resource_id] = assetIds;
   });
+
   console.log("end extract and rewrite asset ids");
   next();
 }
@@ -240,16 +271,6 @@ function sendRecordToSql (req, entity, assets, callback) {
   entityRecord.sclZ = entity.scale[2];
 
   var assetIds = req.dependentAssetIds[entity.resource_id];
-
-  // extract entity's assets' dependent asset ids
-  for (var key in assets) {
-    var asset = assets[key];
-    var newId = req.assetIdMapOldToNew[parseInt(key)];
-    if (assetIds.includes(newId)) {
-      var depAssetsIds = getDependentAssetIdsFromAsset(asset);
-      assetIds = arrayUnique(assetIds.concat(depAssetsIds));
-    }
-  }
 
   entityRecord.assetIds = assetIds;
 
@@ -301,19 +322,6 @@ function phantomGetZip(req, res, next) {
 
 }
 
-function rewriteAssetMapIds(req, res, next) {
-  for (var assetId in req.assets) {
-    var asset = req.assets[assetId];
-    if ('data' in asset) {
-      if ('emissiveMap' in asset.data)
-        asset.data.emissiveMap = req.assetIdMapOldToNew[asset.data.emissiveMap];
-      if ('diffuseMap' in asset.data)
-      asset.data.diffuseMap = req.assetIdMapOldToNew[asset.data.diffuseMap];      
-    }
-  }
-  next();
-}
-
 // sets the parent of entities to SCENE unless the id is found in this upload
 function setParentOnEntities(req, res, next) {
   async.each(req.entities, function(entity, callback) {
@@ -349,7 +357,7 @@ function setParentOnEntities(req, res, next) {
  * POST /api/entities
  *
  */
-router.post('/', multer.single('zipFile'), checkFormat, unzipEntries, apiLib.getReservedIds, apiLib.sendUploadToGCS, apiLib.rewriteAssetUrls, rewriteAssetMapIds, apiLib.sendAssetsToDatastore, setParentOnEntities, extractAndRewriteDependentAssetIds, apiLib.sendEntitiesToDatastore, sendRecordsToSql, function (req, res, next) {
+router.post('/', multer.single('zipFile'), checkFormat, unzipEntries, apiLib.getReservedIds, apiLib.sendUploadToGCS, apiLib.rewriteAssetUrls, extractAndRewriteDependentAssetIds, apiLib.sendAssetsToDatastore, setParentOnEntities, apiLib.sendEntitiesToDatastore, sendRecordsToSql, function (req, res, next) {
 //  console.log(req.entities); 
 //  console.log(req.assets); 
 //  console.log(req.assetFiles);
