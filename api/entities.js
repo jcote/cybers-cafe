@@ -147,6 +147,12 @@ function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew,
           for (var scriptName in entity.components.script.scripts) {
             var script = entity.components.script.scripts[scriptName];
             if (script != null && 'attributes' in script && script.attributes != null) {
+              for (var scriptCandidateAssetId in assets) {
+                var scriptCandidateAsset = assets[scriptCandidateAssetId];
+                if (scriptCandidateAsset.name == scriptName + ".js") {
+                  assetIds.push(scriptCandidateAsset.id);
+                }
+              }
               if ('materials' in script.attributes && script.attributes.materials != null) {
                 for (var i = 0; i < script.attributes.materials.length; i++) {
                   var material = script.attributes.materials[i];
