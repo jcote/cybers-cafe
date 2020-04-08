@@ -121,7 +121,8 @@ var MathUtils = {
 	spiralPair: spiralPair
 };
 
-module.exports = {
+// for npm test
+/*module.exports = {
   cantorPair: cantorPair,
   reverseCantorPair: reverseCantorPair,
   evenOddEncode: evenOddEncode,
@@ -131,4 +132,4 @@ module.exports = {
   getRelativePosition: getRelativePosition,
   getAbsolutePosition: getAbsolutePosition,
   spiralPair: spiralPair
-}
+}*/

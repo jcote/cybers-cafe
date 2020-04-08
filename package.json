@@ -1,6 +1,6 @@
 {
   "name": "cybers-cafe",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Functional Server in Cyberspace",
   "repository": "https://source.developers.google.com/p/cybers-cafe/r/nodejs-mvms-quickstart",
   "private": true,
