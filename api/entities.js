@@ -30,31 +30,29 @@ const multer = Multer({//dest:'uploads'
   } 
 });
 
-var entitiesRe = /^\d{6}\.json$/;
-var assetFilesRe = /^files\/assets\/\d{7}\/\d{1}\/.+$/;
+var entitiesRe = /^\d+\.json$/;
+var assetFilesRe = /^files\/assets\/\d+\/\d{1}\/.+$/;
 
 function getDependentAssetIdsFromAsset(asset, assetIdMapOldToNew, assets, dependentAssetIds) {
   var assetIds = [];
-      if ('data' in asset) {
-      if ('emissiveMap' in asset.data 
-          && asset.data.emissiveMap > 0
-          && assetIdMapOldToNew[asset.data.emissiveMap]) {
-        var newId = assetIdMapOldToNew[asset.data.emissiveMap];
-        asset.data.emissiveMap = newId;
-        assetIds.push(newId);
-        assetIds = assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets, dependentAssetIds));
-      }
-      if ('diffuseMap' in asset.data
-          && asset.data.diffuseMap > 0
-          && assetIdMapOldToNew[asset.data.diffuseMap]){
-        var newId = assetIdMapOldToNew[asset.data.diffuseMap];
-        asset.data.diffuseMap = newId;
-        assetIds.push(newId);
-        assetIds = assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets, dependentAssetIds));
-      }
-      //TODO: Other kinds of Maps    
-    }
   if (asset != undefined && 'data' in asset && asset.data != null) {
+    if ('emissiveMap' in asset.data 
+        && asset.data.emissiveMap > 0
+        && assetIdMapOldToNew[asset.data.emissiveMap]) {
+      var newId = assetIdMapOldToNew[asset.data.emissiveMap];
+      asset.data.emissiveMap = newId;
+      assetIds.push(newId);
+      assetIds = assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets, dependentAssetIds));
+    }
+    if ('diffuseMap' in asset.data
+        && asset.data.diffuseMap > 0
+        && assetIdMapOldToNew[asset.data.diffuseMap]){
+      var newId = assetIdMapOldToNew[asset.data.diffuseMap];
+      asset.data.diffuseMap = newId;
+      assetIds.push(newId);
+      assetIds = assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets, dependentAssetIds));
+    }
+    //TODO: Other kinds of Maps    
     for (var key in asset.data) { 
       if (key.endsWith('Map')) {
         if (typeof asset.data[key] === 'number'
@@ -144,6 +142,39 @@ function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew,
           }
         }
       }
+      if ('script' in entity.components && entity.components.script != null) {
+        if ('scripts' in entity.components.script && entity.components.script.scripts != null) {
+          for (var scriptName in entity.components.script.scripts) {
+            var script = entity.components.script.scripts[scriptName];
+            if (script != null && 'attributes' in script && script.attributes != null) {
+              if ('materials' in script.attributes && script.attributes.materials != null) {
+                for (var i = 0; i < script.attributes.materials.length; i++) {
+                  var material = script.attributes.materials[i];
+                  if (typeof material === 'number'
+                      && material != null
+                      && assetIdMapOldToNew[material]) {
+                    var newId = assetIdMapOldToNew[material];
+                    script.attributes.materials[i] = newId;
+                    assetIds.push(newId);
+                    assetIds = assetIds.concat(dependentAssetIds[newId]);
+                  }
+                }
+              }
+              if ('video' in script.attributes && script.attributes.video != null) {
+                if (typeof script.attributes.video === 'number'
+                    && script.attributes.video != null
+                    && assetIdMapOldToNew[script.attributes.video]) {
+                  var newId = assetIdMapOldToNew[script.attributes.video];
+                  script.attributes.video = newId;
+                  assetIds.push(newId);
+                  assetIds = assetIds.concat(dependentAssetIds[newId]);
+                }
+              }
+            }
+          }
+        }
+      }
+
     }
     return arrayUnique(assetIds);
 }

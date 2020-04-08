@@ -52,7 +52,7 @@ Network.prototype.initialize = function() {
     });
 
     socket.on ('addAsset', function (data) {
-        console.log('Add Asset');
+        console.log('Add Asset ' + data.asset.id);
         if (!self.app.assets.get(data.asset.id)) {
 	        self.queue.enqueue(new QueueItem('asset', data.asset));
 	        if (!self.isQueueRunning) {
@@ -62,7 +62,7 @@ Network.prototype.initialize = function() {
     });
 
     socket.on ('addEntity', function (data) {
-        console.log('Add Entity');
+        console.log('Add Entity ' + data.entity.id);
         if (!(data.entity.id in self.app.entities)) {
 	        self.queue.enqueue(new QueueItem('entity', data.entity));
 	        if (!self.isQueueRunning) {
