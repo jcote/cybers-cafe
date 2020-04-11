@@ -56,6 +56,10 @@ app.get('/viewport', function (req, res) {
   res.render("viewport.jade");
 });
 
+app.get('/sitemap.xml', function (req, res) {
+  res.sendFile(path.join(__dirname, "sitemap.xml"));
+});
+
 // Basic 404 handler
 app.use(function (req, res) {
   res.status(404).send('Not Found');
