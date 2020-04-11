@@ -15,13 +15,13 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
-var Multer  = require('multer');
 var fs = require('fs');
 var md5 = require('md5');
 const uuidv4 = require('uuid/v4');
 const async = require('async');
 const sqlRecord = require('./records-cloudsql');
 const apiLib = require('./lib');
+var Multer  = require('multer');
 
 const multer = Multer({//dest:'uploads'
   storage: Multer.MemoryStorage,
@@ -35,77 +35,97 @@ var router = express.Router();
 // Automatically parse request body as JSON
 router.use(bodyParser.json());
 
-function createImageAssetsAndEntity (req, res, next) {
+
+function createHyperlinkAssets(assets, assetFiles, callback) {
+  // Obtain new id's for assets
+  // TODO: have the datastore model create 2 blank assets to reserve these ids
+  apiLib.getModel().reserveIdCreate('Asset', function(err, reservedId) {
+    if (err) {
+      return callback(err);
+    }
+
+    var assetFontFileId = reservedId;
+    
+    var assetFontFullPath = "stock/files/assets/29754627/1/Roboto-Medium.png";
+
+  fs.readFile(assetFontFullPath, function(err, assetFontBuf) {
+      if (err) {
+        return callback(err);
+      }
+
+      var assetFile = {
+        originalName: "Roboto-Medium.png",
+        originalPath: "stock/files/assets/29754627/1/",
+        data: assetFontBuf
+      };
+
+      assetFiles[assetFontFullPath] = assetFile;
+
+      fs.readFile("stock/asset/hyperlink.json", function(err, assetStockBuf) {
+        if (err) {
+          return callback(err);
+        }
+        var assetStockJson = JSON.parse(assetStockBuf);
+
+        // populate the stock File Asset
+        var hyperlinkFontAsset = assetStockJson[29754627];
+        hyperlinkFontAsset.id = assetFontFileId;
+        hyperlinkFontAsset.file.fullPath = assetFontFullPath;
+
+        // save assets to req
+        assets[assetFontFileId] = hyperlinkFontAsset;
+
+        return callback(null, hyperlinkFontAsset);
+   		});
+    });
+  });
+}
+
+function createHyperlinkAssetsAndEntity (req, res, next) {
   console.log("begin create image assets + entity");
   req.assets = {};
   req.assetFiles = {};
   req.entities = {};
   req.entitiesWithNoKey = [];
   req.records = {};
+console.log(req.body);
+  if (!req.body.linkText || req.body.linkText.length == 0) {
+  	return next("No link Text given!");
+  }
   
-  // Obtain new id's for assets
-  // TODO: have the datastore model create 2 blank assets to reserve these ids
-  apiLib.getModel().reserveIdCreate('Asset', function(err, reservedId1) {
+  apiLib.getModel().readByName('Asset', "Roboto-Medium.ttf", function(err, hyperlinkFontAssetId) {
+    
+  	if (err) {
+    	console.log("Hyperlink asset font not found, creating one")
+    	createHyperlinkAssets(req.assets, req.assetFiles, function(err, hyperlinkFontAsset) {
+    		createEntity(hyperlinkFontAsset.id, req.entitiesWithNoKey, req.body.linkText, next);
+    	});
+		} else {
+			createEntity(hyperlinkFontAssetId, req.entitiesWithNoKey, req.body.linkText, next);
+		}
+  });
+
+}
+
+function createEntity(hyperlinkFontAssetId, entitiesWithNoKey, inputText, callback) {
+  fs.readFile("stock/entity/hyperlink.json", function(err, entityStockBuf) {
     if (err) {
-      return next(err);
+      return callback(err);
     }
-      apiLib.getModel().reserveIdCreate('Asset', function(err, reservedId2) {
-      if (err) {
-        return next(err);
-      }
+    var entityStockJson = JSON.parse(entityStockBuf);
 
-      var assetFileId = reservedId1;
-      var assetMaterialId = reservedId2;
+    // Populate the stock Entity
+    var entity = entityStockJson;
+    entity.components.fontAsset = hyperlinkFontAssetId;
+    entity.resource_id = uuidv4();
+    entity.components.element.text = inputText;
+    entitiesWithNoKey.push(entity);
 
-      // Populate Asset Files and save to req
-      var assetFullPath = "files/assets/" + assetFileId + "/1/" + req.file.originalname;
-      req.assetFiles[assetFullPath] = req.file;
-
-      fs.readFile("stock/asset/image.json", function(err, assetStockBuf) {
-        if (err) {
-          return next(err);
-        }
-        var assetStockJson = JSON.parse(assetStockBuf);
-
-        // populate the stock File Asset
-        var fileAsset = assetStockJson[6451433];
-        fileAsset.id = assetFileId;
-        fileAsset.name = req.file.originalname;
-        fileAsset.file.filename = req.file.originalname;
-        fileAsset.file.size = req.file.size;
-        fileAsset.file.fullPath = assetFullPath;
-        fileAsset.file.hash = md5(req.file.buffer);
-
-        // Populate the stock Material Asset
-        var materialAsset = assetStockJson[6451449];
-        materialAsset.id = assetMaterialId;
-        materialAsset.data.diffuseMap = assetFileId;
-        materialAsset.data.emissiveMap = assetFileId;
-
-        // save assets to req
-        req.assets[assetFileId] = fileAsset;
-        req.assets[assetMaterialId] = materialAsset;
-
-        fs.readFile("stock/entity/image.json", function(err, entityStockBuf) {
-          if (err) {
-            return next(err);
-          }
-          var entityStockJson = JSON.parse(entityStockBuf);
-
-          // Populate the stock Entity
-          var entity = entityStockJson;
-          entity.components.model.materialAsset = assetMaterialId;
-          entity.resource_id = uuidv4();
-          req.entitiesWithNoKey.push(entity);
-
-          //console.log(req.assets);
-          //console.log(req.assetFiles);
-          //console.log(req.entities);
-          console.log("finish create image assets + entity");
-          next();
-        });
-      });
-    });
+    //console.log(req.assets);
+    //console.log(req.assetFiles);
+    //console.log(req.entities);
+    console.log("finish create image assets + entity");
+    callback();
   });
 }
 
@@ -156,26 +176,11 @@ function sendRecordToSql (req, entity, assets, callback) {
   });
 }
 
-var imgMimeTypes = ["image/gif", "image/jpeg", "image/png", "image/svg+xml"];
-
-function checkFormatImg (req, res, next) {
-  if (req.file == undefined) {
-    return res.json({"message":"No file given"});
-  }
-  if (!imgMimeTypes.includes(req.file.mimetype)) {
-    return res.json({"message":"Not an image format (jpeg, gif, png, svg): " + req.file.mimetype});
-  }
-  if (req.file.buffer.byteLength == 0) {
-    return res.json({"message":"Empty file given"});
-  }
-  next();
-}
-
 /**
- * POST /api/image
+ * POST /api/hyperlink
  *
  */
-router.post('/', multer.single('imgFile'), checkFormatImg, createImageAssetsAndEntity, apiLib.sendUploadToGCS, apiLib.rewriteAssetUrls, apiLib.sendAssetsToDatastore, apiLib.sendEntitiesToDatastore, sendRecordsToSql, function (req, res, next) {
+router.post('/', multer.fields([{name: 'linkText'}]), createHyperlinkAssetsAndEntity, apiLib.sendUploadToGCS, apiLib.rewriteAssetUrls, apiLib.sendAssetsToDatastore, apiLib.sendEntitiesToDatastore, sendRecordsToSql, function (req, res, next) {
 //  console.log(req.entities); 
 //  console.log(req.assets); 
 //  console.log(req.assetFiles);

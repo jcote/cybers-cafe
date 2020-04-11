@@ -1,0 +1,106 @@
+{
+  "name": "Hyperlink",
+  "tags": [],
+  "enabled": true,
+  "resource_id": "18a5fc72-0526-45e9-a23a-4c99a06b5157",
+  "parent": "e8ae4254-6751-11e5-bd2a-8438356164ca",
+  "children": [],
+  "position": [
+    0,
+    0,
+    0
+  ],
+  "rotation": [
+    0,
+    0,
+    -4.644775260055947E-10
+  ],
+  "scale": [
+    0.04,
+    0.04,
+    1
+  ],
+  "components": {
+    "element": {
+      "enabled": true,
+      "type": "text",
+      "anchor": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "text": "A Hyperlink",
+      "key": null,
+      "fontAsset": 29754627,
+      "fontSize": 24,
+      "minFontSize": 8,
+      "maxFontSize": 32,
+      "autoFitWidth": false,
+      "autoFitHeight": false,
+      "maxLines": null,
+      "lineHeight": 12,
+      "wrapLines": true,
+      "spacing": 1,
+      "color": [
+        1,
+        1,
+        1
+      ],
+      "opacity": 1,
+      "textureAsset": null,
+      "spriteAsset": null,
+      "spriteFrame": 0,
+      "pixelsPerUnit": null,
+      "width": 123.645,
+      "height": 25.242,
+      "margin": [
+        -61.822,
+        -12.621,
+        -61.822,
+        -12.621
+      ],
+      "alignment": [
+        0.5,
+        0.5
+      ],
+      "outlineColor": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "outlineThickness": 0,
+      "shadowColor": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "shadowOffset": [
+        0,
+        0
+      ],
+      "rect": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "materialAsset": null,
+      "autoWidth": true,
+      "autoHeight": true,
+      "useInput": false,
+      "batchGroupId": null,
+      "mask": false,
+      "layers": [
+        4
+      ],
+      "enableMarkup": false
+    }
+  }
+}

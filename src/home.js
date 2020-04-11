@@ -142,7 +142,7 @@ function selectSection(section) {
 }
 
 // Form Select
-var createForms = ["createEntityImageForm", "createEntityModelForm"];
+var createForms = ["createEntityImageForm", "createEntityModelForm", "createEntityHyperlinkForm"];
 var editForms = ["editEntityMoveForm", "editEntityRotateForm", "editEntityScaleForm"];
 
 function selectForm (form) {
@@ -337,6 +337,42 @@ $(function(){
   };
 
   var form = document.forms.namedItem("createEntityImage");
+  form.addEventListener('submit', onUpload, false);
+});
+
+
+// Create Link
+$(function(){
+  var onUpload = function(ev) {
+    var oOutput = document.getElementById("createFormResultContainer"),
+        oData = new FormData(form);
+
+      oOutput.innerHTML = "Uploading...";
+
+    var oReq = new XMLHttpRequest();
+    oReq.open("POST", "api/hyperlink", true);
+    oReq.onload = function(oEvent) {
+      if (oReq.status == 200) {
+        var responseJson = JSON.parse(oReq.responseText);
+        oOutput.appendChild(document.createTextNode(responseJson.message));
+        var entityId = Object.keys(responseJson.records)[0]; // only one entity right now...
+        var objectId = responseJson.records[entityId].objectId;
+        var entity = responseJson.entities[objectId];
+        var assets = responseJson.assets;
+        entity.id = entityId;
+        entity.objectId =  responseJson.records[entityId].objectId;
+        createPlacementButton(entity, assets);
+        oOutput.appendChild(document.createTextNode("Ready to place entity..."));
+      } else {
+        oOutput.appendChild(document.createTextNode("Error occurred. " + responseJson.message));
+      }
+    };
+
+    oReq.send(oData);
+    ev.preventDefault();
+  };
+
+  var form = document.forms.namedItem("createEntityHyperlink");
   form.addEventListener('submit', onUpload, false);
 });
 

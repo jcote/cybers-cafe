@@ -104,6 +104,26 @@ function list (kind, limit, token, cb) {
 }
 // [END list]
 
+function readByName (kind, name, cb) {
+  var q = ds.createQuery([kind])
+    .limit(1)
+//    .order('title')
+    .filter('name', '=', name);
+
+  ds.runQuery(q, function (err, entities, nextQuery) {
+    if (err) {
+      return cb(err);
+    }
+    if (!entities || entities.length == 0) {
+      return cb({
+        code: 404,
+        message: 'Not found'
+      });
+    }
+    cb(null, entities[0]);
+  });
+}
+
 // Creates a new entity or updates an existing entity with new data. The provided
 // data is automatically translated into Datastore format. The entity will be
 // queued for background processing.
@@ -174,6 +194,7 @@ module.exports = {
     update(kind, null, data, cb);
   },
   read: read,
+  readByName: readByName,
   update: update,
   delete: _delete,
   reserveIdCreate: reserveIdCreate,

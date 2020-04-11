@@ -71,6 +71,8 @@ html(lang="en")
                   a(id="modelLink", href="#", onclick="selectForm('createEntityModelForm')") 3D Model
                 li
                   a(id="imageLink", href="#", onclick="selectForm('createEntityImageForm')") Image
+                li
+                  a(id="hyperlinkLink", href="#", onclick="selectForm('createEntityHyperlinkForm')") Link
 
           form(id="createEntityModelForm" name="createEntityModel" method="post" enctype="multipart/form-data")
             .container.interface-part
@@ -118,6 +120,20 @@ html(lang="en")
                 .col-sm-4
                   button.btn.btn-success(type="submit") Upload
                 .col-sm-4
+          form(id="createEntityHyperlinkForm" name="createEntityHyperlink" method="post" enctype="multipart/form-data")
+            .container.interface-part
+              .row
+                .col-sm-4
+                  label(for="text") Link Text :
+                .col-sm-8
+                  input.form-ctl(type="text", name="linkText", id="linkText", value=entity.linkText)
+              br
+              .row
+                .col-sm-4
+                .col-sm-4
+                  button.btn.btn-success(type="submit") Upload
+                .col-sm-4
+
           br
           .list-group(id="entityChooseList")
           br

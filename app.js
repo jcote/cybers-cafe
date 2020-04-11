@@ -16,6 +16,7 @@
 var path = require('path');
 var express = require('express');
 var config = require('./config');
+const bodyParser = require('body-parser');
 
 var app = express();
 
@@ -23,6 +24,9 @@ app.disable('etag');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.set('trust proxy', true);
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // Use the built-in express middleware for serving static files from './playcanvas'
 app.use('/canvas', express.static('canvas'));
@@ -33,6 +37,7 @@ app.use('/scripts', express.static('scripts'));
 // entities
 app.use('/api/entities', require('./api/entities'));
 app.use('/api/image', require('./api/image'));
+app.use('/api/hyperlink', require('./api/hyperlink'));
 app.use('/api/entity', require('./api/entity'));
 
 // feedback
