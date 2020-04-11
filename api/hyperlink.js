@@ -21,6 +21,7 @@ const uuidv4 = require('uuid/v4');
 const async = require('async');
 const sqlRecord = require('./records-cloudsql');
 const apiLib = require('./lib');
+const util = require('util');
 var Multer  = require('multer');
 
 const multer = Multer({//dest:'uploads'
@@ -36,30 +37,35 @@ var router = express.Router();
 router.use(bodyParser.json());
 
 
-function createHyperlinkAssets(assets, assetFiles, callback) {
-  // Obtain new id's for assets
-  // TODO: have the datastore model create 2 blank assets to reserve these ids
+// create an asset for the text.js file
+// (all hyperlinks should use this same asset)
+function createHyperlinkFileAsset(assets, assetFiles, callback) {
   apiLib.getModel().reserveIdCreate('Asset', function(err, reservedId) {
     if (err) {
       return callback(err);
     }
+      var assetFileId = reservedId;
+      
+      var assetFileFullPath = "stock/files/assets/29747892/1/hyperlink-29747892.js";
 
-    var assetFontFileId = reservedId;
-    
-    var assetFontFullPath = "stock/files/assets/29754627/1/Roboto-Medium.png";
-
-  fs.readFile(assetFontFullPath, function(err, assetFontBuf) {
+    // create js file asset
+    fs.readFile(assetFileFullPath, function(err, assetFileBuf) {
       if (err) {
         return callback(err);
       }
 
-      var assetFile = {
-        originalName: "Roboto-Medium.png",
-        originalPath: "stock/files/assets/29754627/1/",
-        data: assetFontBuf
-      };
+        // 'asset file' for GCS upload use
+        var hyperlinkJsAssetFile = {
+          originalName: "hyperlink-29747892.js",
+          originalPath: assetFileFullPath,
+  //        mimetype: zipEntry.mimetype,
+          file: {
+            buffer: assetFileBuf
+          } // ...or use getCompressedData to avoid decompression and to save space (but client needs to decompress)
+        };
+        // save for file to be uploaded to google cloud storage
+        assetFiles[assetFileFullPath] = hyperlinkJsAssetFile;
 
-      assetFiles[assetFontFullPath] = assetFile;
 
       fs.readFile("stock/asset/hyperlink.json", function(err, assetStockBuf) {
         if (err) {
@@ -68,46 +74,63 @@ function createHyperlinkAssets(assets, assetFiles, callback) {
         var assetStockJson = JSON.parse(assetStockBuf);
 
         // populate the stock File Asset
-        var hyperlinkFontAsset = assetStockJson[29754627];
-        hyperlinkFontAsset.id = assetFontFileId;
-        hyperlinkFontAsset.file.fullPath = assetFontFullPath;
-
+        var hyperlinkJsAsset = assetStockJson[29747892];
+        hyperlinkJsAsset.id = assetFileId;
+        hyperlinkJsAsset.file.fullPath = assetFileFullPath;
         // save assets to req
-        assets[assetFontFileId] = hyperlinkFontAsset;
+        assets[assetFileId] = hyperlinkJsAsset;
 
-        return callback(null, hyperlinkFontAsset);
-   		});
+        return callback(null, hyperlinkJsAsset);
+      });
     });
   });
 }
 
-function createHyperlinkAssetsAndEntity (req, res, next) {
-  console.log("begin create image assets + entity");
-  req.assets = {};
-  req.assetFiles = {};
-  req.entities = {};
-  req.entitiesWithNoKey = [];
-  req.records = {};
-console.log(req.body);
-  if (!req.body.linkText || req.body.linkText.length == 0) {
-  	return next("No link Text given!");
-  }
-  
-  apiLib.getModel().readByName('Asset', "Roboto-Medium.ttf", function(err, hyperlinkFontAssetId) {
-    
-  	if (err) {
-    	console.log("Hyperlink asset font not found, creating one")
-    	createHyperlinkAssets(req.assets, req.assetFiles, function(err, hyperlinkFontAsset) {
-    		createEntity(hyperlinkFontAsset.id, req.entitiesWithNoKey, req.body.linkText, next);
-    	});
-		} else {
-			createEntity(hyperlinkFontAssetId, req.entitiesWithNoKey, req.body.linkText, next);
-		}
-  });
 
+// create hyperlink material asset
+// (all hyperlinks should use this same asset)
+function createHyperlinkMaterialAsset(assets, assetFiles, callback) {
+  apiLib.getModel().reserveIdCreate('Asset', function(err, reservedId) {
+    if (err) {
+      return callback(err);
+    }
+    var assetMaterialId = reservedId;
+
+    fs.readFile("stock/asset/hyperlink.json", function(err, assetStockBuf) {
+      if (err) {
+        return callback(err);
+      }
+      var assetStockJson = JSON.parse(assetStockBuf);
+
+      // populate the stock File Asset
+      var hyperlinkMaterialAsset = assetStockJson[29747894];
+      hyperlinkMaterialAsset.id = assetMaterialId;
+
+      // save assets to req
+      assets[assetMaterialId] = hyperlinkMaterialAsset;
+
+      return callback(null, hyperlinkMaterialAsset);
+    });
+  });
 }
 
-function createEntity(hyperlinkFontAssetId, entitiesWithNoKey, inputText, callback) {
+function readOrCreateAssetByName(assetName, assets, assetFiles, createAssetFunction, callback) {
+  apiLib.getModel().readByName('Asset', assetName, function(err, asset) {
+    
+    if (err) {
+      console.log("Asset " + assetName + " not found, creating one")
+      createAssetFunction(assets, assetFiles, function(err, asset2) {
+        assets[asset.id] = asset2;
+        callback(null, asset2);
+      });
+    } else {
+      assets[asset.id] = asset;
+      callback(null, asset);
+    }
+  });
+}
+
+function createEntity(hyperlinkMaterialAssetId, entitiesWithNoKey, inputText, callback) {
   fs.readFile("stock/entity/hyperlink.json", function(err, entityStockBuf) {
     if (err) {
       return callback(err);
@@ -116,9 +139,9 @@ function createEntity(hyperlinkFontAssetId, entitiesWithNoKey, inputText, callba
 
     // Populate the stock Entity
     var entity = entityStockJson;
-    entity.components.fontAsset = hyperlinkFontAssetId;
+    entity.components.model.materialAsset = hyperlinkMaterialAssetId;
     entity.resource_id = uuidv4();
-    entity.components.element.text = inputText;
+    entity.components.script.scripts["hyperlink-29747892"].attributes.text = inputText;
     entitiesWithNoKey.push(entity);
 
     //console.log(req.assets);
@@ -127,6 +150,32 @@ function createEntity(hyperlinkFontAssetId, entitiesWithNoKey, inputText, callba
     console.log("finish create image assets + entity");
     callback();
   });
+}
+
+async function createHyperlinkAssetsAndEntity (req, res, next) {
+  console.log("begin create image assets + entity");
+  req.assets = {};
+  req.assetFiles = {};
+  req.entities = {};
+  req.entitiesWithNoKey = [];
+  req.records = {};
+
+  if (!req.body.linkText || req.body.linkText.length == 0) {
+  	return next("No link Text given!");
+  }
+
+  // read or create essential assets
+  const asyncReadOrCreateAssetByName = util.promisify(readOrCreateAssetByName);
+
+  var hyperlinkJsAsset = await asyncReadOrCreateAssetByName(
+    "hyperlink-29747892.js", req.assets, req.assetFiles, createHyperlinkFileAsset);
+
+  var hyperlinkMaterialAsset = await asyncReadOrCreateAssetByName(
+    "Hyperlink-29747894", req.assets, req.assetFiles, createHyperlinkMaterialAsset);
+  
+  // create the actual entity
+	createEntity(hyperlinkMaterialAsset.id, req.entitiesWithNoKey, req.body.linkText, next);
+
 }
 
 // same as in entities.js but uses different sendRecordToSql
@@ -180,7 +229,7 @@ function sendRecordToSql (req, entity, assets, callback) {
  * POST /api/hyperlink
  *
  */
-router.post('/', multer.fields([{name: 'linkText'}]), createHyperlinkAssetsAndEntity, apiLib.sendUploadToGCS, apiLib.rewriteAssetUrls, apiLib.sendAssetsToDatastore, apiLib.sendEntitiesToDatastore, sendRecordsToSql, function (req, res, next) {
+router.post('/', multer.fields([{name: 'linkText'}]), createHyperlinkAssetsAndEntity, apiLib.sendUploadToGCS, apiLib.rewriteAssetUrls, apiLib.extractAndRewriteDependentAssetIds, apiLib.sendAssetsToDatastore, apiLib.sendEntitiesToDatastore, sendRecordsToSql, function (req, res, next) {
 //  console.log(req.entities); 
 //  console.log(req.assets); 
 //  console.log(req.assetFiles);

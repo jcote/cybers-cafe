@@ -33,170 +33,6 @@ const multer = Multer({//dest:'uploads'
 var entitiesRe = /^\d+\.json$/;
 var assetFilesRe = /^files\/assets\/\d+\/\d{1}\/.+$/;
 
-function getDependentAssetIdsFromAsset(asset, assetIdMapOldToNew, assets, dependentAssetIds) {
-  var assetIds = [];
-  if (asset != undefined && 'data' in asset && asset.data != null) {
-    if ('emissiveMap' in asset.data 
-        && asset.data.emissiveMap > 0
-        && assetIdMapOldToNew[asset.data.emissiveMap]) {
-      var newId = assetIdMapOldToNew[asset.data.emissiveMap];
-      asset.data.emissiveMap = newId;
-      assetIds.push(newId);
-      assetIds = assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets, dependentAssetIds));
-    }
-    if ('diffuseMap' in asset.data
-        && asset.data.diffuseMap > 0
-        && assetIdMapOldToNew[asset.data.diffuseMap]){
-      var newId = assetIdMapOldToNew[asset.data.diffuseMap];
-      asset.data.diffuseMap = newId;
-      assetIds.push(newId);
-      assetIds = assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets, dependentAssetIds));
-    }
-    //TODO: Other kinds of Maps    
-    for (var key in asset.data) { 
-      if (key.endsWith('Map')) {
-        if (typeof asset.data[key] === 'number'
-            && asset.data[key] > 0 
-            && assetIdMapOldToNew[asset.data[key]]) {
-          var newId = assetIdMapOldToNew[asset.data[key]];
-          asset.data[key] = newId;
-          assetIds.push(newId);
-          assetIds = assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets, dependentAssetIds));
-        }
-      }
-    }
-    if ('mapping' in asset.data && asset.data.mapping != null) {
-      for (var i=0; i < asset.data.mapping.length; i++) {
-        var entry = asset.data.mapping[i];
-        if ('material' in entry
-            && entry.material != null
-            && assetIdMapOldToNew[entry.material]) {
-          var newId = assetIdMapOldToNew[entry.material];
-          entry.material = newId;
-          assetIds.push(newId);
-          assetIds = assetIds.concat(getDependentAssetIdsFromAsset(assets[newId], assetIdMapOldToNew, assets, dependentAssetIds));
-        }
-      }
-    }
-  }
-
-  if (asset.id in dependentAssetIds)
-    dependentAssetIds[asset.id] = arrayUnique(dependentAssetIds[asset.id].concat(assetIds));
-  else
-    dependentAssetIds[asset.id] = arrayUnique(assetIds);
-
-  return assetIds;
-}
-
-function getDependentAssetIdsFromEntityAndRewriteIds(entity, assetIdMapOldToNew, assets, dependentAssetIds) {
-    var assetIds = [];
-    if ('components' in entity && entity.components != null) {
-      if ('model' in entity.components && entity.components.model != null) {
-        if ('asset' in entity.components.model) {
-          if (typeof entity.components.model.asset === 'number'
-              && entity.components.model.asset != null
-              && assetIdMapOldToNew[entity.components.model.asset]) {
-            var newId = assetIdMapOldToNew[entity.components.model.asset];
-            entity.components.model.asset = newId;
-            assetIds.push(newId);
-            assetIds = assetIds.concat(dependentAssetIds[newId]);
-          }
-        }
-        if ('materialAsset' in entity.components.model) {
-          if (typeof entity.components.model.materialAsset === 'number'
-            && entity.components.model.materialAsset != null
-            && assetIdMapOldToNew[entity.components.model.materialAsset]) {
-            var newId = assetIdMapOldToNew[entity.components.model.materialAsset];
-            entity.components.model.materialAsset = newId;
-            assetIds.push(newId);
-            assetIds = assetIds.concat(dependentAssetIds[newId]);
-          }
-        }
-      }
-      if ('collision' in entity.components && entity.components.collision != null) {
-        if ('asset' in entity.components.collision) {
-          if (typeof entity.components.collision.asset === 'number'
-              && entity.components.collision.asset != null
-              && assetIdMapOldToNew[entity.components.collision.asset]) {
-            var newId = assetIdMapOldToNew[entity.components.collision.asset];
-            entity.components.collision.asset = newId;
-            assetIds.push(newId);
-            assetIds = assetIds.concat(dependentAssetIds[newId]);
-          }
-        }
-      }
-      if ('animation' in entity.components && entity.components.animation != null) {
-        if ('assets' in entity.components.animation) {
-          if (Array.isArray(entity.components.animation.assets)) {
-            if (entity.components.animation.assets.length > 0) {
-              if (typeof entity.components.animation.assets[0] === 'number'
-                && entity.components.animation.assets[0] != null
-                && assetIdMapOldToNew[entity.components.animation.assets[0]]) {
-                // TODO: GET all animations, not just first one
-                var newId = assetIdMapOldToNew[entity.components.animation.assets[0]];
-                entity.components.animation.assets[0] = newId;
-                assetIds.push(newId);
-                assetIds = assetIds.concat(dependentAssetIds[newId]);
-              }
-            }
-          }
-        }
-      }
-      if ('script' in entity.components && entity.components.script != null) {
-        if ('scripts' in entity.components.script && entity.components.script.scripts != null) {
-          for (var scriptName in entity.components.script.scripts) {
-            var script = entity.components.script.scripts[scriptName];
-            if (script != null && 'attributes' in script && script.attributes != null) {
-              for (var scriptCandidateAssetId in assets) {
-                var scriptCandidateAsset = assets[scriptCandidateAssetId];
-                if (scriptCandidateAsset.name == scriptName + ".js") {
-                  assetIds.push(scriptCandidateAsset.id);
-                }
-              }
-              if ('materials' in script.attributes && script.attributes.materials != null) {
-                for (var i = 0; i < script.attributes.materials.length; i++) {
-                  var material = script.attributes.materials[i];
-                  if (typeof material === 'number'
-                      && material != null
-                      && assetIdMapOldToNew[material]) {
-                    var newId = assetIdMapOldToNew[material];
-                    script.attributes.materials[i] = newId;
-                    assetIds.push(newId);
-                    assetIds = assetIds.concat(dependentAssetIds[newId]);
-                  }
-                }
-              }
-              if ('video' in script.attributes && script.attributes.video != null) {
-                if (typeof script.attributes.video === 'number'
-                    && script.attributes.video != null
-                    && assetIdMapOldToNew[script.attributes.video]) {
-                  var newId = assetIdMapOldToNew[script.attributes.video];
-                  script.attributes.video = newId;
-                  assetIds.push(newId);
-                  assetIds = assetIds.concat(dependentAssetIds[newId]);
-                }
-              }
-            }
-          }
-        }
-      }
-
-    }
-    return arrayUnique(assetIds);
-}
-
-function arrayUnique(array) {
-    var a = array.concat();
-    for(var i=0; i<a.length; ++i) {
-        for(var j=i+1; j<a.length; ++j) {
-            if(a[i] === a[j])
-                a.splice(j--, 1);
-        }
-    }
-
-    return a;
-}
-
 var router = express.Router();
 
 // Automatically parse request body as JSON
@@ -236,9 +72,11 @@ function unzipEntries (req, res, next) {
         originalName: zipEntry.name,
         originalPath: zipEntry.entryName.substring(0,entryPathLength),
 //        mimetype: zipEntry.mimetype,
-        data: zipEntry.getData() // ...or use getCompressedData to avoid decompression and to save space (but client needs to decompress)
+        file: {
+          buffer: zipEntry.getData()
+        } // ...or use getCompressedData to avoid decompression and to save space (but client needs to decompress)
       };
-      if (assetFile.data.length) {
+      if ('file' in assetFile && 'buffer' in assetFile.file && assetFile.file.buffer.length) {
         req.assetFiles[zipEntry.entryName] = assetFile;
         console.log("found asset file: " + zipEntry.entryName);
       }
@@ -266,26 +104,6 @@ function sendRecordsToSql(req, res, next) {
   });
 }
 
-function extractAndRewriteDependentAssetIds(req, res, next) {
-  req.dependentAssetIds = {};
-
-  Object.keys(req.assets).forEach(function(assetId) {
-    var asset = req.assets[assetId];
-    // extract assets's dependent asset ids
-    var assetIds = getDependentAssetIdsFromAsset(asset, req.assetIdMapOldToNew, req.assets, req.dependentAssetIds);
-    req.dependentAssetIds[assetId] = assetIds;
-  });
-
-  Object.keys(req.entities).forEach(function(entityGuid) {
-    var entity = req.entities[entityGuid];
-    // extract entity's dependent asset ids
-    var assetIds = getDependentAssetIdsFromEntityAndRewriteIds(entity, req.assetIdMapOldToNew, req.assets, req.dependentAssetIds);
-    req.dependentAssetIds[entity.resource_id] = assetIds;
-  });
-
-  console.log("end extract and rewrite asset ids");
-  next();
-}
 
 function sendRecordToSql (req, entity, assets, callback) {
   console.log("begin sql store");
@@ -394,7 +212,7 @@ function setParentOnEntities(req, res, next) {
  * POST /api/entities
  *
  */
-router.post('/', multer.single('zipFile'), checkFormat, unzipEntries, apiLib.getReservedIds, apiLib.sendUploadToGCS, apiLib.rewriteAssetUrls, extractAndRewriteDependentAssetIds, apiLib.sendAssetsToDatastore, setParentOnEntities, apiLib.sendEntitiesToDatastore, sendRecordsToSql, function (req, res, next) {
+router.post('/', multer.single('zipFile'), checkFormat, unzipEntries, apiLib.getReservedIds, apiLib.sendUploadToGCS, apiLib.rewriteAssetUrls, apiLib.extractAndRewriteDependentAssetIds, apiLib.sendAssetsToDatastore, setParentOnEntities, apiLib.sendEntitiesToDatastore, sendRecordsToSql, function (req, res, next) {
 //  console.log(req.entities); 
 //  console.log(req.assets); 
 //  console.log(req.assetFiles);

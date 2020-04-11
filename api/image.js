@@ -59,7 +59,15 @@ function createImageAssetsAndEntity (req, res, next) {
 
       // Populate Asset Files and save to req
       var assetFullPath = "files/assets/" + assetFileId + "/1/" + req.file.originalname;
-      req.assetFiles[assetFullPath] = req.file;
+      var assetFile = {
+        originalName: req.file.originalName,
+        originalPath: req.file.originalPath,
+//        mimetype: zipEntry.mimetype,
+        file: {
+          buffer: req.file.buffer
+        } // ...or use getCompressedData to avoid decompression and to save space (but client needs to decompress)
+      };
+      req.assetFiles[assetFullPath] = assetFile;
 
       fs.readFile("stock/asset/image.json", function(err, assetStockBuf) {
         if (err) {
