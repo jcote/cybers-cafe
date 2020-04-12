@@ -177,6 +177,7 @@ function entityPlacement (ev) {
 	raycastEntity.modeRaycast();
   document.getElementById("modeLabel").innerHTML = "Placement Mode";
   document.getElementById("modeLabel").className = "label label-mode-placement";
+  movementEntity.mode = "placement";
 
   // bind event listener for selected entity
 	var sceneEntity = context.root.findByName("scene");
@@ -223,6 +224,7 @@ function entityPlacement (ev) {
     raycastEntity.disableInput();
     document.getElementById("modeLabel").innerHTML = "Movement Mode";
     document.getElementById("modeLabel").className = "label label-mode-movement";
+    movementEntity.mode = "movement";
     // effect in UI
     button.className += " disabled";
     var oOutput = document.getElementById("createFormResultContainer")
@@ -418,6 +420,7 @@ $(function(){
     transformEntity.disableInput();
     document.getElementById("modeLabel").innerHTML = "Movement Mode";
     document.getElementById("modeLabel").className = "label label-mode-movement";
+    movementEntity.mode = "movement";
 
 	  var oReq = new XMLHttpRequest();
 	  oReq.open("PUT", "api/entity/" + oData.get("id"), true);
@@ -479,6 +482,7 @@ $(function(){
 	raycastEntity.modeFramebuffer();
     document.getElementById("modeLabel").innerHTML = "Select Mode";
     document.getElementById("modeLabel").className = "label label-mode-select";
+    movementEntity.mode = "select";
 
     // bind event listener for selected entity
     var onEntityHit = function(hitEntity) {
@@ -488,6 +492,7 @@ $(function(){
 	    raycastEntity.disableInput();
       document.getElementById("modeLabel").innerHTML = "Movement Mode";
       document.getElementById("modeLabel").className = "label label-mode-movement";
+      movementEntity.mode = "movement";
     };
     raycastEntity.on('hit', onEntityHit);
   };
@@ -521,6 +526,7 @@ $(function(){
 		transformEntity.enableInput();
     document.getElementById("modeLabel").innerHTML = "Translate Mode";
     document.getElementById("modeLabel").className = "label label-mode-translate";
+    movementEntity.mode = "translate";
 
     // bind event listener for entity movement
     var onEntityMove = function(entityId) {
@@ -562,6 +568,7 @@ $(function(){
 		transformEntity.enableInput();
     document.getElementById("modeLabel").innerHTML = "Rotate Mode";
     document.getElementById("modeLabel").className = "label label-mode-rotate";
+    movementEntity.mode = "rotate";
 
     // bind event listener for entity rotation
     var onEntityRotate = function(entityId) {
@@ -604,6 +611,7 @@ $(function(){
 		transformEntity.enableInput();
     document.getElementById("modeLabel").innerHTML = "Scale Mode";
     document.getElementById("modeLabel").className = "label label-mode-scale";
+    movementEntity.mode = "scale";
 
     // bind event listener for entity rotation
     var onEntityScale = function(entityId) {
@@ -654,6 +662,7 @@ $(function(){
 		transformEntity.disableInput();
 	  document.getElementById("modeLabel").innerHTML = "Movement Mode";
 	  document.getElementById("modeLabel").className = "label label-mode-movement";
+    movementEntity.mode = "movement";
     // gather all the data
     var posX = document.getElementById("editEntityPosX").value;
 	  var posY = document.getElementById("editEntityPosY").value;

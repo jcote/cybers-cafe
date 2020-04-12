@@ -90,6 +90,7 @@ Movement.prototype.createTileGrid = function (range, scale) {
 // initialize code called once per entity
 Movement.prototype.initialize = function() {
     var app = this.app;     
+    this.mode = "movement";
 
     ////////////////////
     // Touch controls //
@@ -304,7 +305,7 @@ Movement.prototype.update = function(dt) {
     // Infinite tile end 
 
     // on hover for Hyperlinks
-    if (this.mousePosition != null) {
+    if (this.mousePosition != null && this.mode == "movement") {
       this.hoverEntity = this.raycastEntity.framebuffer(this.mousePosition);
       if (this.hoverEntity && this.hoverEntity.name == "Hyperlink") {
         document.body.style.cursor = "pointer";
@@ -454,16 +455,18 @@ Movement.prototype.onMouseDown = function (event) {
 }
 
 Movement.prototype.onMouseUp = function (event) {
-  // check the mouse click is released while still over the link that it clicked on
-  if (this.hyperlinkEntity && this.hyperlinkEntity == this.hoverEntity) {
-    // find the hyperlink script property
-    for (var scriptIndex in this.hyperlinkEntity.script.scripts) {
-      var script = this.hyperlinkEntity.script.scripts[scriptIndex];
-      if (script.entity.name == "Hyperlink") {
-        // get the link text
-        var linkText = script.entity.script.scripts[0].text;
-        // warp
-        warp(linkText);
+  if (this.mode == "movement") {
+    // check the mouse click is released while still over the link that it clicked on
+    if (this.hyperlinkEntity && this.hyperlinkEntity == this.hoverEntity) {
+      // find the hyperlink script property
+      for (var scriptIndex in this.hyperlinkEntity.script.scripts) {
+        var script = this.hyperlinkEntity.script.scripts[scriptIndex];
+        if (script.entity.name == "Hyperlink") {
+          // get the link text
+          var linkText = script.entity.script.scripts[0].text;
+          // warp
+          warp(linkText);
+        }
       }
     }
   }
