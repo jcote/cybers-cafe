@@ -154,30 +154,12 @@ Network.prototype.updateLocation = function () {
 };
 
 Network.prototype.popQueue = function() {
-	if (this.queue.getLength() === 0) {
-		this.isQueueRunning = false;
-
-		var self = this;
-		setTimeout(function(){
-			if (!self.isQueueRunning) {
-				self.progress = 0;
-			  self.progressExpected = 0;
-	      $('#progress-inner-div').attr('aria-valuenow', 100).css('width','100%');
-	      setTimeout(function(){
-			    $('#progress-div').css('visibility', 'hidden');
-			  },2000);
-			}			
-		},10000);
-
-    return;
-	}
-
 	if (!this.isQueueRunning) {
 		$('#progress-inner-div').attr('aria-valuenow', 0).css('width',0);
 		$('#progress-div').css('visibility', 'visible');
+	  this.isQueueRunning = true;
 	}
 
-	this.isQueueRunning = true;
 
   this.progress++;
   if (this.progressExpected) {
@@ -186,14 +168,35 @@ Network.prototype.popQueue = function() {
   }
 
 	var queueItem = this.queue.dequeue();
-	if (queueItem.type == 'asset') {
-        this.addAsset (queueItem.resource);
-    } else if (queueItem.type == 'entity') {
-        this.addEntity (queueItem.resource);
-    } else {
-    	console.log("Unknown QueueItem type: " + queueItem.type);
-    	this.popQueue();
+  if (queueItem) {
+  	if (queueItem.type == 'asset') {
+          this.addAsset (queueItem.resource);
+      } else if (queueItem.type == 'entity') {
+          this.addEntity (queueItem.resource);
+      } else {
+      	console.log("Unknown QueueItem type: " + queueItem.type);
+      	this.popQueue();
+      }
     }
+
+  if (this.queue.getLength() === 0) {
+    this.isQueueRunning = false;
+
+    var self = this;
+    setTimeout(function(){
+      if (!self.isQueueRunning) {
+        self.progress = 0;
+        self.progressExpected = 0;
+        $('#progress-inner-div').attr('aria-valuenow', 100).css('width','100%');
+        setTimeout(function(){
+          $('#progress-div').css('visibility', 'hidden');
+          $('#progress-inner-div').attr('aria-valuenow', 0).css('width','0%');
+        },3000);
+      }     
+    },5000);
+
+  }
+
 };
 
 Network.prototype.addAsset = function(data) {
@@ -232,6 +235,7 @@ Network.prototype.addAsset = function(data) {
 };
 
 Network.prototype.addEntity = function(data) {
+    this.popQueue();
     var entity = new pc.Entity();
     var app = pc.Application.getApplication("application-canvas");
     var context = app.context;
@@ -286,5 +290,5 @@ Network.prototype.addEntity = function(data) {
 
 //    console.log('Entity Added');
 //    console.log(data);
-    this.popQueue();
+
 };
