@@ -191,6 +191,9 @@ Movement.prototype.initialize = function() {
         console.error("First Person Movement script needs to have a DYNAMIC 'rigidbody' component");
     }
     // FP end
+
+    var playerEntity = app.context.root.findByName("Player");
+    this.raycastEntity = playerEntity.script.raycast;
 };
 
 // update code called every frame
@@ -295,6 +298,16 @@ Movement.prototype.update = function(dt) {
     this.treadmillX(gridOffset.x);
     this.treadmillZ(gridOffset.z);
     // Infinite tile end 
+
+    // on hover for Hyperlinks
+    if (this.mousePosition != null) {
+      var hoverEntity = this.raycastEntity.framebuffer(this.mousePosition);
+      if (hoverEntity && hoverEntity.name == "Hyperlink") {
+        document.body.style.cursor = "pointer";
+      } else if (document.body.style.cursor != "auto") {
+        document.body.style.cursor = "auto";
+      }
+    }
 };
 
 Movement.prototype.treadmillX = function(gridOffsetX) {
@@ -413,14 +426,20 @@ Movement.prototype.orbit = function (movex, movey) {
 };
 
 Movement.prototype.onMouseMove = function (event) {
-    if (this.inputEnabled) {
-      if (event.buttons[pc.input.MOUSEBUTTON_LEFT]) {
-        this.orbit(event.dx * 0.2, event.dy * 0.2);
-      } else if (event.buttons[pc.input.MOUSEBUTTON_RIGHT]) {
-        var factor = this.distance / 700;
-        this.pan(event.dx * -factor, event.dy * factor);
-      }
+  if (!this.mousePosition)
+    this.mousePosition = {"x": null,
+                          "y": null};
+  this.mousePosition.x = event.x;
+  this.mousePosition.y = event.y;
+
+  if (this.inputEnabled) {
+    if (event.buttons[pc.input.MOUSEBUTTON_LEFT]) {
+      this.orbit(event.dx * 0.2, event.dy * 0.2);
+    } else if (event.buttons[pc.input.MOUSEBUTTON_RIGHT]) {
+      var factor = this.distance / 700;
+      this.pan(event.dx * -factor, event.dy * factor);
     }
+  }
 };
 
 Movement.prototype.enableInput = function () {

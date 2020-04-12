@@ -64,7 +64,22 @@ Raycast.prototype.doRaycast = function (screenPosition) {
     }    
 };
 
-Raycast.prototype.doFramebuffer = function (event) {
+Raycast.prototype.doRaycast = function (screenPosition) {
+    // The vec3 to raycast from
+    var from = this.cameraEntity.getPosition ();
+    // The vec3 to raycast to 
+    var to = this.cameraEntity.camera.screenToWorld(screenPosition.x, screenPosition.y, this.cameraEntity.camera.farClip);
+
+    // Raycast between the two points
+    var result = this.app.systems.rigidbody.raycastFirst(from, to);
+    
+    // If there was a hit, store the entity
+    if (result) {
+        this.fire("hit", result);
+    }    
+};
+
+Raycast.prototype.framebuffer = function (event) {
     var canvas = this.app.graphicsDevice.canvas;
     var canvasWidth = parseInt(canvas.clientWidth, 10);
     var canvasHeight = parseInt(canvas.clientHeight, 10);
@@ -84,17 +99,26 @@ Raycast.prototype.doFramebuffer = function (event) {
 
     if (selected.length > 0) {
         // Get the graph node used by the selected mesh instance
+        if (!selected[0]) return null;
+
         var entity = selected[0].node;
 
         // Bubble up the hierarchy until we find an actual Entity
         while (!(entity instanceof pc.Entity) && entity !== null) {
             entity = entity.getParent();
         }
-        if (entity) {
-            this.fire("hit", entity);
-        }
+        return entity;
     }
+
+    return null;
 };
+
+Raycast.prototype.doFramebuffer = function (event) {
+    var entity = this.framebuffer(event);
+    if (entity) {
+        this.fire("hit", entity);
+    }
+}
 
 Raycast.prototype.enableInput = function () {
   this.inputEnabled = true;

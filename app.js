@@ -15,7 +15,6 @@
 
 var path = require('path');
 var express = require('express');
-var config = require('./config');
 const bodyParser = require('body-parser');
 
 var app = express();
@@ -76,7 +75,7 @@ app.use(function (err, req, res, next) {
 
 if (module === require.main) {
   // Start the server
-  var server = app.listen(config.get('PORT'), function () {
+  var server = app.listen(process.env.PORT, function () {
     var port = server.address().port;
     console.log('App listening on port %s', port);
   });

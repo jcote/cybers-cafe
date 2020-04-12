@@ -1,7 +1,6 @@
 'use strict';
 
 var express = require('express');
-var config = require('../config');
 var mysql = require('mysql');
 var crypto = require('crypto');
 const async = require('async');
