@@ -18,4 +18,4 @@ INPUT_SETTINGS = {
 };
 PRELOAD_MODULES = [
 ];
-CYBERS_CAFE_SERVICE_URL = 'http://localhost:59595/'
+CYBERS_CAFE_SERVICE_URL = 'https://service.cybers.cafe/'
