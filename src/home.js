@@ -19,113 +19,117 @@ function drawer () {
   }
 }
 
+function warp(warpLocationName) { 
+  // check name is valid
+  var alphanumericRe = /^[0-9a-zA-Z]+$/;
+  if (!warpLocationName.match(alphanumericRe)) { 
+    alert("Alphanumeric names only.");
+    return;
+  }
+
+  // setup - get modules
+  var app = pc.Application.getApplication("application-canvas");
+  var context = app.context;
+  var playerEntity = context.root.findByName("Player");
+  var movementEntity = playerEntity.script.movement;
+  var sceneEntity = context.root.findByName("scene");
+  var networkEntity = sceneEntity.script.network;    
+
+  // compute location
+  var warpLocationNumber = parseInt(warpLocationName,36);
+  var warpLocationPair = MathUtils.zReverseCantorPair(warpLocationNumber);
+
+  console.log("##### Warp to: [" + warpLocationPair + "] (" + warpLocationNumber + ") '" + warpLocationName + "'");
+  console.log("Current loc: "+ movementEntity.locationX + ", " +movementEntity.locationZ);
+  console.log("Current breadcrumb: "+ movementEntity.locationBreadcrumbVector[0] + ", " +movementEntity.locationBreadcrumbVector[1]);
+  console.log("Current origin: "+networkEntity.origin);
+
+  // compute delta from current origin to warp location, to be used for moving the objects
+  var  warpLocationDelta = [ warpLocationPair[0] - networkEntity.origin[0], 
+                             warpLocationPair[1] - networkEntity.origin[1] ];
+
+  // update the 'current location'
+  movementEntity.locationX = warpLocationPair[0];
+  movementEntity.locationZ = warpLocationPair[1];
+
+  // must recreate tiles around origin, or shuffle will occur and mess with locationX/Z
+  movementEntity.createTileGrid(movementEntity.range, movementEntity.scale);
+
+  // update the breadcrumb vector so that locationupdate may be triggered if warped far enough
+  movementEntity.locationBreadcrumbVector[0] += warpLocationDelta[0];
+  movementEntity.locationBreadcrumbVector[1] += warpLocationDelta[1];
+
+  // update Network origin
+  networkEntity.origin[0] = warpLocationPair[0];
+  networkEntity.origin[1] = warpLocationPair[1];
+
+  // clear the network queue (disabled)
+ //  networkEntity.isQueueRunning = false;    
+  // networkEntity.queue = new Queue();
+  // networkEntity.progress = 0;
+ //  networkEntity.progressExpected = 0;
+//   $('#progress-inner-div').attr('aria-valuenow', 0).css('width','100%');
+//   $('#progress-div').css('visibility', 'hidden');
+
+  // handle existing entities
+  Object.keys(app.entities).forEach(function(entityId) {
+    var pos = app.entities[entityId].getLocalPosition();
+    var newpos = {};
+    newpos.x = pos.x - warpLocationDelta[0] * Network.scale;
+    newpos.y = pos.y;
+    newpos.z = pos.z - warpLocationDelta[1] * Network.scale;
+    if (Math.abs(warpLocationPair[0] - newpos.x) < 50 || Math.abs(warpLocationPair[1] - newpos.z) < 50) {
+      // move close entity relative to warp
+      if ('rigidbody' in app.entities[entityId]) {            
+        app.entities[entityId].rigidbody.teleport(newpos.x, newpos.y, newpos.z);
+      } else {
+        app.entities[entityId].translate(- warpLocationDelta[0] * Network.scale, 0, - warpLocationDelta[1] * Network.scale);
+      }
+    } else {
+      // remove far entity
+      app.entities[entityId].destroy();
+      delete app.entities[entityId];
+    }
+  });
+
+  // handle existing players
+  if (!networkEntity.players) networkEntity.players = [];
+  Object.keys(networkEntity.players).forEach(function(playerId) {
+    if ('entity' in networkEntity.players[playerId]) {
+      var pos = networkEntity.players[playerId].entity.getLocalPosition();
+      var newpos = {};
+      newpos.x = pos.x - warpLocationDelta[0] * Network.scale;
+      newpos.y = pos.y;
+      newpos.z = pos.z - warpLocationDelta[1] * Network.scale;
+      if (Math.abs(warpLocationPair[0] - newpos.x) < 50 || Math.abs(warpLocationPair[1] - newpos.z) < 50) {
+        // move close player relative to warp
+        networkEntity.players[playerId].entity.rigidbody.teleport(newpos.x, newpos.y, newpos.z);
+      } else {
+        // remove far player
+        networkEntity.players[playerId].entity.destroy();
+//          delete networkEntity.players[i];
+        // TODO: re-add players that come back into closeness
+      }
+    }
+  });
+
+  // move to new origin and report position
+  networkEntity.player.rigidbody.teleport(0, 0.5, 0);
+  networkEntity.updatePosition();
+
+  // the following happen automatically
+//    networkEntity.updateLocation();
+
+  // update location div
+  //$('#location-div').html(warpLocationName);
+};
+
 // Warp To button
 $(function(){
-  var onClick = function(ev) { 
-		// check name is valid
+  var onClick = function(ev) {
     var warpLocationName = $('#warpToInput').val();
-		var alphanumericRe = /^[0-9a-zA-Z]+$/;
- 		if (!warpLocationName.match(alphanumericRe)) { 
-      alert("Alphanumeric names only.");
-      return;
-    }
-
-    // setup - get modules
-		var app = pc.Application.getApplication("application-canvas");
-		var context = app.context;
-		var playerEntity = context.root.findByName("Player");
-    var movementEntity = playerEntity.script.movement;
-		var sceneEntity = context.root.findByName("scene");
-	  var networkEntity = sceneEntity.script.network;    
-
-    // compute location
-    var warpLocationNumber = parseInt(warpLocationName,36);
-    var warpLocationPair = MathUtils.zReverseCantorPair(warpLocationNumber);
-
-    console.log("##### Warp to: [" + warpLocationPair + "] (" + warpLocationNumber + ") '" + warpLocationName + "'");
-    console.log("Current loc: "+ movementEntity.locationX + ", " +movementEntity.locationZ);
-    console.log("Current breadcrumb: "+ movementEntity.locationBreadcrumbVector[0] + ", " +movementEntity.locationBreadcrumbVector[1]);
-    console.log("Current origin: "+networkEntity.origin);
-
-    // compute delta from current origin to warp location, to be used for moving the objects
-    var  warpLocationDelta = [ warpLocationPair[0] - networkEntity.origin[0], 
-                               warpLocationPair[1] - networkEntity.origin[1] ];
-
-    // update the 'current location'
-    movementEntity.locationX = warpLocationPair[0];
-    movementEntity.locationZ = warpLocationPair[1];
-
-    // must recreate tiles around origin, or shuffle will occur and mess with locationX/Z
-    movementEntity.createTileGrid(movementEntity.range, movementEntity.scale);
-
-    // update the breadcrumb vector so that locationupdate may be triggered if warped far enough
-    movementEntity.locationBreadcrumbVector[0] += warpLocationDelta[0];
-    movementEntity.locationBreadcrumbVector[1] += warpLocationDelta[1];
-
-  	// update Network origin
-	  networkEntity.origin[0] = warpLocationPair[0];
-	  networkEntity.origin[1] = warpLocationPair[1];
-
-	  // clear the network queue (disabled)
-   //  networkEntity.isQueueRunning = false;	  
-	  // networkEntity.queue = new Queue();
-		// networkEntity.progress = 0;
-	 //  networkEntity.progressExpected = 0;
-  //   $('#progress-inner-div').attr('aria-valuenow', 0).css('width','100%');
-  //   $('#progress-div').css('visibility', 'hidden');
-
-    // handle existing entities
-  	Object.keys(app.entities).forEach(function(entityId) {
-			var pos = app.entities[entityId].getLocalPosition();
-			var newpos = {};
-			newpos.x = pos.x - warpLocationDelta[0] * Network.scale;
-			newpos.y = pos.y;
-			newpos.z = pos.z - warpLocationDelta[1] * Network.scale;
-			if (Math.abs(warpLocationPair[0] - newpos.x) < 50 || Math.abs(warpLocationPair[1] - newpos.z) < 50) {
-  			// move close entity relative to warp
-	  		if ('rigidbody' in app.entities[entityId]) {		  			
-  				app.entities[entityId].rigidbody.teleport(newpos.x, newpos.y, newpos.z);
-	  		} else {
-	  			app.entities[entityId].translate(- warpLocationDelta[0] * Network.scale, 0, - warpLocationDelta[1] * Network.scale);
-	  		}
-			} else {
-				// remove far entity
-	  		app.entities[entityId].destroy();
-	  		delete app.entities[entityId];
-			}
-  	});
-
-    // handle existing players
-    if (!networkEntity.players) networkEntity.players = [];
-    Object.keys(networkEntity.players).forEach(function(playerId) {
-    	if ('entity' in networkEntity.players[playerId]) {
-				var pos = networkEntity.players[playerId].entity.getLocalPosition();
-				var newpos = {};
-				newpos.x = pos.x - warpLocationDelta[0] * Network.scale;
-				newpos.y = pos.y;
-				newpos.z = pos.z - warpLocationDelta[1] * Network.scale;
-				if (Math.abs(warpLocationPair[0] - newpos.x) < 50 || Math.abs(warpLocationPair[1] - newpos.z) < 50) {
-	  			// move close player relative to warp
-	  			networkEntity.players[playerId].entity.rigidbody.teleport(newpos.x, newpos.y, newpos.z);
-				} else {
-					// remove far player
-		  		networkEntity.players[playerId].entity.destroy();
-	//		  		delete networkEntity.players[i];
-		  		// TODO: re-add players that come back into closeness
-				}
-			}
-    });
-
-  	// move to new origin and report position
-  	networkEntity.player.rigidbody.teleport(0, 0.5, 0);
-    networkEntity.updatePosition();
-
-    // the following happen automatically
-//		networkEntity.updateLocation();
-
-    // update location div
-    //$('#location-div').html(warpLocationName);
-  };
+    warp(warpLocationName);
+  }
 
   var button = document.getElementById("warpToButton");
   button.addEventListener('click', onClick, false);

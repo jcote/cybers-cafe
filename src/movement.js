@@ -165,6 +165,9 @@ Movement.prototype.initialize = function() {
     app.mouse.on(pc.input.EVENT_MOUSEMOVE, this.onMouseMove, this);
     app.mouse.on(pc.input.EVENT_MOUSEWHEEL, this.onMouseWheel, this);
 
+    app.mouse.on(pc.EVENT_MOUSEDOWN, this.onMouseDown, this);
+    app.mouse.on(pc.EVENT_MOUSEUP, this.onMouseUp, this);
+
     app.mouse.disableContextMenu();
     
     // Infinite tile
@@ -194,6 +197,7 @@ Movement.prototype.initialize = function() {
 
     var playerEntity = app.context.root.findByName("Player");
     this.raycastEntity = playerEntity.script.raycast;
+
 };
 
 // update code called every frame
@@ -301,11 +305,12 @@ Movement.prototype.update = function(dt) {
 
     // on hover for Hyperlinks
     if (this.mousePosition != null) {
-      var hoverEntity = this.raycastEntity.framebuffer(this.mousePosition);
-      if (hoverEntity && hoverEntity.name == "Hyperlink") {
+      this.hoverEntity = this.raycastEntity.framebuffer(this.mousePosition);
+      if (this.hoverEntity && this.hoverEntity.name == "Hyperlink") {
         document.body.style.cursor = "pointer";
       } else if (document.body.style.cursor != "auto") {
         document.body.style.cursor = "auto";
+        this.hoverEntity = null;
       }
     }
 };
@@ -441,6 +446,29 @@ Movement.prototype.onMouseMove = function (event) {
     }
   }
 };
+
+Movement.prototype.onMouseDown = function (event) {
+  if (event.buttons[pc.input.MOUSEBUTTON_LEFT] && this.hoverEntity && this.hoverEntity.name == "Hyperlink") {
+    this.hyperlinkEntity = this.hoverEntity;
+  }
+}
+
+Movement.prototype.onMouseUp = function (event) {
+  // check the mouse click is released while still over the link that it clicked on
+  if (this.hyperlinkEntity && this.hyperlinkEntity == this.hoverEntity) {
+    // find the hyperlink script property
+    for (var scriptIndex in this.hyperlinkEntity.script.scripts) {
+      var script = this.hyperlinkEntity.script.scripts[scriptIndex];
+      if (script.entity.name == "Hyperlink") {
+        // get the link text
+        var linkText = script.entity.script.scripts[0].text;
+        // warp
+        warp(linkText);
+      }
+    }
+  }
+  this.hyperlinkEntity = null;
+}
 
 Movement.prototype.enableInput = function () {
   this.inputEnabled = true;
