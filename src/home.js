@@ -265,7 +265,7 @@ function createPlacementButton(entity, assets) {
 	var entityChooseList = document.getElementById("entityChooseList");
 	entityChooseList.appendChild(entityButton);
 }
-/*
+
 // Create 3D Model
 $(function(){
   var onUpload = function(ev) {
@@ -310,7 +310,7 @@ $(function(){
   var form = document.forms.namedItem("createEntityModelZip");
   form.addEventListener('submit', onUpload, false);
 });
-*/
+
 
 
 function makeGlbEntity(url, callback){
@@ -337,7 +337,7 @@ app.assets.loadFromUrl(url, 'binary', function (err, asset) {
     });
 });
 }
-
+/*
 // Create FBX Model
 $(function(){
   var onUpload = function(ev) {
@@ -387,7 +387,7 @@ $(function(){
   var form = document.forms.namedItem("createEntityModel");
   form.addEventListener('submit', onUpload, false);
 });
-
+*/
 
 // Create Image
 $(function(){

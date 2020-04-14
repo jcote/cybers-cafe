@@ -118,6 +118,10 @@ body {
   display: none;
 }
 
+#createEntityHyperlinkForm {
+  display: none;
+}
+
 #editSection {
   display: none;
 }
