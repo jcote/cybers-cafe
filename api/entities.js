@@ -237,7 +237,7 @@ router.post('/', multer.single('zipFile'), checkFormat, unzipEntries, apiLib.get
     });
     console.log("completed storage");
     return res.status(200).json({
-      "message":"Found "  + Object.keys(req.entities).length + " entities, " + Object.keys(req.assets).length + " assets and " + Object.keys(req.assetFiles).length + " asset files...",
+      "message":"Found "  + Object.keys(req.entitiesDS).length + " entities, " + Object.keys(req.assets).length + " assets and " + Object.keys(req.assetFiles).length + " asset files...",
       "records": req.records,
       "entities": req.entitiesDS,
       "assets": req.assets});

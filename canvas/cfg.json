@@ -9,6 +9,8 @@
     "preferWebGl2": true,
     "preserveDrawingBuffer": false,
     "scripts": [
+      29847499,
+      29847500,
       6178173,
       6178178,
       6178176,
@@ -1507,6 +1509,52 @@
       "region": "eu-west-1",
       "i18n": {},
       "id": "7113767"
+    },
+    "29847499": {
+      "tags": [],
+      "name": "playcanvas-gltf.js",
+      "revision": 1,
+      "preload": true,
+      "meta": null,
+      "data": {
+        "order": 100,
+        "scripts": {},
+        "loadingType": 0,
+        "loading": false
+      },
+      "type": "script",
+      "file": {
+        "filename": "playcanvas-gltf.js",
+        "size": 66896,
+        "hash": "7f3314f0c022860095e7d2f2316ff613",
+        "url": "files/assets/29847499/1/playcanvas-gltf.js"
+      },
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "29847499"
+    },
+    "29847500": {
+      "tags": [],
+      "name": "playcanvas-anim.js",
+      "revision": 1,
+      "preload": true,
+      "meta": null,
+      "data": {
+        "order": 100,
+        "scripts": {},
+        "loadingType": 0,
+        "loading": false
+      },
+      "type": "script",
+      "file": {
+        "filename": "playcanvas-anim.js",
+        "size": 95560,
+        "hash": "f0f3b0227ae719f1491260e09abe09c0",
+        "url": "files/assets/29847500/1/playcanvas-anim.js"
+      },
+      "region": "eu-west-1",
+      "i18n": {},
+      "id": "29847500"
     }
   }
 }

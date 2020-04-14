@@ -265,7 +265,7 @@ function createPlacementButton(entity, assets) {
 	var entityChooseList = document.getElementById("entityChooseList");
 	entityChooseList.appendChild(entityButton);
 }
-
+/*
 // Create 3D Model
 $(function(){
   var onUpload = function(ev) {
@@ -275,7 +275,7 @@ $(function(){
       oOutput.innerHTML = "Uploading...";
 
 	  var oReq = new XMLHttpRequest();
-	  oReq.open("POST", "api/entities", true);
+    oReq.open("POST", "api/entities", true);
 	  oReq.onload = function(oEvent) {
 	    if (oReq.status == 200) {
 	      var responseJson = JSON.parse(oReq.responseText);
@@ -307,9 +307,87 @@ $(function(){
 	  ev.preventDefault();
   };
 
+  var form = document.forms.namedItem("createEntityModelZip");
+  form.addEventListener('submit', onUpload, false);
+});
+*/
+
+
+function makeGlbEntity(url, callback){
+  var app = pc.Application.getApplication("application-canvas");
+app.assets.loadFromUrl(url, 'binary', function (err, asset) {
+  if (err) return callback(err);
+    var glb = asset.resource;
+    loadGlb(glb, app.graphicsDevice, function (err, res) {
+        if (err) return callback(err);
+        // Wrap the model as an asset and add to the asset registry
+        var asset = new pc.Asset('gltf', 'model', {
+            url: ''
+        });
+        asset.resource = res.model;
+        asset.loaded = true;
+        app.assets.add(asset);
+
+        // Add the loaded scene to the hierarchy
+        var gltf = new pc.Entity('gltf');
+        gltf.addComponent('model', {
+            asset: asset
+        });
+        callback(null, entity, asset);
+    });
+});
+}
+
+// Create FBX Model
+$(function(){
+  var onUpload = function(ev) {
+    var oOutput = document.getElementById("createFormResultContainer"),
+        oData = new FormData(form);
+
+      oOutput.innerHTML = "Uploading...";
+
+    var oReq = new XMLHttpRequest();
+    oReq.open("POST", "api/fbx", true);
+    oReq.onload = function(oEvent) {
+      if (oReq.status == 200) {
+        var responseJson = JSON.parse(oReq.responseText);
+        oOutput.appendChild(document.createTextNode(responseJson.message));
+        if (responseJson.records) {
+          Object.keys(responseJson.records).forEach(function(entityId) {
+            if (entityId == "undefined") return;
+            // gather together the entity itself and its assets so we can render them
+            var objectId = responseJson.records[entityId].objectId;
+            var entity = responseJson.entities[objectId];
+            entity.id = entityId;
+            entity.objectId = objectId;
+            // select dependent assets from aggregate
+            var asset = responseJson.assets[entity.components.model.asset.id];
+            makeGlbEntity(asset.file.url, function(err, entity, asset2) {
+              if (err) {
+                oOutput.appendChild(document.createTextNode("Error occurred. " + err));
+                return;
+              }
+              var assets = {};
+              assets[asset2.id] = asset2;
+              createPlacementButton(entity, assets);
+              oOutput.appendChild(document.createTextNode("Ready to place entity..."));
+
+            });
+          });
+        }
+      } else {
+        oOutput.appendChild(document.createTextNode("Error occurred. " + responseJson.message));
+      }
+    };
+
+    oReq.send(oData);
+    ev.preventDefault();
+  };
+
   var form = document.forms.namedItem("createEntityModel");
   form.addEventListener('submit', onUpload, false);
 });
+
 
 // Create Image
 $(function(){

@@ -3,7 +3,7 @@ module.exports = {
       {
         name: "Cybers Cafe",
         script: "./app.js",
-        watch: true,
+        watch: false,
         env: {
           "GOOGLE_APPLICATION_CREDENTIALS":"/home/latte/.google/Cybers Cafe-cc5478d309c4.json",
           "DATA_BACKEND": "datastore",

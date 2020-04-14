@@ -120,7 +120,7 @@ function readOrCreateAssetByName(assetName, assets, assetFiles, createAssetFunct
     if (err) {
       console.log("Asset " + assetName + " not found, creating one")
       createAssetFunction(assets, assetFiles, function(err, asset2) {
-        assets[asset.id] = asset2;
+        assets[asset2.id] = asset2;
         callback(null, asset2);
       });
     } else {

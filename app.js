@@ -35,6 +35,7 @@ app.use('/scripts', express.static('scripts'));
 
 // entities
 app.use('/api/entities', require('./api/entities'));
+app.use('/api/fbx', require('./api/fbx'));
 app.use('/api/image', require('./api/image'));
 app.use('/api/hyperlink', require('./api/hyperlink'));
 app.use('/api/entity', require('./api/entity'));
