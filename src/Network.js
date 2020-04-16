@@ -280,7 +280,11 @@ Network.prototype.addEntity = function(data) {
         entity.setLocalPosition(relativePosition[0],relativePosition[1],relativePosition[2]);
     }
 
-    entity.setLocalScale(data.scale[0],data.scale[1],data.scale[2]);
+    if ('scale' in data) {
+      entity.setLocalScale(data.scale[0],data.scale[1],data.scale[2]);
+    } else {
+      entity.setLocalScale(data.localScale[0],data.localScale[1],data.localScale[2]);
+    }
     entity.setEulerAngles(data.rotation[0],data.rotation[1],data.rotation[2]);
     if (entity.rigidbody) {
       entity.rigidbody.teleport(relativePosition[0],relativePosition[1],relativePosition[2]);

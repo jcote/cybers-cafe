@@ -265,7 +265,7 @@ function createPlacementButton(entity, assets) {
 	var entityChooseList = document.getElementById("entityChooseList");
 	entityChooseList.appendChild(entityButton);
 }
-
+/*
 // Create 3D Model
 $(function(){
   var onUpload = function(ev) {
@@ -311,33 +311,41 @@ $(function(){
   form.addEventListener('submit', onUpload, false);
 });
 
+*/
 
-
-function makeGlbEntity(url, callback){
+function makeGlbEntity(asset, callback){
   var app = pc.Application.getApplication("application-canvas");
-app.assets.loadFromUrl(url, 'binary', function (err, asset) {
+app.assets.loadFromUrl(asset.file.url, 'binary', function (err, asset) {
   if (err) return callback(err);
     var glb = asset.resource;
     loadGlb(glb, app.graphicsDevice, function (err, res) {
         if (err) return callback(err);
         // Wrap the model as an asset and add to the asset registry
-        var asset = new pc.Asset('gltf', 'model', {
-            url: ''
+        var asset2 = new pc.Asset('gltf', 'model', {
+            url: asset.file.url
         });
-        asset.resource = res.model;
-        asset.loaded = true;
-        app.assets.add(asset);
+        asset2.resource = res.model;
+        asset2.file = {
+          'hash':asset.file.hash,
+          'fullPath':asset.file.fullPath,
+          'filename':asset.file.filename,
+          'size':asset.file.size,
+          'url':asset.file.url};
+        asset2.id = asset.id;
+        asset2.name = asset.name;
+        asset2.loaded = true;
+        app.assets.add(asset2);
 
         // Add the loaded scene to the hierarchy
         var gltf = new pc.Entity('gltf');
         gltf.addComponent('model', {
-            asset: asset
+            asset: asset2
         });
-        callback(null, entity, asset);
+        callback(null, gltf, asset2);
     });
 });
 }
-/*
+
 // Create FBX Model
 $(function(){
   var onUpload = function(ev) {
@@ -358,18 +366,18 @@ $(function(){
             // gather together the entity itself and its assets so we can render them
             var objectId = responseJson.records[entityId].objectId;
             var entity = responseJson.entities[objectId];
-            entity.id = entityId;
-            entity.objectId = objectId;
             // select dependent assets from aggregate
             var asset = responseJson.assets[entity.components.model.asset.id];
-            makeGlbEntity(asset.file.url, function(err, entity, asset2) {
+            makeGlbEntity(asset, function(err, entity2, asset2) {
               if (err) {
                 oOutput.appendChild(document.createTextNode("Error occurred. " + err));
                 return;
               }
+              entity2.id = entityId;
+              entity2.objectId = objectId;
               var assets = {};
               assets[asset2.id] = asset2;
-              createPlacementButton(entity, assets);
+              createPlacementButton(entity2, assets);
               oOutput.appendChild(document.createTextNode("Ready to place entity..."));
 
             });
@@ -387,7 +395,7 @@ $(function(){
   var form = document.forms.namedItem("createEntityModel");
   form.addEventListener('submit', onUpload, false);
 });
-*/
+
 
 // Create Image
 $(function(){
